@@ -30,7 +30,7 @@ class SeoTitle implements SnippetInterface {
 	 *
 	 * Adds a filter to modify the WordPress title tag.
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_filter( 'wp_title', [ $this, 'filter_wp_title' ], 10, 3 );
 	}
 

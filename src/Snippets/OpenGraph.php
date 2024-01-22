@@ -21,7 +21,7 @@ class OpenGraph implements SnippetInterface {
 	 *
 	 * Adds the Open Graph meta tags to the wp_head action.
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_action( 'wp_head', [ $this, 'add_meta_tags' ], 5 );
 	}
 

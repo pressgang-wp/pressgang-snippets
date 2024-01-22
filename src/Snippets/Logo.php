@@ -20,7 +20,7 @@ class Logo implements SnippetInterface {
 	 * Adds the add_logo method to the 'customize_register' action hook in
 	 * WordPress.
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 	}
 

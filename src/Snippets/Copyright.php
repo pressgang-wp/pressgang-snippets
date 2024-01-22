@@ -17,7 +17,7 @@ class Copyright implements SnippetInterface {
 	 *
 	 * Adds the setup method to the 'customize_register' action.
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 	}
 

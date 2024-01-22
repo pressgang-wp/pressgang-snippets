@@ -16,7 +16,7 @@ class AdminLogo implements SnippetInterface {
 	 *
 	 * Hooks into WordPress to change the admin login logo.
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_action( 'login_enqueue_scripts', [ $this, 'add_login_logo' ] );
 	}
 
