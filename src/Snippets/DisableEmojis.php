@@ -1,6 +1,8 @@
 <?php
 
-namespace PressGang\ToDo;
+namespace PressGang\Snippets;
+
+use PressGang\Snippets\SnippetInterface;
 
 /**
  * Disable Emojis
@@ -8,18 +10,17 @@ namespace PressGang\ToDo;
  * Removes emoji support and related scripts from WordPress for performance
  * optimization.
  */
-class DisableEmojis {
+class DisableEmojis implements SnippetInterface {
 
 	/**
 	 * Constructor.
 	 *
 	 * Adds actions and filters to disable emojis in WordPress.
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_action( 'init', [ $this, 'disable_emojis' ] );
 		\add_filter( 'tiny_mce_plugins', [ $this, 'disable_emojis_tinymce' ] );
-		\add_filter( 'wp_resource_hints',
-			[ $this, 'disable_emojis_remove_dns_prefetch' ], 10, 2 );
+		\add_filter( 'wp_resource_hints', [ $this, 'disable_emojis_remove_dns_prefetch' ], 10, 2 );
 	}
 
 	/**
@@ -70,5 +71,3 @@ class DisableEmojis {
 	}
 
 }
-
-new DisableEmojis();
