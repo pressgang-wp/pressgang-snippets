@@ -3,7 +3,6 @@
 namespace PressGang\Snippets;
 
 use WP_Customize_Manager;
-use function PressGang\Snippets\__;
 
 /**
  * Class Logo
@@ -12,7 +11,7 @@ use function PressGang\Snippets\__;
  *
  * @package PressGang
  */
-class Logo {
+class Logo extends PressGang\Snippets\SnippetInterface {
 
 	/**
 	 * Constructor.
@@ -46,7 +45,7 @@ class Logo {
 
 		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize,
 			'logo', [
-				'label'   => __( "Logo", THEMENAME ),
+				'label'   => \__( "Logo", THEMENAME ),
 				'section' => 'logo',
 			] ) );
 	}

@@ -7,7 +7,7 @@ namespace PressGang\Snippets;
  *
  * Customizes the WordPress admin login logo with the theme's logo.
  */
-class AdminLogo {
+class AdminLogo extends PressGang\Snippets\SnippetInterface {
 
 	/**
 	 * Constructor.

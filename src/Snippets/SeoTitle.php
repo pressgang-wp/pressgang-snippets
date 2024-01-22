@@ -21,7 +21,7 @@ namespace PressGang\Snippets;
  * The site title also gets added to all titles.
  *
  */
-class SeoTitle {
+class SeoTitle extends PressGang\Snippets\SnippetInterface {
 
 	/**
 	 * Constructor.

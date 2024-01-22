@@ -13,7 +13,7 @@ use Timber;
  * @see https://developers.facebook.com/docs/sharing/webmasters/#markup
  * @package PressGang
  */
-class OpenGraph {
+class OpenGraph extends PressGang\Snippets\SnippetInterface {
 
 	/**
 	 * Constructor.

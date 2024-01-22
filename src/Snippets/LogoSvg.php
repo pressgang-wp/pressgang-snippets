@@ -2,8 +2,6 @@
 
 namespace PressGang\Snippets;
 
-use function PressGang\Snippets\_x;
-
 /**
  * Class LogoSvg
  *
@@ -14,7 +12,7 @@ use function PressGang\Snippets\_x;
  *
  * @package PressGang
  */
-class LogoSvg {
+class LogoSvg extends PressGang\Snippets\SnippetInterface {
 
 	/**
 	 * Constructor.
@@ -47,7 +45,7 @@ class LogoSvg {
 
 		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize,
 			'logo_svg', [
-				'label'      => _x( "Logo SVG", 'Customizer', THEMENAME ),
+				'label'      => \_x( "Logo SVG", 'Customizer', THEMENAME ),
 				'section'    => 'logo',
 				'extensions' => [ 'svg' ],
 			] ) );
