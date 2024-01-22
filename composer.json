@@ -1,4 +1,19 @@
 {
+  "name": "pressgang-wp/pressgang-snippets",
+  "description": "A collection of reusable snippets for WordPress themes, specifically tailored for integration with the PressGang parent theme framework.",
+  "type": "wordpress-theme",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Benedict Wallis",
+      "email": "ben@benedict-wallis.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": "^8.0",
+    "timber/timber": "^2.0"
+  },
   "autoload": {
     "psr-4": {
       "PressGang\\Snippets\\": "src/Snippets/"
