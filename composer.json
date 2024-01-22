@@ -1,7 +1,7 @@
 {
   "name": "pressgang-wp/pressgang-snippets",
   "description": "A collection of reusable snippets for WordPress themes, specifically tailored for integration with the PressGang parent theme framework.",
-  "type": "wordpress-theme",
+  "type": "library",
   "license": "MIT",
   "authors": [
     {
