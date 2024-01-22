@@ -35,8 +35,7 @@ class LogoSvg {
 	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
 	 *     instance.
 	 */
-	public function add_to_customizer( \WP_Customize_Manager $wp_customize
-	): void {
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! $wp_customize->get_section( 'logo' ) ) {
 			$wp_customize->add_section( 'logo', [
 				'title'    => \_x( "Logo", 'Customizer', THEMENAME ),

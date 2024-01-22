@@ -4,7 +4,6 @@ namespace PressGang\Snippets;
 
 use PressGang;
 use Timber;
-use function PressGang\Snippets\is_single;
 
 /**
  * Class OpenGraph
@@ -33,18 +32,12 @@ class OpenGraph {
 	 */
 	public function add_meta_tags() {
 		Timber::render( 'snippets/open-graph.twig', [
-			'site_name'   => \apply_filters( 'pressgang_og_site_name',
-				\get_bloginfo() ),
-			'title'       => \apply_filters( 'pressgang_og_title',
-				$this->get_title() ),
-			'description' => \apply_filters( 'pressgang_og_description',
-				$this->get_description() ),
-			'type'        => \apply_filters( 'pressgang_og_type',
-				$this->get_type() ),
-			'url'         => \apply_filters( 'pressgang_og_url',
-				$this->get_url() ),
-			'image'       => \apply_filters( 'pressgang_og_image',
-				$this->get_image_url() ),
+			'site_name'   => \apply_filters( 'pressgang_og_site_name', \get_bloginfo() ),
+			'title'       => \apply_filters( 'pressgang_og_title', $this->get_title() ),
+			'description' => \apply_filters( 'pressgang_og_description', $this->get_description() ),
+			'type'        => \apply_filters( 'pressgang_og_type', $this->get_type() ),
+			'url'         => \apply_filters( 'pressgang_og_url', $this->get_url() ),
+			'image'       => \apply_filters( 'pressgang_og_image', $this->get_image_url() ),
 		] );
 	}
 
@@ -69,7 +62,7 @@ class OpenGraph {
 	 * @return string The Open Graph type.
 	 */
 	protected function get_type(): string {
-		return \is_author() ? 'profile' : ( is_single() ? 'article' : 'website' );
+		return \is_author() ? 'profile' : ( \is_single() ? 'article' : 'website' );
 	}
 
 	/**
