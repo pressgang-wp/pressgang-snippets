@@ -12,6 +12,11 @@ To incorporate `PressGang Snippets` into your PressGang child theme, use Compose
 composer require pressgang-wp/pressgang-snippets
 ```
 
+@TODO while in dev...
+```bash
+composer require pressgang-wp/pressgang-snippets:dev-master
+```
+
 ## Configuring Snippets in Your Theme
 
 To utilize the PressGang Snippets in your WordPress theme, you need to configure them in your theme's `config/snippets.php` file. This file acts as a central place to manage which snippets are active in your theme and to pass any necessary arguments to them.
