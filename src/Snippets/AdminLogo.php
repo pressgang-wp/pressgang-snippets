@@ -59,5 +59,3 @@ class AdminLogo implements SnippetInterface {
 	}
 
 }
-
-new AdminLogo();

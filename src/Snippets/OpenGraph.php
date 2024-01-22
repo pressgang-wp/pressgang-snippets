@@ -107,5 +107,3 @@ class OpenGraph implements SnippetInterface {
 	}
 
 }
-
-new OpenGraph();

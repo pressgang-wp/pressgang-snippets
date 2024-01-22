@@ -150,5 +150,3 @@ class SeoTitle implements SnippetInterface {
 	}
 
 }
-
-new SeoTitle();

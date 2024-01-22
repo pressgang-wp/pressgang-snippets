@@ -52,5 +52,3 @@ class Logo implements SnippetInterface {
 	}
 
 }
-
-new Logo();

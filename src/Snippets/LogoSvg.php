@@ -54,5 +54,3 @@ class LogoSvg implements SnippetInterface {
 	}
 
 }
-
-new LogoSvg();

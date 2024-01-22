@@ -57,10 +57,7 @@ class DisableEmojis implements SnippetInterface {
 	 *
 	 * @return array Modified list of URLs.
 	 */
-	public function disable_emojis_remove_dns_prefetch(
-		array $urls,
-		string $relation_type
-	): array {
+	public function disable_emojis_remove_dns_prefetch( array $urls, string $relation_type ): array {
 		if ( $relation_type == 'dns-prefetch' ) {
 			$emoji_svg_url = \apply_filters( 'emoji_svg_url',
 				'https://s.w.org/images/core/emoji/2/svg/' );
@@ -69,5 +66,4 @@ class DisableEmojis implements SnippetInterface {
 
 		return $urls;
 	}
-
 }

@@ -54,5 +54,4 @@ class Copyright implements SnippetInterface {
 				'section' => 'footer',
 			] ) );
 	}
-
 }
