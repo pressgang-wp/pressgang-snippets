@@ -2,12 +2,14 @@
 
 namespace PressGang\Snippets;
 
+use PressGang\Snippets\SnippetInterface;
+
 /**
  * Class AdminLogo
  *
  * Customizes the WordPress admin login logo with the theme's logo.
  */
-class AdminLogo extends PressGang\Snippets\SnippetInterface {
+class AdminLogo implements SnippetInterface {
 
 	/**
 	 * Constructor.

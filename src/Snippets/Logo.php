@@ -2,6 +2,7 @@
 
 namespace PressGang\Snippets;
 
+use PressGang\Snippets\SnippetInterface;
 use WP_Customize_Manager;
 
 /**
@@ -11,7 +12,7 @@ use WP_Customize_Manager;
  *
  * @package PressGang
  */
-class Logo extends PressGang\Snippets\SnippetInterface {
+class Logo implements SnippetInterface {
 
 	/**
 	 * Constructor.

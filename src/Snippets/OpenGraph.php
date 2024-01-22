@@ -2,6 +2,7 @@
 
 namespace PressGang\Snippets;
 
+use PressGang\Snippets\SnippetInterface;
 use PressGang;
 use Timber;
 
@@ -13,7 +14,7 @@ use Timber;
  * @see https://developers.facebook.com/docs/sharing/webmasters/#markup
  * @package PressGang
  */
-class OpenGraph extends PressGang\Snippets\SnippetInterface {
+class OpenGraph implements SnippetInterface {
 
 	/**
 	 * Constructor.

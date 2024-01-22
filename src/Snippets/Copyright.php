@@ -2,13 +2,15 @@
 
 namespace PressGang\Snippets;
 
+use PressGang\Snippets\SnippetInterface;
+
 /**
  * Class Copyright
  *
  * Handles the addition of copyright-related settings to the WordPress
  * Customizer.
  */
-class Copyright extends PressGang\Snippets\SnippetInterface {
+class Copyright implements SnippetInterface {
 
 	/**
 	 * Constructor.

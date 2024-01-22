@@ -2,6 +2,8 @@
 
 namespace PressGang\Snippets;
 
+use PressGang\Snippets\SnippetInterface;
+
 /**
  * Class LogoSvg
  *
@@ -12,7 +14,7 @@ namespace PressGang\Snippets;
  *
  * @package PressGang
  */
-class LogoSvg extends PressGang\Snippets\SnippetInterface {
+class LogoSvg implements SnippetInterface {
 
 	/**
 	 * Constructor.
