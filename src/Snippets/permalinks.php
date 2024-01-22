@@ -1,6 +1,6 @@
 <?php
 
-namespace Snippets;
+namespace PressGang\Snippets;
 
 /**
  * Flush permalinks in wp-admin

@@ -1,6 +1,6 @@
 <?php
 
-namespace Snippets;
+namespace PressGang\Snippets;
 
 use PressGang\Scripts;
 use function PressGang\get_template_directory_uri;

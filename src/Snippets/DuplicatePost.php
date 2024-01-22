@@ -1,6 +1,6 @@
 <?php
 
-namespace Snippets;
+namespace PressGang\Snippets;
 
 /**
  * Duplicate posts and pages without plugins

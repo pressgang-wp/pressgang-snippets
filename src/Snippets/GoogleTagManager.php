@@ -1,6 +1,6 @@
 <?php
 
-namespace Snippets;
+namespace PressGang\Snippets;
 
 if ( ! defined( 'EXPLICIT_CONSENT' ) ) {
 	define( "EXPLICIT_CONSENT", false );

@@ -1,6 +1,6 @@
 <?php
 
-namespace Snippets;
+namespace PressGang\Snippets;
 
 require_once __DIR__ . '/search-exclude.php';
 

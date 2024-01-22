@@ -1,6 +1,6 @@
 <?php
 
-namespace Snippets;
+namespace PressGang\Snippets;
 
 use function Library\__;
 use function Library\get_theme_mod;
