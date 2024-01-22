@@ -31,19 +31,19 @@ class AdminTaxonomyFilter {
 		foreach ( $taxonomies as $taxonomy ) {
 			$terms = get_terms( $taxonomy->name );
 			if ( count( $terms ) > 0 ) : ?>
-              <select name="<?php echo $taxonomy->name; ?>"
-                      id="<?php echo $taxonomy->name; ?>" class="postform">
-                <option value=""><?php echo __( sprintf( "Show All %s",
-						$taxonomy->labels->name ) ); ?></option>
-				  <?php foreach ( $terms as $term ) : ?>
-                    <option
-                      value="<?php echo $term->slug; ?>" <?php echo( filter_input( INPUT_GET,
-						$taxonomy->name,
-						FILTER_SANITIZE_STRING ) === $term->slug ? "selected=\"selected\"" : '' ); ?>>
-						<?php echo $term->name; ?>
-                    </option>
-				  <?php endforeach; ?>
-              </select>
+                <select name="<?php echo $taxonomy->name; ?>"
+                        id="<?php echo $taxonomy->name; ?>" class="postform">
+                    <option value=""><?php echo __( sprintf( "Show All %s",
+							$taxonomy->labels->name ) ); ?></option>
+					<?php foreach ( $terms as $term ) : ?>
+                        <option
+                                value="<?php echo $term->slug; ?>" <?php echo( filter_input( INPUT_GET,
+							$taxonomy->name,
+							FILTER_SANITIZE_STRING ) === $term->slug ? "selected=\"selected\"" : '' ); ?>>
+							<?php echo $term->name; ?>
+                        </option>
+					<?php endforeach; ?>
+                </select>
 			<?php endif;
 		}
 	}

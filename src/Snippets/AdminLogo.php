@@ -36,7 +36,7 @@ class AdminLogo {
 	/**
 	 * Generates CSS for customizing the login logo.
 	 *
-	 * @param  string  $logo_url  URL of the custom logo.
+	 * @param string $logo_url URL of the custom logo.
 	 *
 	 * @return string CSS code for the custom login logo.
 	 */

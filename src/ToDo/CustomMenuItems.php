@@ -51,10 +51,10 @@ class CustomMenuItems {
 	 *
 	 * - See: https://github.com/timber/timber/issues/200
 	 *
-	 * @param  string  $menu_name  The name or slug of the navigation menu
-	 * @param  int  $parent_object_id  The id of the post/page, which must be
+	 * @param string $menu_name The name or slug of the navigation menu
+	 * @param int $parent_object_id The id of the post/page, which must be
 	 *     present in the menu, and to which we want to add subitems
-	 * @param  array  $subitems  The sub-items to be added to the menu, as an
+	 * @param array $subitems The sub-items to be added to the menu, as an
 	 *                                      array( array( 'text' => 'foo',
 	 *     'url' => '/bar') )
 	 */

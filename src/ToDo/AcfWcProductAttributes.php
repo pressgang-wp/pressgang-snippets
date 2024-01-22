@@ -46,7 +46,7 @@ class AcfWcProductAttributes {
 	 */
 	public function acf_location_rule_values( $choices ) {
 		foreach ( \wc_get_attribute_taxonomies() as $attr ) {
-			$pa_name = \wc_attribute_taxonomy_name( $attr->attribute_name );
+			$pa_name             = \wc_attribute_taxonomy_name( $attr->attribute_name );
 			$choices[ $pa_name ] = $attr->attribute_label;
 		}
 

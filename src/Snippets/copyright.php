@@ -24,7 +24,7 @@ class Copyright {
 	 * Adds a new section for Footer settings in the Customizer and defines
 	 * controls for them.
 	 *
-	 * @param  \WP_Customize_Manager  $wp_customize  The WP_Customize_Manager
+	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
 	 *     instance.
 	 */
 	protected function add_to_customizer( \WP_Customize_Manager $wp_customize

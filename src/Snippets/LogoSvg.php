@@ -32,7 +32,7 @@ class LogoSvg {
 	 * Adds a new control for an SVG logo in the WordPress Customizer under the
 	 * 'logo' section.
 	 *
-	 * @param  \WP_Customize_Manager  $wp_customize  The WP_Customize_Manager
+	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
 	 *     instance.
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize

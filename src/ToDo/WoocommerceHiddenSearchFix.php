@@ -19,7 +19,7 @@ class WooCommerceHiddenSearchFix {
 	/**
 	 * hidden_product_search_query_fix
 	 *
-	 * @param  bool  $query
+	 * @param bool $query
 	 */
 	public function hidden_product_search_query_fix( $query = false ) {
 		global $wp_the_query;

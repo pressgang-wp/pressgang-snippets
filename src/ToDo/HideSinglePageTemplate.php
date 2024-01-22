@@ -19,9 +19,9 @@ class HideSinglePageTemplate {
 	/**
 	 * Filter the theme page templates.
 	 *
-	 * @param  array  $page_templates  Page templates.
-	 * @param  WP_Theme  $this  WP_Theme instance.
-	 * @param  WP_Post  $post  The post being edited, provided for context, or
+	 * @param array $page_templates Page templates.
+	 * @param WP_Theme $this WP_Theme instance.
+	 * @param WP_Post $post The post being edited, provided for context, or
 	 *     null.
 	 *
 	 * @return array Modified page templates array.

@@ -65,10 +65,10 @@ class RequiredFeaturedImage {
 	public function featured_image_error() {
 		// TODO add a pressgang feature for notices
 		if ( get_transient( 'has_post_thumbnail' ) == "no" ) { ?>
-          <div class="error">
-          <p><?php __( "You must select a Featured Image. Your Post has been saved but it cannot be published.",
-				  THEMENAME ) ?></p>
-          </div><?php
+            <div class="error">
+            <p><?php __( "You must select a Featured Image. Your Post has been saved but it cannot be published.",
+					THEMENAME ) ?></p>
+            </div><?php
 		}
 		delete_transient( 'has_post_thumbnail' );
 	}

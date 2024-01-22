@@ -38,7 +38,7 @@ class DisableEmojis {
 	/**
 	 * Removes the TinyMCE emoji plugin.
 	 *
-	 * @param  array  $plugins  TinyMCE plugins.
+	 * @param array $plugins TinyMCE plugins.
 	 *
 	 * @return array Modified list of TinyMCE plugins.
 	 */
@@ -50,8 +50,8 @@ class DisableEmojis {
 	/**
 	 * Removes emoji CDN hostname from DNS prefetching hints.
 	 *
-	 * @param  array  $urls  URLs to print for resource hints.
-	 * @param  string  $relation_type  The relation type the URLs are printed
+	 * @param array $urls URLs to print for resource hints.
+	 * @param string $relation_type The relation type the URLs are printed
 	 *     for.
 	 *
 	 * @return array Modified list of URLs.

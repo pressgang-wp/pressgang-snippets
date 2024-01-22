@@ -1,2 +1,3 @@
 # pressgang-snippets
- Reusable snippets for PressGang WordPress themes
+
+Reusable snippets for PressGang WordPress themes

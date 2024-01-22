@@ -61,19 +61,19 @@ class AcfWysiwygMin {
 
 		if ( isset( $field['wysiwyg_height'] ) && $field['wysiwyg_height'] > 0 ) :
 			?>
-          <style type="text/css">
-            <?php echo $field_class; ?>
-            iframe {
-              min-height: <?php echo $field['wysiwyg_height']; ?>px;
-            }
-          </style>
-          <script type="text/javascript">
-            jQuery(window).load(function () {
-              jQuery('<?php echo $field_class; ?>').each(function () {
-                jQuery('#' + jQuery(this).find('iframe').attr('id')).height( <?php echo $field['wysiwyg_height']; ?> );
-              });
-            });
-          </script>
+            <style type="text/css">
+                <?php echo $field_class; ?>
+                iframe {
+                    min-height: <?php echo $field['wysiwyg_height']; ?>px;
+                }
+            </style>
+            <script type="text/javascript">
+                jQuery(window).load(function () {
+                    jQuery('<?php echo $field_class; ?>').each(function () {
+                        jQuery('#' + jQuery(this).find('iframe').attr('id')).height( <?php echo $field['wysiwyg_height']; ?> );
+                    });
+                });
+            </script>
 		<?php endif;
 	}
 

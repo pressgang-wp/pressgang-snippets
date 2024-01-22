@@ -279,8 +279,8 @@ class Breadcrumb {
 	 * append_link
 	 *
 	 * @param $title
-	 * @param  string  $class
-	 * @param  null  $url
+	 * @param string $class
+	 * @param null $url
 	 */
 	private function append_link( $title, $class = '', $url = null ) {
 		$this->breadcrumbs[] = [

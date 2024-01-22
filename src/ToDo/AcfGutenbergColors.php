@@ -15,14 +15,14 @@ class AcfGutenbergColors {
 	 * @return void
 	 */
 	public function acf_color_palette() { ?>
-      <script type="text/javascript">
-        (function () {
-          acf.add_filter('color_picker_args', function (args) {
-            args.palettes = wp.data.select('core/block-editor').getSettings().colors.map(color => color.color);
-            return args;
-          });
-        })();
-      </script>
+        <script type="text/javascript">
+            (function () {
+                acf.add_filter('color_picker_args', function (args) {
+                    args.palettes = wp.data.select('core/block-editor').getSettings().colors.map(color => color.color);
+                    return args;
+                });
+            })();
+        </script>
 	<?php }
 
 }

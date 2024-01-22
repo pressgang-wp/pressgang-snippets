@@ -35,9 +35,9 @@ class SeoTitle {
 	/**
 	 * Filters and modifies the WordPress title tag.
 	 *
-	 * @param  string  $title  The original title.
-	 * @param  string  $separator  The title separator.
-	 * @param  string  $location  The location of the site name (left or right).
+	 * @param string $title The original title.
+	 * @param string $separator The title separator.
+	 * @param string $location The location of the site name (left or right).
 	 *
 	 * @return string The modified title.
 	 */
@@ -59,8 +59,8 @@ class SeoTitle {
 	/**
 	 * Generates a title for search result pages.
 	 *
-	 * @param  string  $title  The original title.
-	 * @param  string  $separator  The title separator.
+	 * @param string $title The original title.
+	 * @param string $separator The title separator.
 	 *
 	 * @return string The modified title for search pages.
 	 */
@@ -82,9 +82,9 @@ class SeoTitle {
 	/**
 	 * Generates a standard title for pages other than search results.
 	 *
-	 * @param  string  $title  The original title.
-	 * @param  string  $separator  The title separator.
-	 * @param  string  $location  The location of the site name.
+	 * @param string $title The original title.
+	 * @param string $separator The title separator.
+	 * @param string $location The location of the site name.
 	 *
 	 * @return string The modified standard title.
 	 */
@@ -138,8 +138,8 @@ class SeoTitle {
 	/**
 	 * Checks if there are multiple pages.
 	 *
-	 * @param  int  $paged  Current page number.
-	 * @param  int  $page  Current page number.
+	 * @param int $paged Current page number.
+	 * @param int $page Current page number.
 	 *
 	 * @return bool True if there are multiple pages, false otherwise.
 	 */

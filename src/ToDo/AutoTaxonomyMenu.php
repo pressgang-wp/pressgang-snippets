@@ -63,8 +63,8 @@ class AutoTaxonomyMenu {
 	 * get_nav_menu_item
 	 *
 	 * @param $term
-	 * @param  int  $parent_id
-	 * @param  int  $order
+	 * @param int $parent_id
+	 * @param int $order
 	 *
 	 * @return \stdClass
 	 */

@@ -29,7 +29,7 @@ class Trustpilot {
 	 * This function registers settings and controls for managing Trustpilot
 	 * integration such as Business ID, Template ID, and Reviews URL.
 	 *
-	 * @param  WP_Customize_Manager  $wp_customize  WordPress Customizer
+	 * @param WP_Customize_Manager $wp_customize WordPress Customizer
 	 *     object.
 	 */
 	public function customizer( $wp_customize ) {
@@ -94,9 +94,9 @@ class Trustpilot {
 	 * This script is necessary for Trustpilot widgets to function properly.
 	 */
 	public function script() { ?>
-      <script type="text/javascript"
-              src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-              async></script>
+        <script type="text/javascript"
+                src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
+                async></script>
 		<?php
 	}
 

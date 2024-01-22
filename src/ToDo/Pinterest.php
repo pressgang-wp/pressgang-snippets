@@ -55,7 +55,7 @@ class Pinterest {
 			FILTER_SANITIZE_STRING );
 
 		if ( $pinterest ) : ?>
-          <meta name="p:domain_verify" content="<?php echo $pinterest; ?>"/>
+            <meta name="p:domain_verify" content="<?php echo $pinterest; ?>"/>
 		<?php endif;
 	}
 

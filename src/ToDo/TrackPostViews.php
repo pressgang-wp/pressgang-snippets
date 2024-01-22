@@ -55,7 +55,7 @@ class TrackPostViews {
 	/**
 	 * set_post_views
 	 *
-	 * @param  int  $post_id
+	 * @param int $post_id
 	 */
 	public function set_post_views( $post_id ) {
 		$count = intval( get_post_meta( $post_id, self::COUNT_KEY, true ) );
@@ -88,8 +88,8 @@ class TrackPostViews {
 	/**
 	 * get_most_popular
 	 *
-	 * @param  string  $post_type
-	 * @param  int  $number
+	 * @param string $post_type
+	 * @param int $number
 	 *
 	 * @return \WP_Query
 	 */
@@ -119,7 +119,7 @@ class TrackPostViews {
 	 */
 	public function cache_breaker() {
 		if ( is_single() ) { ?>
-          <!-- mfunc \PressGang\TrackPostViews::set_post_views($post_id); --><!-- /mfunc -->
+            <!-- mfunc \PressGang\TrackPostViews::set_post_views($post_id); --><!-- /mfunc -->
 			<?php
 		}
 	}

@@ -30,7 +30,7 @@ class Logo {
 	 * Adds a new section for the logo in the WordPress Customizer and defines
 	 * controls for it.
 	 *
-	 * @param  \WP_Customize_Manager  $wp_customize  The WP_Customize_Manager
+	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
 	 *     instance.
 	 */
 	public function add_to_customizer( WP_Customize_Manager $wp_customize
