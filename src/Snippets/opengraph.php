@@ -4,6 +4,7 @@ namespace PressGang\Snippets;
 
 use PressGang;
 use Timber;
+use function PressGang\Snippets\is_single;
 
 /**
  * Class OpenGraph

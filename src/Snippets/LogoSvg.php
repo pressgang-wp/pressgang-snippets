@@ -2,6 +2,8 @@
 
 namespace PressGang\Snippets;
 
+use function PressGang\Snippets\_x;
+
 /**
  * Class LogoSvg
  *

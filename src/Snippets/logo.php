@@ -3,6 +3,7 @@
 namespace PressGang\Snippets;
 
 use WP_Customize_Manager;
+use function PressGang\Snippets\__;
 
 /**
  * Class Logo
