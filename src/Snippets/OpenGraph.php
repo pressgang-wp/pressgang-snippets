@@ -50,8 +50,7 @@ class OpenGraph implements SnippetInterface {
 	protected function get_image_url(): string {
 		$post    = \Timber::get_post();
 		$img_url = $post && \has_post_thumbnail( $post->ID )
-			? \wp_get_attachment_image_src( \get_post_thumbnail_id( $post->ID ),
-				'large' )[0]
+			? \wp_get_attachment_image_src( \get_post_thumbnail_id( $post->ID ), 'large' )[0]
 			: ( \get_theme_mod( 'logo' ) );
 
 		return \apply_filters( 'og_image', $img_url );
@@ -97,8 +96,7 @@ class OpenGraph implements SnippetInterface {
 	 */
 	protected function get_url(): string {
 		if ( \is_tax() ) {
-			return \get_term_link( \get_query_var( 'term' ),
-				\get_query_var( 'taxonomy' ) );
+			return \get_term_link( \get_query_var( 'term' ), \get_query_var( 'taxonomy' ) );
 		} elseif ( \is_post_type_archive() ) {
 			return \get_post_type_archive_link( \get_query_var( 'post_type' ) );
 		}
