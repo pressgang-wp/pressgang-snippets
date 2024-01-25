@@ -13,15 +13,16 @@ use Twig\TwigFunction;
  * Customizer for Trustpilot configuration and embedding the Trustpilot script
  * in the website's head section for the widgets to function properly.
  */
-class Trustpilot {
+class Trustpilot implements SnippetInterface {
 
 	/**
 	 * Trustpilot constructor.
 	 *
 	 * Sets up WordPress customizer options, includes Trustpilot script,
 	 * and adds Trustpilot widgets to Twig.
-	 */
-	public function __construct() {
+	 *
+	 * @param array $args*/
+	public function __construct( array $args) {
 		\add_action( 'customize_register', [ $this, 'customizer' ] );
 		\add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 		\add_filter( 'timber/twig', [ $this, 'add_to_twig' ] );
