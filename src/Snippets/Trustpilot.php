@@ -1,15 +1,14 @@
 <?php
 
-namespace PressGang\ToDo;
-
-use WP_Customize_Manager;
-use function PressGang\Snippets\__;
+namespace PressGang\Snippets;
 
 /**
  * Class Trustpilot
  *
  * Handles the integration of Trustpilot widget and customizer settings in a
- * WordPress theme.
+ * WordPress theme. This includes adding custom settings in the WordPress
+ * Customizer for Trustpilot configuration and embedding the Trustpilot script
+ * in the website's head section for the widgets to function properly.
  */
 class Trustpilot {
 
@@ -20,26 +19,25 @@ class Trustpilot {
 	 */
 	public function __construct() {
 		\add_action( 'customize_register', [ $this, 'customizer' ] );
-		\add_action( 'wp_head', [ $this, 'script' ] );
+		\add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 	}
 
 	/**
 	 * Add Trustpilot settings to the WordPress Customizer.
 	 *
 	 * This function registers settings and controls for managing Trustpilot
-	 * integration such as Business ID, Template ID, and Reviews URL.
+	 * integration such as Business ID, Template ID, and Reviews URL. It creates
+	 * a new section in the WordPress Customizer dedicated to Trustpilot settings,
+	 * allowing for easy customization and integration of Trustpilot features.
 	 *
-	 * @param WP_Customize_Manager $wp_customize WordPress Customizer
-	 *     object.
+	 * @param \WP_Customize_Manager $wp_customize WordPress Customizer object.
 	 */
-	public function customizer( $wp_customize ) {
+	public function customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['trustpilot'] ) ) {
 			$wp_customize->add_section( 'trustpilot', [
-				'title' => __( "Trustpilot", THEMENAME ),
+				'title' => _x( "Trustpilot", 'Trustpilot', THEMENAME ),
 			] );
 		}
-
-		// trustpilot business id
 
 		$wp_customize->add_setting( 'trustpilot_business_id',
 			[
@@ -50,12 +48,10 @@ class Trustpilot {
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'trustpilot_business_id', [
-				'label'   => __( "Business ID", THEMENAME ),
+				'label'   => _x( "Business ID", 'Trustpilot', THEMENAME ),
 				'section' => 'trustpilot',
 				'type'    => 'text',
 			] ) );
-
-		// trustpilot template id
 
 		$wp_customize->add_setting( 'trustpilot_template_id',
 			[
@@ -70,8 +66,6 @@ class Trustpilot {
 				'section' => 'trustpilot',
 				'type'    => 'text',
 			] ) );
-
-		// trustpilot reviews url
 
 		$wp_customize->add_setting( 'trustpilot_reviews_link',
 			[
@@ -92,14 +86,18 @@ class Trustpilot {
 	 * Outputs the Trustpilot script tag in the website's head section.
 	 *
 	 * This script is necessary for Trustpilot widgets to function properly.
+	 * It should be included in the head of each page where Trustpilot widgets
+	 * are intended to be used.
 	 */
-	public function script() { ?>
-        <script type="text/javascript"
-                src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-                async></script>
-		<?php
+	public function register_scripts(): void {
+		\wp_register_script(
+			'trustpilot-snippet',
+			'//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js',
+			[],
+			null,
+			true
+		);
+
+		\wp_enqueue_script( 'trustpilot-widget-script' );
 	}
-
 }
-
-new Trustpilot();
