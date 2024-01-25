@@ -15,6 +15,8 @@ use Twig\TwigFunction;
  */
 class Trustpilot implements SnippetInterface {
 
+	const SCRIPT_ENQUEUE_KEY = 'trustpilot-pressgang-snippet';
+
 	/**
 	 * Trustpilot constructor.
 	 *
@@ -98,14 +100,14 @@ class Trustpilot implements SnippetInterface {
 	 */
 	public function register_scripts(): void {
 		\wp_register_script(
-			'trustpilot-snippet',
+			self::SCRIPT_ENQUEUE_KEY,
 			'//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js',
 			[],
 			null,
 			true
 		);
 
-		\wp_enqueue_script( 'trustpilot-widget-script' );
+		\wp_enqueue_script( self::SCRIPT_ENQUEUE_KEY );
 	}
 
 	/**
