@@ -2,6 +2,7 @@
 
 namespace PressGang\Snippets;
 
+use Twig\Environment;
 use Twig\TwigFunction;
 
 /**
@@ -113,10 +114,11 @@ class Trustpilot {
 	 * Trustpilot widgets within templates.
 	 *
 	 * @hooked timber/twig
-	 * @param \Twig\Environment $twig The Twig environment instance.
+	 *
+	 * @param Environment $twig The Twig environment instance.
 	 */
-	public function add_to_twig( $twig ): void {
-		$twig->addFunction( new \TwigFunction( 'trustpilot_mini', [ $this, 'render_mini_widget' ] ) );
+	public function add_to_twig( Environment $twig ): void {
+		$twig->addFunction( new TwigFunction( 'trustpilot_mini', [ $this, 'render_mini_widget' ] ) );
 	}
 
 	/**
