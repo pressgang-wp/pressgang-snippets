@@ -118,8 +118,9 @@ class Trustpilot implements SnippetInterface {
 	 *
 	 * @param Environment $twig The Twig environment instance.
 	 */
-	public function add_to_twig( Environment $twig ): void {
+	public function add_to_twig( Environment $twig ): Environment {
 		$twig->addFunction( new TwigFunction( 'trustpilot_mini', [ $this, 'render_mini_widget' ] ) );
+		return $twig;
 	}
 
 	/**
