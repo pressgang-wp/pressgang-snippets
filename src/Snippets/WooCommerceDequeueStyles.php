@@ -27,6 +27,7 @@ class WooCommerceDequeueStyles implements SnippetInterface {
 	 * Dequeues the styles
 	 *
 	 * @hooked woocommerce_enqueue_styles
+	 *
 	 * @param $enqueue_styles
 	 *
 	 * @return mixed
@@ -46,6 +47,8 @@ class WooCommerceDequeueStyles implements SnippetInterface {
 	 * @return void
 	 */
 	public function dequeue_select_woo(): void {
+		\wp_dequeue_style( 'select2' );
+		\wp_deregister_style( 'select2' );
 		\wp_dequeue_style( 'selectWoo' );
 		\wp_deregister_style( 'selectWoo' );
 	}
