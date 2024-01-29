@@ -54,7 +54,7 @@ class Breadcrumb implements SnippetInterface {
 	 */
 	public function render(): void {
 		$this->generate_links();
-		Timber::render( 'snippets/breadcrumb.twig', [ 'breadcrumbs' = $this->breadcrumbs ] );
+		Timber::render( 'snippets/breadcrumb.twig', [ 'breadcrumbs' => $this->breadcrumbs ] );
 	}
 
 	/**
