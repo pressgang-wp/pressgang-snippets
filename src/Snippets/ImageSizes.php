@@ -11,7 +11,7 @@ namespace PressGang\Snippets;
  */
 class ImageSizes implements SnippetInterface {
 
-	private $args;
+	private array $args;
 
 	/**
 	 * ImageSizes constructor.
@@ -20,7 +20,7 @@ class ImageSizes implements SnippetInterface {
 	 *
 	 * @param array $args Associative array for image size configuration.
 	 */
-	public function __construct( $args ) {
+	public function __construct( array $args ) {
 		$this->args = $args;
 		\add_action( 'init', [ $this, 'setup_image_sizes' ] );
 	}
