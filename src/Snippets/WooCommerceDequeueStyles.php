@@ -20,7 +20,6 @@ class WooCommerceDequeueStyles implements SnippetInterface {
 	 */
 	public function __construct( array $args ) {
 		\add_filter( 'woocommerce_enqueue_styles', [ $this, 'dequeue_styles' ] );
-		\add_filter( 'woocommerce_enqueue_styles', [ $this, 'dequeue_select_woo' ] );
 	}
 
 	/**
@@ -38,18 +37,5 @@ class WooCommerceDequeueStyles implements SnippetInterface {
 		unset( $enqueue_styles['woocommerce-smallscreen'] ); // remove the smallscreen optimisation
 
 		return $enqueue_styles;
-	}
-
-	/**
-	 * Dequeues select woo styles
-	 *
-	 * @hooked woocommerce_enqueue_styles
-	 * @return void
-	 */
-	public function dequeue_select_woo(): void {
-		\wp_dequeue_style( 'select2' );
-		\wp_deregister_style( 'select2' );
-		\wp_dequeue_style( 'selectWoo' );
-		\wp_deregister_style( 'selectWoo' );
 	}
 }
