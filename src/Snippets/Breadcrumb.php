@@ -40,7 +40,7 @@ class Breadcrumb implements SnippetInterface {
 	 *
 	 * @return Environment Modified Twig environment with new function.
 	 */
-	public function add_to_twig( $twig ): mixed {
+	public function add_to_twig( Environment $twig ): Environment {
 		$twig->addFunction( new TwigFunction( 'breadcrumb', [ $this, 'render' ] ) );
 
 		return $twig;
