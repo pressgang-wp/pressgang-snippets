@@ -4,10 +4,10 @@
             <li class="breadcrumb-item {{ breadcrumb.class|e('html_attr') }}" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                 {% if breadcrumb.url %}
                     <a href="{{ breadcrumb.url|e('html_attr') }}" itemprop="item">
-                        <span itemprop="name">{{ breadcrumb.title|e('html_attr')|default('') }}</span>
+                        <span itemprop="name">{{ breadcrumb.title|default('') }}</span>
                     </a>
                 {% else %}
-                    <span itemprop="name">{{ breadcrumb.title|e('html_attr') }}</span>
+                    <span itemprop="name">{{ breadcrumb.title }}</span>
                 {% endif %}
                 <meta itemprop="position" content="{{ loop.index|e('html_attr') }}">
             </li>
