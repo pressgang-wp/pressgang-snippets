@@ -73,10 +73,10 @@ class Hotjar implements SnippetInterface {
 	 * This method checks if tracking for logged-in users is enabled or if the current visitor is not logged in, and if
 	 * a Hotjar ID is set. If these conditions are satisfied, it renders the Hotjar tracking script using Timber.
 	 */
-	public function script() {
+	public function script(): void {
 		$track_logged_in = get_theme_mod( 'hotjar-track-logged-in' );
 
-		if ( $track_logged_in || ( ! $track_logged_in && ! is_user_logged_in() ) ) {
+		if ( $track_logged_in || ! is_user_logged_in() ) {
 			if ( $hotjar_id = urlencode( \get_theme_mod( 'hotjar-id' ) ) ) {
 				Timber::render( 'snippets/hotjar.twig', [
 					'hotjar_id' => $hotjar_id,
