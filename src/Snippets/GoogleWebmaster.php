@@ -1,11 +1,8 @@
 <?php
 
-namespace PressGang\ToDo;
+namespace PressGang\Snippets;
 
-use function PressGang\Snippets\__;
-use function PressGang\Snippets\add_action;
-
-class GoogleWebmaster {
+class GoogleWebmaster implements SnippetInterface {
 
 	/**
 	 * __construct
@@ -14,8 +11,8 @@ class GoogleWebmaster {
 	 *
 	 * @return void
 	 */
-	public function __construct() {
-		add_action( 'customize_register', [ $this, 'customizer' ] );
+	public function __construct( array $args ) {
+		\add_action( 'customize_register', [ $this, 'customizer' ] );
 	}
 
 	/**
@@ -31,7 +28,7 @@ class GoogleWebmaster {
 		}
 
 		$wp_customize->add_setting(
-			'google_verification_code',
+			'google-verification-code',
 			[
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
@@ -39,16 +36,11 @@ class GoogleWebmaster {
 		);
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
-			'google_verification_code', [
-				'label'       => __( "Google Webmaster Verification Code",
-					THEMENAME ),
-				'description' => sprintf( __( "See %s" ),
-					'https://goo.gl/kXrMha' ),
+			'google-verification-code', [
+				'label'       => __( "Google Webmaster Verification Code", THEMENAME ),
+				'description' => sprintf( __( "See %s" ), 'https://goo.gl/kXrMha' ),
 				'section'     => 'google',
 				'type'        => 'text',
 			] ) );
 	}
-
 }
-
-new GoogleWebmaster();
