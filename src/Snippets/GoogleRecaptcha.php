@@ -18,7 +18,7 @@ class GoogleRecaptcha implements SnippetInterface {
 	 *
 	 * Registers the customization settings and controls for Google reCAPTCHA in the WordPress Customizer.
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 	}
 
