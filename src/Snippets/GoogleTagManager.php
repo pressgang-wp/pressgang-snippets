@@ -83,7 +83,7 @@ class GoogleTagManager implements SnippetInterface {
 	 * JavaScript is disabled. It renders the fallback if a GTM ID is present in the theme's Customizer setting.
 	 */
 	public function no_script(): void {
-		$track_logged_in = \get_theme_mod( 'google-analytics-track-logged-in' );
+		$track_logged_in = \get_theme_mod( 'google-tag-manager-track-logged-in' );
 
 		if ( $track_logged_in || \is_user_logged_in() ) {
 			if ( $google_tag_manager_id = \get_theme_mod( 'google-tag-manager-id' ) ) {
