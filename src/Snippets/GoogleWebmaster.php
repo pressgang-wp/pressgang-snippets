@@ -20,7 +20,7 @@ class GoogleWebmaster implements SnippetInterface {
 	 * @param array $args Arguments for the constructor, allowing for future expansion or customization.
 	 */
 	public function __construct( array $args ) {
-		\add_action( 'customize_register', [ $this, 'customizer' ] );
+		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 	}
 
 	/**
