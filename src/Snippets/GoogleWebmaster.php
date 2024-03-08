@@ -2,28 +2,38 @@
 
 namespace PressGang\Snippets;
 
+/**
+ * Integrates Google Webmaster verification code setting into the WordPress Customizer.
+ *
+ * This class allows site administrators to easily add their Google Webmaster verification code to their site
+ * through the WordPress Customizer.
+ *
+ * The verification code is used to verify ownership of the site with Google Webmaster Tools.
+ */
 class GoogleWebmaster implements SnippetInterface {
 
 	/**
-	 * __construct
+	 * Constructor for GoogleWebmaster.
 	 *
-	 * Adds a google-webmaster customizer field, the value is added in site.php
+	 * Registers an action with WordPress to add a custom field to the Customizer for the Google Webmaster verification code.
 	 *
-	 * @return void
+	 * @param array $args Arguments for the constructor, allowing for future expansion or customization.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'customizer' ] );
 	}
 
 	/**
-	 * Add to customizer
+	 * Adds Google Webmaster verification code setting to the WordPress Customizer.
 	 *
-	 * @param $wp_customize
+	 * Creates a new section in the Customizer if it doesn't exist and adds a setting for the Google verification code.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize The WordPress Customizer object, providing access to the Customizer's API.
 	 */
-	public function customizer( $wp_customize ) {
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['google'] ) ) {
 			$wp_customize->add_section( 'google', [
-				'title' => __( "Google", THEMENAME ),
+				'title' => \__( "Google", THEMENAME ),
 			] );
 		}
 
@@ -37,8 +47,8 @@ class GoogleWebmaster implements SnippetInterface {
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'google-verification-code', [
-				'label'       => __( "Google Webmaster Verification Code", THEMENAME ),
-				'description' => sprintf( __( "See %s" ), 'https://goo.gl/kXrMha' ),
+				'label'       => \__( "Google Webmaster Verification Code", THEMENAME ),
+				'description' => sprintf( \__( "See %s", THEMENAME ), 'https://goo.gl/kXrMha' ),
 				'section'     => 'google',
 				'type'        => 'text',
 			] ) );
