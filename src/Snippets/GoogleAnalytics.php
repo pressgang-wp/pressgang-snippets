@@ -49,7 +49,7 @@ class GoogleAnalytics implements SnippetInterface {
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'google-analytics-track-logged-in', [
-				'label'   => __( "Track Logged In Users?", THEMENAME ),
+				'label'   => __( "Analytics Track Logged In Users?", THEMENAME ),
 				'section' => 'google',
 				'type'    => 'checkbox',
 			] ) );
