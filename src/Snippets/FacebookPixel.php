@@ -1,11 +1,8 @@
 <?php
 
-namespace PressGang\ToDo;
+namespace PressGang\Snippets;
 
-use function PressGang\Snippets\__;
-use function PressGang\Snippets\add_action;
-use function PressGang\Snippets\get_theme_mod;
-use function PressGang\Snippets\is_user_logged_in;
+use Timber\Timber;
 
 class FacebookPixel {
 
@@ -15,8 +12,8 @@ class FacebookPixel {
 	 * @return void
 	 */
 	public function __construct() {
-		add_action( 'customize_register', [ $this, 'customizer' ] );
-		add_action( 'wp_head', [ $this, 'script' ] );
+		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
+		\add_action( 'wp_head', [ $this, 'script' ] );
 	}
 
 	/**
@@ -24,14 +21,12 @@ class FacebookPixel {
 	 *
 	 * @param $wp_customize
 	 */
-	public function customizer( $wp_customize ) {
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['facebook'] ) ) {
 			$wp_customize->add_section( 'facebook', [
 				'title' => __( "Facebook", THEMENAME ),
 			] );
 		}
-
-		// tracking id
 
 		$wp_customize->add_setting(
 			'facebook-pixel-id',
@@ -48,11 +43,8 @@ class FacebookPixel {
 				'type'    => 'text',
 			] ) );
 
-		// track logged in users?
-
 		$wp_customize->add_setting(
-			'facebook-track-logged-in',
-			[
+			'facebook-track-logged-in', [
 				'default' => 0,
 			]
 		);
@@ -70,12 +62,12 @@ class FacebookPixel {
 	 *
 	 * @return void
 	 */
-	public function script() {
-		$track_logged_in = get_theme_mod( 'facebook-track-logged-in' );
+	public function script(): void {
+		$track_logged_in = \get_theme_mod( 'facebook-track-logged-in' );
 
-		if ( $track_logged_in || ( ! $track_logged_in && ! is_user_logged_in() ) ) {
-			if ( $facebook_pixel_id = urlencode( get_theme_mod( 'facebook-pixel-id' ) ) ) {
-				\Timber\Timber::render( 'facebook-pixel.twig', [
+		if ( $track_logged_in || ! \is_user_logged_in() ) {
+			if ( $facebook_pixel_id = urlencode( \get_theme_mod( 'facebook-pixel-id' ) ) ) {
+				Timber::render( 'facebook-pixel.twig', [
 					'facebook_pixel_id' => $facebook_pixel_id,
 				] );
 			}
@@ -83,5 +75,3 @@ class FacebookPixel {
 	}
 
 }
-
-new FacebookPixel();
