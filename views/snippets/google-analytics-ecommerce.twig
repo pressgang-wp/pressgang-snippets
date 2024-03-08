@@ -1,0 +1,21 @@
+<script>
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        'transactionId': '{{ transaction_id|e('esc_js') }}',
+        'transactionAffiliation': '{{ transaction_affiliation|e('esc_js') }}',
+        'transactionTotal': {{ transaction_total|e('esc_js') }},
+        'transactionTax': {{ transaction_tax|e('esc_js') }},
+        'transactionShipping': {{ transaction_shipping|e('esc_js') }},
+        'transactionProducts': [
+            {% for item in transaction_products %}
+            {
+                'sku': '{{ item.sku|e('esc_js') }}',
+                'name': '{{ item.name|e('esc_js') }}',
+                'category': '{{ item.category|e('esc_js') }}',
+                'price': {{ item.price|e('esc_js') }},
+                'quantity': {{ item.quantity|e('esc_js') }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    });
+</script>
