@@ -38,7 +38,7 @@ class Tawkto implements SnippetInterface {
 		$wp_customize->add_setting( 'tawkto_id', [ 'default' => '' ] );
 
 		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize,
-			'tawkto_id', [
+			'tawkto-id', [
 				'label'   => \__( "ID", THEMENAME ),
 				'section' => 'tawkto',
 			] ) );
@@ -49,7 +49,7 @@ class Tawkto implements SnippetInterface {
 	 *
 	 */
 	public function render(): void {
-		if ( $tawkto_id = \get_theme_mod( 'tawkto_id' ) ) {
+		if ( $tawkto_id = \get_theme_mod( 'tawkto-id' ) ) {
 			Timber::render( 'snippets/tawkto.twig', [ 'id' => $tawkto_id ] );
 		}
 	}
