@@ -3,7 +3,6 @@
 namespace PressGang\Snippets;
 
 use PressGang\Snippets\SnippetInterface;
-use WP_Customize_Manager;
 
 /**
  * Class Logo
@@ -33,7 +32,7 @@ class Logo implements SnippetInterface {
 	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
 	 *     instance.
 	 */
-	public function add_to_customizer( WP_Customize_Manager $wp_customize ): void {
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! $wp_customize->get_section( 'logo' ) ) {
 			// Add a new section for Logo settings
 			$wp_customize->add_section( 'logo', [
