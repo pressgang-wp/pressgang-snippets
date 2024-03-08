@@ -12,7 +12,7 @@ class GoogleAnalytics implements SnippetInterface {
 	 * @return void
 	 */
 	public function __construct() {
-		\add_action( 'customize_register', [ $this, 'customizer' ] );
+		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 		\add_action( 'wp_head', [ $this, 'script' ] );
 	}
 
