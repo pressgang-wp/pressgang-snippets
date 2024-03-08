@@ -4,14 +4,14 @@ namespace PressGang\Snippets;
 
 use Timber\Timber;
 
-class FacebookPixel {
+class FacebookPixel implements SnippetInterface {
 
 	/**
 	 * __construct
 	 *
 	 * @return void
 	 */
-	public function __construct() {
+	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 		\add_action( 'wp_head', [ $this, 'script' ] );
 	}

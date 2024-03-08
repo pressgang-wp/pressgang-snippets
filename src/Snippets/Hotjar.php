@@ -18,7 +18,7 @@ class Hotjar implements SnippetInterface {
 	 * Adds necessary actions to integrate Hotjar settings into the WordPress Customizer and to inject the Hotjar
 	 * tracking script into the site's head section based on those settings.
 	 */
-	public function __construct() {
+	public function __construct( array $args) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 		\add_action( 'wp_head', [ $this, 'script' ] );
 	}
