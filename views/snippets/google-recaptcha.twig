@@ -1,21 +1,35 @@
 {% if recaptcha_site_key and recaptcha_secret %}
-    <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key|e('html_attr') }}"></script>
+    <script async src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key|e('html_attr') }}"></script>
     <script>
-        grecaptcha.ready(function () {
+        // This code snippet ensures grecaptcha.ready() can be called at any time.
+        if (typeof grecaptcha === 'undefined') {
+            grecaptcha = {};
+        }
 
-            const formEl = document.getElementById("{{ form_id }}");
+        grecaptcha.ready = function(cb) {
+            if (typeof grecaptcha === 'undefined') {
+                const c = '___grecaptcha_cfg';
+                window[c] = window[c] || {};
+                (window[c]['fns'] = window[c]['fns'] || []).push(cb);
+            } else {
+                cb();
+            }
+        }
 
-            formEl.addEventListener("submit", function (e) {
+        // Usage of grecaptcha.ready()
+        document.addEventListener("DOMContentLoaded", function() {
+            grecaptcha.ready(function() {
+                const formEl = document.getElementById("{{ form_id }}");
 
-                e.preventDefault();
+                formEl.addEventListener("submit", function (e) {
+                    e.preventDefault(); // Prevent default form submission
 
-                grecaptcha.execute('{{ recaptcha_site_key|e('html_attr') }}', {action: 'submit'}).then(function (token) {
-
-                    formEl.querySelector('input[name="recaptcha"]').value = token;
-                    formEl.submit();
+                    grecaptcha.execute('{{ recaptcha_site_key|e('html_attr') }}', {action: 'submit'}).then(function (token) {
+                        formEl.querySelector('input[name="recaptcha"]').value = token; // Set the token in the hidden input
+                        formEl.submit(); // Submit the form
+                    });
                 });
             });
-
         });
     </script>
 {% endif %}
