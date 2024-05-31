@@ -27,20 +27,27 @@ class Tawkto implements SnippetInterface {
 	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager instance.
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! $wp_customize->get_section( 'tawkto' ) ) {
+		if ( ! isset( $wp_customize->sections['tawkto'] ) ) {
 			// Add a new section for Tawk.to settings
 			$wp_customize->add_section( 'tawkto', [
-				'title'    => \_x( "Tawk.to", "Customizer", THEMENAME ),
+				'title'    => \_x( "tawk.to", "Customizer", THEMENAME ),
 				'priority' => 30,
 			] );
 		}
 
-		$wp_customize->add_setting( 'tawkto_id', [ 'default' => '' ] );
+		$wp_customize->add_setting(
+			'tawkto_id',
+			[
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			]
+		);
 
-		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize,
-			'tawkto-id', [
-				'label'   => \__( "ID", THEMENAME ),
+		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
+			'tawkto_id', [
+				'label'   => __( "tawk.to ID", THEMENAME ),
 				'section' => 'tawkto',
+				'type'    => 'text',
 			] ) );
 	}
 
@@ -49,7 +56,7 @@ class Tawkto implements SnippetInterface {
 	 *
 	 */
 	public function render(): void {
-		if ( $tawkto_id = \get_theme_mod( 'tawkto-id' ) ) {
+		if ( $tawkto_id = \get_theme_mod( 'tawkto_id' ) ) {
 			Timber::render( 'snippets/tawkto.twig', [ 'id' => $tawkto_id ] );
 		}
 	}
