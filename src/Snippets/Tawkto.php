@@ -5,7 +5,7 @@ namespace PressGang\Snippets;
 use \Timber\Timber;
 
 /**
- * Integrates Tawk.to live chat widget into a WordPress theme.
+ * Integrates tawk.to live chat widget into a WordPress theme.
  *
  * @see https://developer.tawk.to/
  */
@@ -52,7 +52,7 @@ class Tawkto implements SnippetInterface {
 	}
 
 	/**
-	 * Renders the Tawk.to widget.
+	 * Renders the tawk.to widget.
 	 *
 	 */
 	public function render(): void {
