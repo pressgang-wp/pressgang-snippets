@@ -36,7 +36,7 @@ class Tawkto implements SnippetInterface {
 		}
 
 		$wp_customize->add_setting(
-			'tawkto_id',
+			'tawkto-id',
 			[
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
@@ -44,7 +44,7 @@ class Tawkto implements SnippetInterface {
 		);
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
-			'tawkto_id', [
+			'tawkto-id', [
 				'label'   => __( "tawk.to ID", THEMENAME ),
 				'section' => 'tawkto',
 				'type'    => 'text',
@@ -56,7 +56,7 @@ class Tawkto implements SnippetInterface {
 	 *
 	 */
 	public function render(): void {
-		if ( $tawkto_id = \get_theme_mod( 'tawkto_id' ) ) {
+		if ( $tawkto_id = \get_theme_mod( 'tawkto-id' ) ) {
 			Timber::render( 'snippets/tawkto.twig', [ 'id' => $tawkto_id ] );
 		}
 	}
