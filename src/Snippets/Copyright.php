@@ -29,7 +29,7 @@ class Copyright implements SnippetInterface {
 	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
 	 *     instance.
 	 */
-	protected function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! $wp_customize->get_section( 'footer' ) ) {
 			// Add a new section for Footer settings
 			$wp_customize->add_section( 'footer', [
