@@ -27,7 +27,7 @@ class Tawkto implements SnippetInterface {
 	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager instance.
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['tawkto'] ) ) {
+		if ( ! isset( $wp_customize->get_section['tawkto'] ) ) {
 			// Add a new section for Tawk.to settings
 			$wp_customize->add_section( 'tawkto', [
 				'title'    => \_x( "tawk.to", "Customizer", THEMENAME ),
