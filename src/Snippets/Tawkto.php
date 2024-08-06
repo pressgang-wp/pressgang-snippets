@@ -57,7 +57,7 @@ class Tawkto implements SnippetInterface {
 	 */
 	public function render(): void {
 		if ( $tawkto_id = \get_theme_mod( 'tawkto-id' ) ) {
-			Timber::render( 'snippets/tawkto.twig', [ 'id' => $tawkto_id ] );
+			Timber::render( 'snippets/tawkto.twig', [ 'tawkto_id' => $tawkto_id ] );
 		}
 	}
 
