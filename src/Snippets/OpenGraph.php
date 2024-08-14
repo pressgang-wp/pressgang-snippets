@@ -80,13 +80,16 @@ class OpenGraph implements SnippetInterface {
 	 * @return string The title.
 	 */
 	protected function get_title(): string {
+
+		$title = \get_the_title();
+
 		if ( \is_tax() ) {
-			return \single_term_title( '', false );
+			$title = \single_term_title( '', false );
 		} elseif ( \is_post_type_archive() ) {
-			return \get_the_archive_title();
+			$title = \get_the_archive_title();
 		}
 
-		return \get_the_title();
+		return wp_strip_all_tags( $title );
 	}
 
 	/**
