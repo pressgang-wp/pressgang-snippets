@@ -12,7 +12,7 @@ namespace PressGang\Snippets;
 class ArchiveTitles implements SnippetInterface {
 
 	/**
-	 * @var array 
+	 * @var array
 	 */
 	private array $available_titles = [
 		'archives_title'          => 'Archives',
