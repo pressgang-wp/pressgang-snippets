@@ -28,7 +28,7 @@ class AdminLogo implements SnippetInterface {
 	 * customizer.
 	 */
 	public function add_login_logo(): void {
-		$logo = \get_theme_mod( 'logo' ) ?: \get_theme_mod( 'logo_svg' );
+		$logo = \get_theme_mod( 'logo' ) ?: \get_theme_mod( 'logo_svg_url' );
 
 		if ( $logo ) {
 			echo $this->generate_login_logo_css( $logo );
