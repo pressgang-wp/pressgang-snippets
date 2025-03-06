@@ -58,8 +58,12 @@ class CookieYes implements SnippetInterface {
 	 * @return void
 	 */
 	public function cookieyes_header_script() {
-		if ( $cookieyes_id = \get_theme_mod( 'cookieyes-id' ) ) {
-			\wp_enqueue_script( 'cookie-yes', "https://cdn-cookieyes.com/client_data/{$cookieyes_id}/script.js", [] );
+		if ( $cookieyes_id = sanitize_text_field( \get_theme_mod( 'cookieyes-id' ) ) ) {
+			\wp_enqueue_script(
+				'cookieyes',
+				esc_url( "https://cdn-cookieyes.com/client_data/{$cookieyes_id}/script.js" ),
+				[],
+				false );
 		}
 	}
 
