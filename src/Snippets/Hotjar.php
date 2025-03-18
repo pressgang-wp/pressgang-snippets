@@ -39,7 +39,7 @@ class Hotjar implements SnippetInterface {
 		}
 
 		$wp_customize->add_setting(
-			'hotjar_id',
+			'hotjar-id',
 			[
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
