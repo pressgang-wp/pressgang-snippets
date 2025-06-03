@@ -1,0 +1,11 @@
+{% if conversion_id %}
+	<script async src="https://www.googletagmanager.com/gtag/js?id={{ conversion_id|e('html_attr') }}"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+
+		function gtag() {dataLayer.push(arguments);}
+
+		gtag('js', new Date());
+		gtag('config', '{{ conversion_id }}');
+	</script>
+{% endif %}
