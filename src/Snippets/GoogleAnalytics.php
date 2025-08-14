@@ -63,7 +63,7 @@ class GoogleAnalytics implements SnippetInterface {
 	public function script(): void {
 		$track_logged_in = \get_theme_mod( 'google-analytics-track-logged-in' );
 
-		if ( $track_logged_in || \is_user_logged_in() ) {
+		if ( ! is_user_logged_in() || $track_logged_in ) {
 			if ( $google_analytics_id = \get_theme_mod( 'google-analytics-id' ) ) {
 				Timber::render( 'snippets/google-analytics.twig', [
 					'google_analytics_id' => $google_analytics_id,
