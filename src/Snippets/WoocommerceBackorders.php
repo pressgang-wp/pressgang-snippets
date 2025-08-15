@@ -40,11 +40,13 @@ class WooCommerceBackorders implements SnippetInterface {
 	 */
 	public function out_of_stock_message( string $text ): string {
 		global $product;
-
 		if ( $product ) {
-			if ( $backorder_date = \get_field( 'backorder_date', $product->get_id() ) ) {
-				$backorder_date = \wp_date( \get_option( 'date_format' ), strtotime( $backorder_date ) );
-				$text           = sprintf( __( "Out of stock. Expected delivery date %s.", THEMENAME ), $backorder_date );
+			$backorder_date = \get_post_meta( $product->get_id(), 'backorder_date', true );
+			if ( $backorder_date ) {
+				$text = sprintf(
+					\__( 'Out of stock. Expected delivery date %s.', THEMENAME ),
+					\wp_date( \get_option( 'date_format' ), strtotime( $backorder_date ) )
+				);
 			}
 		}
 
@@ -65,17 +67,18 @@ class WooCommerceBackorders implements SnippetInterface {
 		} else {
 			global $product;
 		}
-
 		if ( $product ) {
 			switch ( $product->get_stock_status() ) {
-				case 'onbackorder' :
-					if ( $backorder_date = \get_field( 'backorder_date',
-						$product->get_id() ) ) {
-						$backorder_date = \wp_date( \get_option( 'date_format' ), strtotime( $backorder_date ) );
-						$availability   = sprintf( __( "Available on backorder. Expected delivery date %s.", THEMENAME ), $backorder_date );
+				case 'onbackorder':
+					$backorder_date = \get_post_meta( $product->get_id(), 'backorder_date', true );
+					if ( $backorder_date ) {
+						$availability = sprintf(
+							\__( 'Available on backorder. Expected delivery date %s.', THEMENAME ),
+							\wp_date( \get_option( 'date_format' ), strtotime( $backorder_date ) )
+						);
 					}
 					break;
-				case 'outofstock' :
+				case 'outofstock':
 					$availability = $this->out_of_stock_message( $availability );
 					break;
 			}
@@ -108,12 +111,24 @@ class WooCommerceBackorders implements SnippetInterface {
 	 * @return void
 	 */
 	public function woocommerce_product_custom_fields_save( int $post_id ): void {
+		if ( array_key_exists( 'backorder_date', $_POST ) ) {
+			$raw = \wp_unslash( (string) $_POST['backorder_date'] );
+			$val = trim( $raw );
 
-		if ( isset( $_POST['backorder_date'] ) ) {
-			$backorder_date = $_POST['backorder_date'];
+			// If cleared, remove the meta so messages don't persist.
+			if ( $val === '' ) {
+				\delete_post_meta( $post_id, 'backorder_date' );
 
-			if ( ! empty( $backorder_date ) ) {
-				\update_post_meta( $post_id, 'backorder_date', \esc_attr( $backorder_date ) );
+				return;
+			}
+
+			// Validate and normalise to Y-m-d for consistency.
+			$dt = \DateTime::createFromFormat( 'Y-m-d', $val );
+			if ( $dt ) {
+				\update_post_meta( $post_id, 'backorder_date', $dt->format( 'Y-m-d' ) );
+			} else {
+				// Fallback: store the sanitised string.
+				\update_post_meta( $post_id, 'backorder_date', \sanitize_text_field( $val ) );
 			}
 		}
 	}
