@@ -30,11 +30,10 @@ class GoogleAdsTag implements SnippetInterface {
 	 * @param  \WP_Customize_Manager  $wp_customize  The Customizer manager
 	 *     instance.
 	 */
-	public function add_to_customizer( \WP_Customize_Manager $wp_customize
-	): void {
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['google'] ) ) {
 			$wp_customize->add_section( 'google', [
-				'title' => __( "Google", THEMENAME ),
+				'title' => \__( "Google", THEMENAME ),
 			] );
 		}
 
@@ -45,7 +44,7 @@ class GoogleAdsTag implements SnippetInterface {
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'google-ads-conversion-id', [
-				'label'   => __( "Google Ads Conversion ID", THEMENAME ),
+				'label'   => \__( "Google Ads Conversion ID", THEMENAME ),
 				'section' => 'google',
 				'type'    => 'text',
 			] ) );
