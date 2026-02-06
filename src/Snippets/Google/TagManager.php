@@ -38,12 +38,76 @@ class TagManager implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['google'] ) ) {
-			$wp_customize->add_section( 'google', [
-				'title' => \__( "Google", THEMENAME ),
-			] );
+		$this->ensure_google_section_exists( $wp_customize );
+		$this->add_container_id_setting( $wp_customize );
+		$this->add_track_logged_in_setting( $wp_customize );
+	}
+
+	/**
+	 * Outputs the GTM <script> tag via the snippets/google/tag-manager.twig
+	 * template when a container ID is configured.
+	 *
+	 * @return void
+	 */
+	public function script(): void {
+		$container_id = $this->get_container_id();
+		if ( ! $container_id ) {
+			return;
 		}
 
+		Timber::render( 'snippets/google/tag-manager.twig', [
+			'google_tag_manager_id' => $container_id,
+		] );
+	}
+
+	/**
+	 * Outputs the GTM <noscript> iframe fallback via the
+	 * snippets/google/tag-manager-no-script.twig template. Respects the
+	 * "track logged-in users" toggle — skips output for logged-in users
+	 * unless the option is enabled.
+	 *
+	 * @return void
+	 */
+	public function no_script(): void {
+		if ( ! $this->should_render_for_current_user() ) {
+			return;
+		}
+
+		$container_id = $this->get_container_id();
+		if ( ! $container_id ) {
+			return;
+		}
+
+		Timber::render( 'snippets/google/tag-manager-no-script.twig', [
+			'google_tag_manager_id' => $container_id,
+		] );
+	}
+
+	/**
+	 * Ensure the shared "Google" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_google_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( isset( $wp_customize->sections['google'] ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'google', [
+			'title' => \__( "Google", THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the GTM container ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_container_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'google-tag-manager-id',
 			[
@@ -58,7 +122,16 @@ class TagManager implements SnippetInterface {
 				'section' => 'google',
 				'type'    => 'text',
 			] ) );
+	}
 
+	/**
+	 * Register the "track logged-in users" setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_track_logged_in_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'google-tag-manager-track-logged-in', [
 			'default' => 0,
@@ -73,36 +146,22 @@ class TagManager implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the GTM <script> tag via the snippets/google/tag-manager.twig
-	 * template when a container ID is configured.
+	 * Get the configured GTM container ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function script(): void {
-		if ( $google_tag_manager_id = \get_theme_mod( 'google-tag-manager-id' ) ) {
-			Timber::render( 'snippets/google/tag-manager.twig', [
-				'google_tag_manager_id' => $google_tag_manager_id,
-			] );
-		}
+	private function get_container_id(): string {
+		return (string) \get_theme_mod( 'google-tag-manager-id' );
 	}
 
 	/**
-	 * Outputs the GTM <noscript> iframe fallback via the
-	 * snippets/google/tag-manager-no-script.twig template. Respects the
-	 * "track logged-in users" toggle — skips output for logged-in users
-	 * unless the option is enabled.
+	 * Determine whether GTM should render for the current user.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function no_script(): void {
+	private function should_render_for_current_user(): bool {
 		$track_logged_in = \get_theme_mod( 'google-tag-manager-track-logged-in' );
 
-		if ( $track_logged_in || ! \is_user_logged_in() ) {
-			if ( $google_tag_manager_id = \get_theme_mod( 'google-tag-manager-id' ) ) {
-				Timber::render( 'snippets/google/tag-manager-no-script.twig', [
-					'google_tag_manager_id' => $google_tag_manager_id,
-				] );
-			}
-		}
+		return $track_logged_in || ! \is_user_logged_in();
 	}
 }
