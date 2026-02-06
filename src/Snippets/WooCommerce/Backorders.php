@@ -43,18 +43,17 @@ class Backorders implements SnippetInterface {
 	 * @return string The modified out-of-stock text including the expected backorder date if available.
 	 */
 	public function out_of_stock_message( string $text ): string {
-		global $product;
-		if ( $product ) {
-			$backorder_date = \get_post_meta( $product->get_id(), 'backorder_date', true );
-			if ( $backorder_date ) {
-				$text = sprintf(
-					\__( 'Out of stock. Expected delivery date %s.', THEMENAME ),
-					\wp_date( \get_option( 'date_format' ), strtotime( $backorder_date ) )
-				);
-			}
+		$product = $this->get_global_product();
+		if ( ! $product ) {
+			return $text;
 		}
 
-		return $text;
+		$backorder_date = $this->get_backorder_date( $product->get_id() );
+		if ( ! $backorder_date ) {
+			return $text;
+		}
+
+		return $this->format_out_of_stock_message( $backorder_date );
 	}
 
 	/**
@@ -68,29 +67,25 @@ class Backorders implements SnippetInterface {
 	 * @return string The modified availability text.
 	 */
 	public function availability_backorder_text( string $availability, mixed $instance ): string {
-		if ( is_a( $instance, 'WC_CP_Product' ) ) {
-			$product = $instance->get_product();
-		} else {
-			global $product;
-		}
-		if ( $product ) {
-			switch ( $product->get_stock_status() ) {
-				case 'onbackorder':
-					$backorder_date = \get_post_meta( $product->get_id(), 'backorder_date', true );
-					if ( $backorder_date ) {
-						$availability = sprintf(
-							\__( 'Available on backorder. Expected delivery date %s.', THEMENAME ),
-							\wp_date( \get_option( 'date_format' ), strtotime( $backorder_date ) )
-						);
-					}
-					break;
-				case 'outofstock':
-					$availability = $this->out_of_stock_message( $availability );
-					break;
-			}
+		$product = $this->resolve_product_instance( $instance );
+		if ( ! $product ) {
+			return $availability;
 		}
 
-		return $availability;
+		if ( $product->get_stock_status() === 'outofstock' ) {
+			return $this->out_of_stock_message( $availability );
+		}
+
+		if ( $product->get_stock_status() !== 'onbackorder' ) {
+			return $availability;
+		}
+
+		$backorder_date = $this->get_backorder_date( $product->get_id() );
+		if ( ! $backorder_date ) {
+			return $availability;
+		}
+
+		return $this->format_backorder_message( $backorder_date );
 	}
 
 	/**
@@ -118,25 +113,114 @@ class Backorders implements SnippetInterface {
 	 * @return void
 	 */
 	public function woocommerce_product_custom_fields_save( int $post_id ): void {
-		if ( array_key_exists( 'backorder_date', $_POST ) ) {
-			$raw = \wp_unslash( (string) $_POST['backorder_date'] );
-			$val = trim( $raw );
-
-			// If cleared, remove the meta so messages don't persist.
-			if ( $val === '' ) {
-				\delete_post_meta( $post_id, 'backorder_date' );
-
-				return;
-			}
-
-			// Validate and normalise to Y-m-d for consistency.
-			$dt = \DateTime::createFromFormat( 'Y-m-d', $val );
-			if ( $dt ) {
-				\update_post_meta( $post_id, 'backorder_date', $dt->format( 'Y-m-d' ) );
-			} else {
-				// Fallback: store the sanitised string.
-				\update_post_meta( $post_id, 'backorder_date', \sanitize_text_field( $val ) );
-			}
+		if ( ! array_key_exists( 'backorder_date', $_POST ) ) {
+			return;
 		}
+
+		$this->save_backorder_date( $post_id, $_POST['backorder_date'] );
+	}
+
+	/**
+	 * Resolve the product from either a composite product instance or globals.
+	 *
+	 * @param mixed $instance Product instance passed by WooCommerce.
+	 *
+	 * @return \WC_Product|null
+	 */
+	private function resolve_product_instance( mixed $instance ): ?\WC_Product {
+		if ( is_a( $instance, 'WC_CP_Product' ) ) {
+			return $instance->get_product();
+		}
+
+		return $this->get_global_product();
+	}
+
+	/**
+	 * Get the global WooCommerce product for the current context.
+	 *
+	 * @return \WC_Product|null
+	 */
+	private function get_global_product(): ?\WC_Product {
+		global $product;
+
+		return $product instanceof \WC_Product ? $product : null;
+	}
+
+	/**
+	 * Fetch the stored backorder date for a product.
+	 *
+	 * @param int $product_id
+	 *
+	 * @return string|null
+	 */
+	private function get_backorder_date( int $product_id ): ?string {
+		$date = \get_post_meta( $product_id, 'backorder_date', true );
+
+		return $date ? (string) $date : null;
+	}
+
+	/**
+	 * Format a backorder date for display.
+	 *
+	 * @param string $backorder_date
+	 *
+	 * @return string
+	 */
+	private function format_backorder_date( string $backorder_date ): string {
+		return \wp_date( \get_option( 'date_format' ), strtotime( $backorder_date ) );
+	}
+
+	/**
+	 * Build an out-of-stock message including a backorder date.
+	 *
+	 * @param string $backorder_date
+	 *
+	 * @return string
+	 */
+	private function format_out_of_stock_message( string $backorder_date ): string {
+		return sprintf(
+			\__( 'Out of stock. Expected delivery date %s.', THEMENAME ),
+			$this->format_backorder_date( $backorder_date )
+		);
+	}
+
+	/**
+	 * Build an on-backorder message including a backorder date.
+	 *
+	 * @param string $backorder_date
+	 *
+	 * @return string
+	 */
+	private function format_backorder_message( string $backorder_date ): string {
+		return sprintf(
+			\__( 'Available on backorder. Expected delivery date %s.', THEMENAME ),
+			$this->format_backorder_date( $backorder_date )
+		);
+	}
+
+	/**
+	 * Persist the backorder date input from the product editor.
+	 *
+	 * @param int $post_id
+	 * @param mixed $raw_value
+	 *
+	 * @return void
+	 */
+	private function save_backorder_date( int $post_id, mixed $raw_value ): void {
+		$raw = \wp_unslash( (string) $raw_value );
+		$val = trim( $raw );
+
+		if ( $val === '' ) {
+			\delete_post_meta( $post_id, 'backorder_date' );
+			return;
+		}
+
+		$dt = \DateTime::createFromFormat( 'Y-m-d', $val );
+		if ( $dt ) {
+			\update_post_meta( $post_id, 'backorder_date', $dt->format( 'Y-m-d' ) );
+			return;
+		}
+
+		\update_post_meta( $post_id, 'backorder_date', \sanitize_text_field( $val ) );
 	}
 }
