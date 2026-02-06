@@ -1,58 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class PostTypeMenuHighlighter
+ * Fixes WordPress nav-menu highlighting for custom post types by adding
+ * 'current_page_parent' on singular CPT views and 'current_page_item' on
+ * CPT archive views to the corresponding menu item.
  *
- * This class provides a workaround for a known issue in WordPress where the menu
- * item highlighting for custom post types doesn't work correctly out of the box.
- *
- * The problem:
- * 1. For single custom post type pages, WordPress doesn't correctly highlight
- *    the corresponding archive page in the menu.
- * 2. For custom post type archive pages, the menu item for the archive page
- *    itself is not highlighted.
- *
- * This class fixes these issues by:
- * 1. Adding the 'current_page_parent' class to the menu item of the archive
- *    page when viewing a single post of that custom post type.
- * 2. Adding the 'current_page_item' class to the menu item of the archive page
- *    when viewing the archive page itself.
- *
- * It works by hooking into the 'nav_menu_css_class' filter and modifying the
- * CSS classes applied to menu items based on the current context (single post
- * or archive page of a custom post type).
- *
- * @package PressGang\Snippets
+ * Enable this snippet when custom post type archive pages or their single
+ * posts are not correctly highlighted in navigation menus.
  */
 class PostTypeMenuHighlighter implements SnippetInterface {
 
 	/**
-	 * CSS classes to be managed by this highlighter.
+	 * CSS classes managed by this highlighter.
 	 *
-	 * @var array
+	 * @var array<int, string>
 	 */
 	private const MANAGED_CLASSES = [ 'current_page_parent', 'current_page_item' ];
 
 	/**
-	 * Constructor for the PostTypeMenuHighlighter class.
+	 * Hooks into the nav_menu_css_class filter.
 	 *
-	 * @param array $args Constructor arguments (unused in this implementation)
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args = [] ) {
 		\add_filter( 'nav_menu_css_class', [ $this, 'custom_menu_classes' ], 10, 2 );
 	}
 
 	/**
-	 * Customizes menu item classes for custom post types.
+	 * Adjusts nav-menu CSS classes for the current custom post type context.
 	 *
-	 * @param array $classes The array of existing CSS classes.
-	 * @param \WP_Post $item The current menu item.
+	 * @param array<int, string> $classes Existing CSS classes for the menu item.
+	 * @param \WP_Post           $item   The current menu item.
 	 *
-	 * @return array The modified array of CSS classes.
+	 * @return array<int, string> The modified CSS classes.
 	 */
 	public function custom_menu_classes( array $classes, \WP_Post $item ): array {
 		$current_post_type = \get_post_type();
