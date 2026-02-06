@@ -1,40 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class WooCommerceDequeueStyles
+ * Removes the three default WooCommerce stylesheets (general, layout, and
+ * smallscreen) so the theme can provide its own shop styles from scratch.
  *
- * A snippet file for removing the WooCommerce default styles so that the shop can be custom styled.
- *
- * @package PressGang\Snippets
+ * Enable this snippet when your theme fully handles WooCommerce styling.
  */
 class WooCommerceDequeueStyles implements SnippetInterface {
 
 	/**
-	 * WooCommerceDequeueStyles constructor.
+	 * Hooks into the woocommerce_enqueue_styles filter.
 	 *
-	 * @param array $args
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_filter( 'woocommerce_enqueue_styles', [ $this, 'dequeue_styles' ] );
 	}
 
 	/**
-	 * Dequeues the styles
+	 * Removes the woocommerce-general, woocommerce-layout, and
+	 * woocommerce-smallscreen stylesheets from the enqueue array.
 	 *
-	 * @hooked woocommerce_enqueue_styles
+	 * @param array<string, array<string, mixed>> $enqueue_styles WooCommerce styles array.
 	 *
-	 * @param $enqueue_styles
-	 *
-	 * @return mixed
+	 * @return array<string, array<string, mixed>> The filtered styles array.
 	 */
-	public function dequeue_styles( $enqueue_styles ): mixed {
-		unset( $enqueue_styles['woocommerce-general'] ); // remove the gloss
-		unset( $enqueue_styles['woocommerce-layout'] ); // remove the layout
-		unset( $enqueue_styles['woocommerce-smallscreen'] ); // remove the smallscreen optimisation
+	public function dequeue_styles( array $enqueue_styles ): array {
+		unset(
+			$enqueue_styles['woocommerce-general'],
+			$enqueue_styles['woocommerce-layout'],
+			$enqueue_styles['woocommerce-smallscreen']
+		);
 
 		return $enqueue_styles;
 	}
