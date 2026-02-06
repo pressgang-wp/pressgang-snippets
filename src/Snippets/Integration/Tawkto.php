@@ -37,13 +37,51 @@ class Tawkto implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! $wp_customize->get_section( 'tawkto' ) ) {
-			$wp_customize->add_section( 'tawkto', [
-				'title'    => \_x( "tawk.to", "Customizer", THEMENAME ),
-				'priority' => 30,
-			] );
+		$this->ensure_tawkto_section_exists( $wp_customize );
+		$this->add_tawkto_id_setting( $wp_customize );
+	}
+
+	/**
+	 * Renders the tawk.to embed script via Twig when a Property ID is
+	 * configured.
+	 *
+	 * @return void
+	 */
+	public function render(): void {
+		$tawkto_id = $this->get_tawkto_id();
+		if ( ! $tawkto_id ) {
+			return;
 		}
 
+		Timber::render( 'snippets/integration/tawkto.twig', [ 'tawkto_id' => $tawkto_id ] );
+	}
+
+	/**
+	 * Ensure the "tawk.to" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_tawkto_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( $wp_customize->get_section( 'tawkto' ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'tawkto', [
+			'title'    => \_x( "tawk.to", "Customizer", THEMENAME ),
+			'priority' => 30,
+		] );
+	}
+
+	/**
+	 * Register the tawk.to ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_tawkto_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting( 'tawkto-id', [
 			'default'           => '',
 			'sanitize_callback' => 'sanitize_text_field',
@@ -58,14 +96,11 @@ class Tawkto implements SnippetInterface {
 	}
 
 	/**
-	 * Renders the tawk.to embed script via Twig when a Property ID is
-	 * configured.
+	 * Get the configured tawk.to property ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function render(): void {
-		if ( $tawkto_id = \get_theme_mod( 'tawkto-id' ) ) {
-			Timber::render( 'snippets/integration/tawkto.twig', [ 'tawkto_id' => $tawkto_id ] );
-		}
+	private function get_tawkto_id(): string {
+		return (string) \get_theme_mod( 'tawkto-id' );
 	}
 }
