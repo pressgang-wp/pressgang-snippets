@@ -1,34 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * Integrates Google Webmaster verification code setting into the WordPress Customizer.
+ * Adds a Google Search Console (Webmaster Tools) verification meta tag to the
+ * site's <head> via a Customizer field, allowing site ownership verification
+ * without editing theme files.
  *
- * This class allows site administrators to easily add their Google Webmaster verification code to their site
- * through the WordPress Customizer.
- *
- * The verification code is used to verify ownership of the site with Google Webmaster Tools.
+ * Enable this snippet to verify your site with Google Search Console. The
+ * verification code is entered in the Customizer under the "Google" section.
  */
 class GoogleWebmaster implements SnippetInterface {
 
 	/**
-	 * Constructor for GoogleWebmaster.
+	 * Registers the Customizer control for the verification code and hooks
+	 * the meta tag output into wp_head.
 	 *
-	 * Registers an action with WordPress to add a custom field to the Customizer for the Google Webmaster verification code.
-	 *
-	 * @param array $args Arguments for the constructor, allowing for future expansion or customization.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
+		\add_action( 'wp_head', [ $this, 'add_meta_tag' ] );
 	}
 
 	/**
-	 * Adds Google Webmaster verification code setting to the WordPress Customizer.
+	 * Adds a text field for the Google Webmaster verification code to the
+	 * Customizer under the shared "Google" section.
 	 *
-	 * Creates a new section in the Customizer if it doesn't exist and adds a setting for the Google verification code.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The WordPress Customizer object, providing access to the Customizer's API.
+	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['google'] ) ) {
@@ -52,5 +55,21 @@ class GoogleWebmaster implements SnippetInterface {
 				'section'     => 'google',
 				'type'        => 'text',
 			] ) );
+	}
+
+	/**
+	 * Outputs the Google Webmaster verification meta tag in the <head> section.
+	 * Only outputs the tag when a verification code has been entered in the
+	 * Customizer.
+	 *
+	 * @return void
+	 */
+	public function add_meta_tag(): void {
+		if ( $verification_code = \get_theme_mod( 'google-verification-code' ) ) {
+			printf(
+				'<meta name="google-site-verification" content="%s" />',
+				\esc_attr( $verification_code )
+			);
+		}
 	}
 }
