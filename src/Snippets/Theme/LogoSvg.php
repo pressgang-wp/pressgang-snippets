@@ -39,21 +39,8 @@ class LogoSvg implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! $wp_customize->get_section( 'logo' ) ) {
-			$wp_customize->add_section( 'logo', [
-				'title'    => \_x( "Logo", 'Customizer', THEMENAME ),
-				'priority' => 30,
-			] );
-		}
-
-		$wp_customize->add_setting( 'logo_svg_url', [ 'default' => '' ] );
-
-		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize,
-			'logo_svg_url', [
-				'label'      => \_x( "Logo SVG", 'Customizer', THEMENAME ),
-				'section'    => 'logo',
-				'extensions' => [ 'svg' ],
-			] ) );
+		$this->ensure_logo_section_exists( $wp_customize );
+		$this->add_logo_svg_setting( $wp_customize );
 	}
 
 	/**
@@ -76,11 +63,10 @@ class LogoSvg implements SnippetInterface {
 	 * @return string|null The SVG markup, or null if the file cannot be read.
 	 */
 	private function fetch_logo_svg_raw_content(): ?string {
-		$logo_svg_url = \get_theme_mod( 'logo_svg_url', '' );
+		$logo_svg_url = $this->get_logo_svg_url();
 
 		if ( $logo_svg_url ) {
-			$attachment_id = \attachment_url_to_postid( $logo_svg_url );
-			$logo_svg_path = \get_attached_file( $attachment_id );
+			$logo_svg_path = $this->get_logo_svg_path( $logo_svg_url );
 
 			if ( $logo_svg_path && \file_exists( $logo_svg_path ) && \is_readable( $logo_svg_path ) ) {
 				return \file_get_contents( $logo_svg_path );
@@ -98,5 +84,63 @@ class LogoSvg implements SnippetInterface {
 	 */
 	public function get_logo_svg_content(): ?string {
 		return \get_theme_mod( 'logo_svg_raw', null );
+	}
+
+	/**
+	 * Ensure the "Logo" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_logo_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( $wp_customize->get_section( 'logo' ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'logo', [
+			'title'    => \_x( "Logo", 'Customizer', THEMENAME ),
+			'priority' => 30,
+		] );
+	}
+
+	/**
+	 * Register the SVG logo setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_logo_svg_setting( \WP_Customize_Manager $wp_customize ): void {
+		$wp_customize->add_setting( 'logo_svg_url', [ 'default' => '' ] );
+
+		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize,
+			'logo_svg_url', [
+				'label'      => \_x( "Logo SVG", 'Customizer', THEMENAME ),
+				'section'    => 'logo',
+				'extensions' => [ 'svg' ],
+			] ) );
+	}
+
+	/**
+	 * Get the stored SVG URL from the Customizer.
+	 *
+	 * @return string
+	 */
+	private function get_logo_svg_url(): string {
+		return (string) \get_theme_mod( 'logo_svg_url', '' );
+	}
+
+	/**
+	 * Resolve the SVG attachment path from its URL.
+	 *
+	 * @param string $logo_svg_url
+	 *
+	 * @return string|false
+	 */
+	private function get_logo_svg_path( string $logo_svg_url ) {
+		$attachment_id = \attachment_url_to_postid( $logo_svg_url );
+
+		return \get_attached_file( $attachment_id );
 	}
 }
