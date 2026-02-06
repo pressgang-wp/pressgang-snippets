@@ -1,28 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 use Timber\Timber;
 
 /**
- * Enables Google Analytics eCommerce tracking for WooCommerce orders.
+ * Injects Google Analytics eCommerce tracking code on the WooCommerce "order
+ * received" (thank-you) page, capturing transaction details and line items for
+ * each completed order.
  *
- * Injects Google Analytics eCommerce tracking code on the WooCommerce order received page,
- * capturing details about the transaction and the items purchased.
+ * Enable this snippet alongside GoogleAnalytics to track revenue data in
+ * Google Analytics. Requires WooCommerce to be active. No configuration needed.
  */
 class GoogleAnalyticsWooCommerce implements SnippetInterface {
 
 	/**
-	 * Initializes the class by hooking into the WordPress 'wp_head' action to inject tracking code.
+	 * Hooks the tracking script injection into wp_head at an early priority
+	 * so it appears before other head scripts.
+	 *
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'wp_head', [ $this, 'inject_tracking_script' ], - 50 );
 	}
 
 	/**
-	 * Conditionally injects the Google Analytics eCommerce tracking script.
+	 * Outputs the eCommerce tracking script on the WooCommerce order-received
+	 * page via the snippets/google-analytics-ecommerce.twig template.
 	 *
-	 * Only outputs the tracking script if on the WooCommerce order received page and the order details are accessible.
+	 * @return void
 	 */
 	public function inject_tracking_script(): void {
 		if ( $this->should_track_order() ) {
@@ -37,31 +45,32 @@ class GoogleAnalyticsWooCommerce implements SnippetInterface {
 	}
 
 	/**
-	 * Determines if the current page is the WooCommerce order received page and WooCommerce is active.
+	 * Checks whether the current page is the WooCommerce order-received page
+	 * and WooCommerce is active.
 	 *
-	 * @return bool True if conditions are met, false otherwise.
+	 * @return bool True if conditions are met for tracking.
 	 */
 	protected function should_track_order(): bool {
 		return class_exists( 'woocommerce' ) && \is_order_received_page();
 	}
 
 	/**
-	 * Retrieves the order ID from the current query variables.
+	 * Extracts the order ID from the current WordPress query variables.
 	 *
-	 * @return int The order ID.
+	 * @return int The order ID from the 'order-received' query var.
 	 */
 	protected function get_order_id_from_query(): int {
 		global $wp;
 
-		return absint( $wp->query_vars['order-received'] );
+		return \absint( $wp->query_vars['order-received'] );
 	}
 
 	/**
-	 * Gathers detailed information about the order for tracking purposes.
+	 * Builds an associative array of order details for the tracking template.
 	 *
-	 * @param \WC_Order $order The WooCommerce order object.
+	 * @param \WC_Order $order The WooCommerce order.
 	 *
-	 * @return array An associative array containing the order details.
+	 * @return array<string, mixed> Transaction and product details for rendering.
 	 */
 	protected function get_order_details( \WC_Order $order ): array {
 		$items = array_map( [ $this, 'get_product_details' ], $order->get_items() );
@@ -77,11 +86,11 @@ class GoogleAnalyticsWooCommerce implements SnippetInterface {
 	}
 
 	/**
-	 * Extracts product details from an order item for tracking.
+	 * Extracts tracking-relevant details from a single order line item.
 	 *
-	 * @param \WC_Order_Item_Product $item The WooCommerce order item.
+	 * @param \WC_Order_Item_Product $item The order line item.
 	 *
-	 * @return array An associative array containing the product's tracking details.
+	 * @return array<string, mixed> Product SKU, name, category, price, and quantity.
 	 */
 	protected function get_product_details( $item ): array {
 		$product  = $item->get_product();
@@ -97,11 +106,12 @@ class GoogleAnalyticsWooCommerce implements SnippetInterface {
 	}
 
 	/**
-	 * Retrieves the primary category of a product.
+	 * Returns the top-level (parent = 0) product category for a product, or
+	 * null if none exists.
 	 *
 	 * @param \WC_Product $product The WooCommerce product.
 	 *
-	 * @return \WP_Term|null The primary product category, or null if no primary category is found.
+	 * @return \WP_Term|null The primary product category term.
 	 */
 	protected function get_primary_product_category( \WC_Product $product ): ?\WP_Term {
 		$categories = \get_the_terms( $product->get_id(), 'product_cat' );
