@@ -1,56 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
+/**
+ * Syncs the ACF colour-picker palette with colours defined in theme.json and
+ * any additional custom colours passed via configuration.
+ *
+ * Enable this snippet when you use ACF colour-picker fields and want the
+ * palette options to automatically reflect the theme's design tokens — so
+ * content editors pick from on-brand colours instead of free-form values.
+ */
 class AcfColorPickerThemeSync implements SnippetInterface {
 
 	/**
-	 * @var array
+	 * Additional hex colour codes to include in the palette alongside
+	 * theme.json colours.
+	 *
+	 * @var array<int, string>
 	 */
-	private $custom_colors;
+	private array $custom_colors;
 
 	/**
-	 * Constructor that accepts a flat array of custom colors.
+	 * Stores any custom colours and hooks into the ACF admin footer to inject
+	 * the colour-picker palette script.
 	 *
-	 * @param array $args Array of custom colors (hex codes).
+	 * @param array<int, string> $args Flat array of hex colour codes
+	 *     (e.g. ['#ff0000', '#00ff00']). Merged with colours extracted from
+	 *     theme.json at render time.
 	 */
 	public function __construct( array $args ) {
-		// Store custom colors provided in the flat $args array.
 		$this->custom_colors = $args;
 
-		// Hook into the admin footer to output the color picker script.
 		\add_action( 'acf/input/admin_footer', [ $this, 'acf_color_palette' ] );
 	}
 
 	/**
-	 * Outputs JavaScript to sync theme.json and custom color palettes with ACF color picker.
+	 * Outputs an inline script that feeds merged theme.json + custom colours
+	 * into the ACF colour-picker via the `color_picker_args` JS filter.
 	 *
 	 * @return void
 	 */
-	public function acf_color_palette() {
-		// Get theme colors from theme.json.
+	public function acf_color_palette(): void {
 		$theme_colors = $this->get_theme_colors();
 
-		// Encode the custom colors array and theme colors to JSON for safe use in JavaScript.
 		$custom_colors = json_encode( $this->custom_colors );
 		$theme_colors  = json_encode( $theme_colors ); ?>
 
         <script type="text/javascript">
             (function () {
                 acf.add_filter('color_picker_args', function (args) {
-                    // Get theme colors from PHP (from theme.json).
                     var theme_colors = <?php echo $theme_colors; ?>;
-
-                    // Add custom colors passed from PHP.
                     var custom_colors = <?php echo $custom_colors; ?>;
-
-                    // Merge theme colors and custom colors.
                     var palette_colors = theme_colors.length ? theme_colors : [];
                     if (custom_colors.length > 0) {
                         palette_colors = palette_colors.concat(custom_colors);
                     }
-
-                    // Set the color palette for the ACF color picker.
                     args.palettes = palette_colors;
                     return args;
                 });
@@ -59,24 +65,23 @@ class AcfColorPickerThemeSync implements SnippetInterface {
 	<?php }
 
 	/**
-	 * Get theme colors from the theme.json file.
+	 * Reads the active theme's theme.json and extracts colour hex codes from
+	 * settings.color.palette.
 	 *
-	 * @return array Array of color hex codes from theme.json.
+	 * @return array<int, string> Hex colour codes, or an empty array if
+	 *     theme.json does not exist or contains no palette.
 	 */
-	private function get_theme_colors() {
-		// Check if the theme.json file exists in the active theme.
+	private function get_theme_colors(): array {
 		$theme_json_path = \get_stylesheet_directory() . '/theme.json';
 		$colors          = [];
 
 		if ( file_exists( $theme_json_path ) ) {
-			// Read the theme.json file and parse it.
 			$theme_json = json_decode( file_get_contents( $theme_json_path ), true );
 
-			// Extract colors if they exist in the theme.json file.
 			if ( isset( $theme_json['settings']['color']['palette'] ) ) {
 				foreach ( $theme_json['settings']['color']['palette'] as $color ) {
 					if ( isset( $color['color'] ) ) {
-						$colors[] = $color['color']; // Get the hex code.
+						$colors[] = $color['color'];
 					}
 				}
 			}
@@ -84,5 +89,4 @@ class AcfColorPickerThemeSync implements SnippetInterface {
 
 		return $colors;
 	}
-
 }
