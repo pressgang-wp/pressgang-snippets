@@ -33,13 +33,36 @@ class Copyright implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! $wp_customize->get_section( 'footer' ) ) {
-			$wp_customize->add_section( 'footer', [
-				'title'    => \_x( "Footer", "Customizer", THEMENAME ),
-				'priority' => 100,
-			] );
+		$this->ensure_footer_section_exists( $wp_customize );
+		$this->add_copyright_setting( $wp_customize );
+	}
+
+	/**
+	 * Ensure the "Footer" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_footer_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( $wp_customize->get_section( 'footer' ) ) {
+			return;
 		}
 
+		$wp_customize->add_section( 'footer', [
+			'title'    => \_x( "Footer", "Customizer", THEMENAME ),
+			'priority' => 100,
+		] );
+	}
+
+	/**
+	 * Register the copyright setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_copyright_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'copyright',
 			[
