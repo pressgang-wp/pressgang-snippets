@@ -1,44 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class Copyright
+ * Adds a "Copyright" text field to the WordPress Customizer under a "Footer"
+ * section, making the copyright notice editable by site administrators.
  *
- * Handles the addition of copyright-related settings to the WordPress
- * Customizer.
+ * Enable this snippet when you want the footer copyright text to be
+ * configurable via the Customizer. The value is available in templates via
+ * get_theme_mod('copyright').
  */
 class Copyright implements SnippetInterface {
 
 	/**
-	 * Constructor.
+	 * Registers the Customizer controls for the copyright text field.
 	 *
-	 * Adds the setup method to the 'customize_register' action.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 	}
 
 	/**
+	 * Adds a "Footer" Customizer section (if it doesn't exist) and registers
+	 * a "Copyright" text setting and control within it.
 	 *
-	 * Adds a new section for Footer settings in the Customizer and defines
-	 * controls for them.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
-	 *     instance.
+	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! $wp_customize->get_section( 'footer' ) ) {
-			// Add a new section for Footer settings
 			$wp_customize->add_section( 'footer', [
 				'title'    => \_x( "Footer", "Customizer", THEMENAME ),
 				'priority' => 100,
 			] );
 		}
 
-		// Add setting for Copyright text
 		$wp_customize->add_setting(
 			'copyright',
 			[
@@ -47,7 +47,6 @@ class Copyright implements SnippetInterface {
 			]
 		);
 
-		// Add control for Copyright text
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'copyright', [
 				'label'   => \_x( "Copyright", 'Customizer', THEMENAME ),
