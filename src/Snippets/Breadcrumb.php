@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 use \Twig\Environment;
@@ -7,38 +9,39 @@ use \Twig\TwigFunction;
 use \Timber\Timber;
 
 /**
- * Class Breadcrumb
+ * Registers a {{ breadcrumb() }} Twig function that renders context-aware
+ * breadcrumb navigation based on the current WordPress page type (single,
+ * page, archive, category, tag, taxonomy, author, date, search, 404).
  *
- * Handles the generation and rendering of breadcrumb navigation in a WordPress theme.
- * This class dynamically creates breadcrumb links based on the current page context
- * and supports various WordPress templates and conditions like posts, pages, categories,
- * archives, and custom post types.
- *
- * @package PressGang\Snippets
+ * Enable this snippet to provide automatic breadcrumb trails in templates
+ * without a third-party plugin. The output is rendered via the
+ * snippets/breadcrumb.twig template.
  */
 class Breadcrumb implements SnippetInterface {
 
+	/**
+	 * Accumulated breadcrumb trail for the current request.
+	 *
+	 * @var array<int, array{title: string, class: string, url: string|null}>
+	 */
 	public array $breadcrumbs = [];
 
 	/**
-	 * Breadcrumb constructor.
+	 * Registers the breadcrumb() function with the Timber/Twig environment.
 	 *
-	 * Initializes the breadcrumb class by setting default values and adding the
-	 * breadcrumb function to Twig.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_filter( 'timber/twig', [ $this, 'add_to_twig' ] );
 	}
 
 	/**
-	 * Adds the breadcrumb function to Twig.
-	 *
-	 * Registers a new 'breadcrumb' function within the Twig environment that can be used
-	 * to render breadcrumbs in templates.
+	 * Adds the breadcrumb() function to the Twig environment so it can be
+	 * called directly in templates.
 	 *
 	 * @param Environment $twig The Twig environment to extend.
 	 *
-	 * @return Environment Modified Twig environment with new function.
+	 * @return Environment The modified Twig environment.
 	 */
 	public function add_to_twig( Environment $twig ): Environment {
 		$twig->addFunction( new TwigFunction( 'breadcrumb', [ $this, 'render' ] ) );
@@ -47,10 +50,10 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
-	 * Renders the breadcrumb trail.
+	 * Builds and renders the breadcrumb trail for the current request using
+	 * the snippets/breadcrumb.twig template.
 	 *
-	 * Calls the links method to build the breadcrumb trail and then renders it using Timber.
-	 * The breadcrumb trail is available in Twig templates via the {{ breadcrumb() }} function.
+	 * @return void
 	 */
 	public function render(): void {
 		$this->generate_links();
@@ -58,11 +61,11 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
-	 * Generates the breadcrumb links.
+	 * Populates the breadcrumbs array based on the current WordPress
+	 * conditional context (category, tag, taxonomy, archive, single, page,
+	 * author, date, search, or 404). Does nothing on the front page.
 	 *
-	 * Constructs the breadcrumb trail based on the current page context, such as
-	 * posts, pages, categories, archives, and custom post types. Populates the
-	 * breadcrumbs array with the appropriate links and labels.
+	 * @return void
 	 */
 	public function generate_links(): void {
 
@@ -104,6 +107,8 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
+	 * Appends the "Home" breadcrumb linking to the site root.
+	 *
 	 * @return void
 	 */
 	protected function append_home_link(): void {
@@ -111,7 +116,8 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
-	 * TODO handle post type archives
+	 * Builds breadcrumb entries for archive pages, including the post-type
+	 * archive link and the current archive title.
 	 *
 	 * @return void
 	 */
@@ -129,13 +135,15 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
-	 * TODO handle custom taxonomy links?
+	 * Builds breadcrumb entries for single posts, including archive link,
+	 * parent page links, category hierarchy, and the post title.
 	 *
-	 * @param $custom_taxonomy
+	 * @param string|null $custom_taxonomy Optional taxonomy to use for
+	 *     custom post types that don't have standard categories.
 	 *
 	 * @return void
 	 */
-	protected function handle_single( $custom_taxonomy = null ): void {
+	protected function handle_single( ?string $custom_taxonomy = null ): void {
 
 		global $post;
 		$post_type = \get_post_type();
@@ -144,25 +152,20 @@ class Breadcrumb implements SnippetInterface {
 
 		$this->add_parent_links( $post );
 
-		// get post category info
 		$category = \get_the_category();
 
 		if ( ! empty( $category ) ) {
-			// get the last post category
 			$last_category = array_values( $category );
 			$last_category = end( $last_category );
 
-			// get the parent categories
 			$get_cat_parents = rtrim( \get_category_parents( $last_category->term_id, true, ',' ), ',' );
 			$cat_parents     = explode( ',', $get_cat_parents );
 
-			// create breadcrumbs for parents
 			foreach ( $cat_parents as $parent ) {
 				$this->append_link( $parent, 'breadcrumb--parent-category breadcrumb--current' );
 			}
 		}
 
-		// if a custom post type within a custom taxonomy
 		$taxonomy_exists = \taxonomy_exists( $custom_taxonomy );
 
 		if ( empty( $category ) && ! empty( $custom_taxonomy ) && $taxonomy_exists ) {
@@ -179,6 +182,8 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
+	 * Builds breadcrumb entries for category archive pages.
+	 *
 	 * @return void
 	 */
 	protected function handle_category(): void {
@@ -188,57 +193,64 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
+	 * Builds breadcrumb entries for static pages, including parent page
+	 * hierarchy.
+	 *
 	 * @return void
 	 */
 	protected function handle_page(): void {
 		global $post;
-		// standard page
 		$this->add_parent_links( $post );
-		// display current page
 		$this->append_link( \get_the_title(), 'breadcrumb-page breadcrumb-current' );
 	}
 
 	/**
+	 * Builds breadcrumb entries for tag archive pages.
+	 *
 	 * @return void
 	 */
 	protected function handle_tag(): void {
-
-		// get tag information
 		$term_id  = \get_query_var( 'tag_id' );
 		$taxonomy = 'post_tag';
 		$args     = "include={$term_id}";
 		$terms    = \get_terms( $taxonomy, $args );
 
-		// display the tag name
 		$this->append_link( $terms[0]->name, "breadcrumb--tag breadcrumb--{$terms[0]->slug} breadcrumb--current" );
 	}
 
 	/**
+	 * Builds breadcrumb entries for custom taxonomy archive pages.
+	 *
+	 * @return void
+	 */
+	protected function handle_tax(): void {
+		$this->handle_archive();
+	}
+
+	/**
+	 * Builds breadcrumb entries for daily archive pages (year > month > day).
+	 *
 	 * @return void
 	 */
 	protected function handle_day(): void {
-		// year link
 		$this->append_link( \get_the_time( 'Y' ), "breadcrumb--year", \get_year_link( \get_the_time( 'Y' ) ) );
-
-		// month link
 		$this->append_link( \get_the_time( 'M' ), "breadcrumb--month", \get_month_link( \get_the_time( 'Y' ), \get_the_time( 'm' ) ) );
-
-		// day link
 		$this->append_link( sprintf( "%s %s", \get_the_time( 'jS' ), \get_the_time( 'M' ) ), "breadcrumb--day" );
 	}
 
 	/**
+	 * Builds breadcrumb entries for monthly archive pages (year > month).
+	 *
 	 * @return void
 	 */
 	protected function handle_month(): void {
-		// year link
 		$this->append_link( \get_the_time( 'Y' ), "breadcrumb--year", \get_year_link( \get_the_time( 'Y' ) ) );
-
-		// month link
 		$this->append_link( \get_the_time( 'M' ), "breadcrumb--month breadcrumb--current" );
 	}
 
 	/**
+	 * Builds a breadcrumb entry for yearly archive pages.
+	 *
 	 * @return void
 	 */
 	protected function handle_year(): void {
@@ -246,16 +258,19 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
+	 * Builds a breadcrumb entry for author archive pages.
+	 *
 	 * @return void
 	 */
 	protected function handle_author(): void {
 		global $author;
 		$userdata = \get_userdata( $author );
 		$this->append_link( $userdata->display_name, "breadcrumb--author breadcrumb--{$userdata->user_nicename}" );
-
 	}
 
 	/**
+	 * Appends a page-number breadcrumb entry for paginated results.
+	 *
 	 * @return void
 	 */
 	protected function handle_paged(): void {
@@ -263,36 +278,36 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
+	 * Builds a breadcrumb entry for search results pages.
+	 *
 	 * @return void
 	 */
 	protected function handle_search(): void {
-		$this->append_link( _x( "Search results", 'Breadcrumb', THEMENAME ), "breadcrumb--search breadcrumb--current" );
+		$this->append_link( \_x( "Search results", 'Breadcrumb', THEMENAME ), "breadcrumb--search breadcrumb--current" );
 	}
 
 	/**
+	 * Builds a breadcrumb entry for 404 pages.
+	 *
 	 * @return void
 	 */
 	protected function handle_404(): void {
-		$this->append_link( _x( "Error 404", 'Breadcrumb', THEMENAME ), "breadcrumb--404 breadcrumb--current" );
+		$this->append_link( \_x( "Error 404", 'Breadcrumb', THEMENAME ), "breadcrumb--404 breadcrumb--current" );
 	}
 
 	/**
-	 * Adds parent page links to the breadcrumb trail.
+	 * Traverses the parent page hierarchy and adds a breadcrumb link for each
+	 * ancestor, ordered from the top-level parent down.
 	 *
-	 * If the current post is a child page, this function adds links to all parent
-	 * pages in the breadcrumb trail.
+	 * @param \WP_Post $post The current post whose ancestors to traverse.
 	 *
-	 * @param \WP_Post $post The current post object.
+	 * @return void
 	 */
 	protected function add_parent_links( \WP_Post $post ): void {
 		if ( $post->post_parent ) {
-			// if child page, get parents
 			$ancestors = \get_post_ancestors( $post->ID );
-
-			// get parents in the right order
 			$ancestors = array_reverse( $ancestors );
 
-			// parent page loop
 			foreach ( $ancestors as $ancestor ) {
 				$this->append_link( \get_the_title( $ancestor ), "breadcrumb-page breadcrumb-{$ancestor}", \get_permalink( $ancestor ) );
 			}
@@ -300,9 +315,12 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
-	 * Adds a link to the post type archive in the breadcrumb trail.
+	 * Adds the post-type archive link as a breadcrumb entry, using the
+	 * archive page title as the label.
 	 *
-	 * @param string $post_type The post type to add the archive link for.
+	 * @param string $post_type The post type slug.
+	 *
+	 * @return void
 	 */
 	protected function add_archive_link( string $post_type ): void {
 		$post_type_object  = \get_post_type_object( $post_type );
@@ -318,13 +336,15 @@ class Breadcrumb implements SnippetInterface {
 	}
 
 	/**
-	 * Appends a link to the breadcrumb trail.
+	 * Pushes a single breadcrumb entry onto the trail.
 	 *
-	 * @param string $title The title of the breadcrumb link.
-	 * @param string $class CSS class for the breadcrumb item.
-	 * @param string|null $url URL of the breadcrumb link.
+	 * @param string      $title The display text for the breadcrumb.
+	 * @param string      $class CSS class(es) for the breadcrumb item.
+	 * @param string|null $url   Optional link URL; null for the current item.
+	 *
+	 * @return void
 	 */
-	private function append_link( string $title, string $class = '', string $url = null ): void {
+	private function append_link( string $title, string $class = '', ?string $url = null ): void {
 		$this->breadcrumbs[] = [
 			'title' => $title,
 			'class' => $class,
