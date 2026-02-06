@@ -1,26 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use WP_Customize_Manager;
-use WP_Customize_Control;
-
 /**
- * Class FacebookVerify
+ * Adds a Facebook Domain Verification meta tag to the site's <head> so that
+ * Facebook can verify domain ownership for Business Manager features.
  *
- * Adds a Facebook Domain Verification customizer field & meta tag.
+ * Enable this snippet when you need to verify your domain with Facebook
+ * Business Manager. The verification code is entered in the Customizer under
+ * the "Facebook" section.
  */
 class FacebookVerify implements SnippetInterface {
 
 	private const OPTION_NAME = 'facebook_domain_verification';
 	private const SECTION_ID = 'facebook';
-	private const LABEL = 'Facebook Domain Verification';
-	private const DESCRIPTION = 'See <a href="https://bit.ly/3eUd2fI" target="_blank">Facebook Domain Verification Guide</a>';
 
 	/**
-	 * Constructor.
+	 * Registers the Customizer setting for the verification code and hooks
+	 * the meta tag output into wp_head.
 	 *
-	 * @param array $args Unused, but required by the interface.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args = [] ) {
 		\add_action( 'customize_register', [ $this, 'customizer' ] );
@@ -28,12 +29,14 @@ class FacebookVerify implements SnippetInterface {
 	}
 
 	/**
-	 * Registers the Customizer setting for Facebook domain verification.
+	 * Adds a text field for the Facebook domain verification code to the
+	 * Customizer under the shared "Facebook" section.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The WordPress Customizer object.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
+	 *
+	 * @return void
 	 */
 	public function customizer( \WP_Customize_Manager $wp_customize ): void {
-		// Ensure the Facebook section exists.
 		if ( ! $wp_customize->get_section( self::SECTION_ID ) ) {
 			$wp_customize->add_section( self::SECTION_ID, [
 				'title' => \esc_html__( 'Facebook', 'pressgang' ),
@@ -52,15 +55,18 @@ class FacebookVerify implements SnippetInterface {
 			$wp_customize,
 			self::OPTION_NAME,
 			[
-				'label'       => \esc_html__( self::LABEL, 'pressgang' ),
-				'description' => \wp_kses_post( self::DESCRIPTION ),
+				'label'       => \esc_html__( 'Facebook Domain Verification', 'pressgang' ),
+				'description' => \wp_kses_post( 'See <a href="https://bit.ly/3eUd2fI" target="_blank">Facebook Domain Verification Guide</a>' ),
 				'section'     => self::SECTION_ID,
 			]
 		) );
 	}
 
 	/**
-	 * Adds the Facebook Domain Verification meta tag to the page head.
+	 * Outputs a <meta name="facebook-domain-verification"> tag in <head>
+	 * when a verification code has been configured.
+	 *
+	 * @return void
 	 */
 	public function add_meta_tag(): void {
 		$verification_code = \get_theme_mod( self::OPTION_NAME );
