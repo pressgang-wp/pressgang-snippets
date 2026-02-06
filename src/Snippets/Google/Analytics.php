@@ -58,7 +58,7 @@ class Analytics implements SnippetInterface {
 			return;
 		}
 
-		Timber::render( 'snippets/google/analytics.twig', [
+		$this->render_template( 'snippets/google/analytics.twig', [
 			'google_analytics_id' => $tracking_id,
 		] );
 	}
@@ -142,5 +142,20 @@ class Analytics implements SnippetInterface {
 		$track_logged_in = \get_theme_mod( 'google-analytics-track-logged-in' );
 
 		return ! \is_user_logged_in() || $track_logged_in;
+	}
+
+	/**
+	 * Renders a Twig template via Timber.
+	 *
+	 * Extracted as a testability seam so tests can override this method
+	 * via anonymous subclass instead of mocking the Timber static call.
+	 *
+	 * @param string               $template Template path.
+	 * @param array<string, mixed> $context  Template context.
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
 	}
 }

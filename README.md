@@ -216,6 +216,47 @@ Every custom feature you build this way is:
 
 Snippets never need a second method call to "activate". Construction **is** activation.
 
+## 🧪 Testing
+
+The library uses **PHPUnit 9.6** with **BrainMonkey** (via [yoast/wp-test-utils](https://github.com/Yoast/wp-test-utils)) for unit testing — the same stack as the PressGang parent theme. Tests mock WordPress functions without a running WordPress installation.
+
+### Running tests
+
+```bash
+composer test              # run the full unit suite
+composer test:unit         # same as above
+
+# Single class or test
+vendor/bin/phpunit --filter DisableEmojisTest
+vendor/bin/phpunit --filter test_script_skips_rendering_when_tracking_id_empty
+```
+
+### Writing tests
+
+Tests live in `tests/Unit/` and mirror the `src/Snippets/` directory structure:
+
+```
+tests/
+├── bootstrap.php
+├── stubs/
+│   └── SnippetInterface.php
+└── Unit/
+    ├── TestCase.php
+    └── Snippets/
+        ├── Content/
+        │   └── DuplicatePostTest.php
+        ├── Google/
+        │   └── AnalyticsTest.php
+        ├── Theme/
+        │   ├── BreadcrumbTest.php
+        │   ├── DisableEmojisTest.php
+        │   └── ImageSizesTest.php
+        └── WooCommerce/
+            └── DequeueStylesTest.php
+```
+
+New test classes should extend `PressGang\Tests\Snippets\Unit\TestCase` and use `Brain\Monkey\Functions\expect()` to mock WordPress functions. For snippets that call `Timber::render()`, extract the call to a protected `render_template()` method and override it in a named test subclass (see `AnalyticsTest` for the pattern).
+
 ## 📋 Requirements
 
 - **PHP** 8.3+
