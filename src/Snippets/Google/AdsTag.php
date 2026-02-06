@@ -36,12 +36,52 @@ class AdsTag implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['google'] ) ) {
-			$wp_customize->add_section( 'google', [
-				'title' => \__( "Google", THEMENAME ),
-			] );
+		$this->ensure_google_section_exists( $wp_customize );
+		$this->add_conversion_id_setting( $wp_customize );
+	}
+
+	/**
+	 * Outputs the Google Ads gtag.js script via the
+	 * snippets/google/ads-tag.twig template when a Conversion ID is configured.
+	 *
+	 * @return void
+	 */
+	public function script(): void {
+		$conversion_id = $this->get_conversion_id();
+		if ( ! $conversion_id ) {
+			return;
 		}
 
+		Timber::render( 'snippets/google/ads-tag.twig', [
+			'conversion_id' => $conversion_id,
+		] );
+	}
+
+	/**
+	 * Ensure the shared "Google" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_google_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( isset( $wp_customize->sections['google'] ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'google', [
+			'title' => \__( "Google", THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the Google Ads Conversion ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_conversion_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting( 'google-ads-conversion-id', [
 			'default'           => '',
 			'sanitize_callback' => 'sanitize_text_field',
@@ -56,16 +96,11 @@ class AdsTag implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the Google Ads gtag.js script via the
-	 * snippets/google/ads-tag.twig template when a Conversion ID is configured.
+	 * Get the configured conversion ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function script(): void {
-		if ( $conversion_id = \get_theme_mod( 'google-ads-conversion-id' ) ) {
-			Timber::render( 'snippets/google/ads-tag.twig', [
-				'conversion_id' => $conversion_id,
-			] );
-		}
+	private function get_conversion_id(): string {
+		return (string) \get_theme_mod( 'google-ads-conversion-id' );
 	}
 }
