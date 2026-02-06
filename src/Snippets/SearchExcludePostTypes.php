@@ -51,7 +51,7 @@ class SearchExcludePostTypes implements SnippetInterface {
 			}
 
 			// Exclude the specified post types
-			$post_types_to_include = array_diff( $current_post_types, $this->excluded_post_types );
+			$post_types_to_include = array_diff( $current_post_types, $this->exclude );
 
 			// Apply the modified list of post types to the query
 			$query->set( 'post_type', $post_types_to_include );
