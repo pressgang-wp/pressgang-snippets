@@ -1,29 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-
 /**
- * Class Permalinks
+ * Rewrites URLs for theme static assets (CSS, JS, images, fonts) to cleaner
+ * root-relative paths (e.g. /css/*, /js/*) instead of the full
+ * /wp-content/themes/{theme}/ path.
  *
- * Handles custom permalink rewrites for a WordPress theme. It rewrites URLs for static assets
- * like CSS, JS, and images to more user-friendly and cleaner URLs. For instance, it rewrites
- * URLs from /wp-content/themes/theme-name/... to /css/, /js/, /img/, etc.
+ * Enable this snippet for prettier asset URLs. Pass an associative array of
+ * folder names mapped to booleans to enable/disable specific rewrites.
  */
 class Permalinks implements SnippetInterface {
 
-	protected $rewrite_rules;
+	/**
+	 * Map of folder names to enabled/disabled status.
+	 *
+	 * @var array<string, bool>
+	 */
+	protected array $rewrite_rules;
 
 	/**
-	 * Constructor for the Permalinks class.
+	 * Merges the provided args with defaults and hooks into
+	 * generate_rewrite_rules.
 	 *
-	 * Initializes the permalink rewrites by adding a hook to 'generate_rewrite_rules'.
-	 *
-	 * @param array $args Arguments for the constructor. Currently not used in implementation.
+	 * @param array<string, bool> $args Folder names mapped to booleans.
+	 *     Defaults: css => true, js => true, img => true, fonts => true,
+	 *     plugins => false.
 	 */
 	public function __construct( array $args ) {
-
-		// Define default folders to rewrite
 		$defaults = [
 			'css'     => true,
 			'js'      => true,
@@ -32,53 +38,31 @@ class Permalinks implements SnippetInterface {
 			'plugins' => false,
 		];
 
-		// Merge passed arguments with defaults
 		$this->rewrite_rules = \wp_parse_args( $args, $defaults );
 
 		\add_action( 'generate_rewrite_rules', [ $this, 'add_rewrites' ] );
 	}
 
 	/**
-	 * Add custom rewrite rules.
+	 * Adds non-WP rewrite rules for each enabled asset folder, mapping
+	 * clean root-relative URLs to the actual theme directory paths.
 	 *
-	 * Adds rewrite rules for static assets (CSS, JS, images, fonts) and plugins, translating
-	 * standard WordPress paths to simplified, cleaner URLs. This method modifies the global
-	 * $wp_rewrite rules to implement the custom rewrites.
+	 * @param \WP_Rewrite $wp_rewrite The WordPress rewrite instance.
 	 *
-	 * @hooked generate_rewrite_rules
-	 * @see https://developer.wordpress.org/reference/hooks/generate_rewrite_rules/
-	 *
-	 * @param object $wp_rewrite The WP_Rewrite object containing WordPress's rewrite rules.
+	 * @return void
 	 */
-	public function add_rewrites( object $wp_rewrite ): void {
-
+	public function add_rewrites( \WP_Rewrite $wp_rewrite ): void {
 		$var        = explode( '/themes/', \get_stylesheet_directory() );
 		$theme_name = next( $var );
 
 		$new_non_wp_rules = [];
 
-		// Add rewrite rules based on enabled options
-		if ( $this->rewrite_rules['css'] ) {
-			$new_non_wp_rules['css/(.*)'] = 'wp-content/themes/' . $theme_name . '/css/$1';
-		}
-
-		if ( $this->rewrite_rules['js'] ) {
-			$new_non_wp_rules['js/(.*)'] = 'wp-content/themes/' . $theme_name . '/js/$1';
-		}
-
-		if ( $this->rewrite_rules['img'] ) {
-			$new_non_wp_rules['img/(.*)'] = 'wp-content/themes/' . $theme_name . '/img/$1';
-		}
-
-		if ( $this->rewrite_rules['fonts'] ) {
-			$new_non_wp_rules['fonts/(.*)'] = 'wp-content/themes/' . $theme_name . '/fonts/$1';
-		}
-
-		if ( $this->rewrite_rules['plugins'] ) {
-			$new_non_wp_rules['plugins/(.*)'] = 'wp-content/themes/' . $theme_name . '/plugins/$1';
+		foreach ( $this->rewrite_rules as $folder => $enabled ) {
+			if ( $enabled ) {
+				$new_non_wp_rules[ $folder . '/(.*)' ] = 'wp-content/themes/' . $theme_name . '/' . $folder . '/$1';
+			}
 		}
 
 		$wp_rewrite->non_wp_rules += $new_non_wp_rules;
 	}
-
 }
