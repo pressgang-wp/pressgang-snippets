@@ -1,49 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class SeoTitle
+ * Filters the wp_title() output for basic SEO improvements: appends the site
+ * name, adds the site description on the front/home page, includes page
+ * numbers for paginated views, and builds a custom title for search results.
  *
- * Handles the modification of the WordPress title tag for SEO purposes.
- *
- * Makes some changes to the <title> tag, by filtering the output of
- * wp_title().
- *
- * If we have a site description, and we're viewing the home page or a blog
- * posts page (when using a static front page), then we will add the site
- * description.
- *
- * If we're viewing a search result, then we're going to recreate the title
- * entirely. We're going to add page numbers to all titles as well, to the
- * middle of a search result title and the end of all other titles.
- *
- * The site title also gets added to all titles.
- *
+ * Enable this snippet for lightweight title-tag SEO when a full SEO plugin
+ * is not in use.
  */
 class SeoTitle implements SnippetInterface {
 
 	/**
-	 * Constructor.
+	 * Hooks into the wp_title filter.
 	 *
-	 * Adds a filter to modify the WordPress title tag.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_filter( 'wp_title', [ $this, 'filter_wp_title' ], 10, 3 );
 	}
 
 	/**
-	 * Filters and modifies the WordPress title tag.
+	 * Filters the wp_title output, delegating to context-specific helpers
+	 * for search pages and standard pages. Feed titles are returned as-is.
 	 *
-	 * @param string $title The original title.
-	 * @param string $separator The title separator.
-	 * @param string $location The location of the site name (left or right).
+	 * @param string $title     The original title.
+	 * @param string $separator The title separator character.
+	 * @param string $location  Where the site name appears ('left' or 'right').
 	 *
 	 * @return string The modified title.
 	 */
-	public function filter_wp_title( $title, $separator, $location ) {
+	public function filter_wp_title( string $title, string $separator, string $location ): string {
 		$separator = trim( $separator );
 		$separator = $separator ? " {$separator} " : ' ';
 
@@ -52,25 +42,24 @@ class SeoTitle implements SnippetInterface {
 		}
 
 		if ( \is_search() ) {
-			return $this->get_search_title( $title, $separator );
+			return $this->get_search_title( $separator );
 		}
 
 		return $this->get_standard_title( $title, $separator, $location );
 	}
 
 	/**
-	 * Generates a title for search result pages.
+	 * Builds a title for search result pages in the format:
+	 * Search '{query}' [| page] | Site Name.
 	 *
-	 * @param string $title The original title.
 	 * @param string $separator The title separator.
 	 *
-	 * @return string The modified title for search pages.
+	 * @return string The search page title.
 	 */
-	protected function get_search_title( $title, $separator ) {
+	protected function get_search_title( string $separator ): string {
 		global $paged;
 
-		$title = sprintf( "%s '%s'", \_x( "Search", 'Title', THEMENAME ),
-			\get_search_query() );
+		$title = sprintf( "%s '%s'", \_x( "Search", 'Title', THEMENAME ), \get_search_query() );
 
 		if ( $paged >= 2 ) {
 			$title .= $separator . $paged;
@@ -82,19 +71,17 @@ class SeoTitle implements SnippetInterface {
 	}
 
 	/**
-	 * Generates a standard title for pages other than search results.
+	 * Builds a standard page title with the site name positioned according
+	 * to $location, appending the site description on the front page and
+	 * page numbers on paginated views.
 	 *
-	 * @param string $title The original title.
+	 * @param string $title     The original title.
 	 * @param string $separator The title separator.
-	 * @param string $location The location of the site name.
+	 * @param string $location  Site name position ('left', 'right', or default).
 	 *
-	 * @return string The modified standard title.
+	 * @return string The assembled title.
 	 */
-	protected function get_standard_title(
-		string $title,
-		string $separator,
-		string $location
-	): string {
+	protected function get_standard_title( string $title, string $separator, string $location ): string {
 		global $paged, $page;
 
 		switch ( strtolower( $location ) ) {
@@ -108,45 +95,14 @@ class SeoTitle implements SnippetInterface {
 				$title .= $separator . \get_bloginfo( 'name', 'display' );
 		}
 
-		if ( $this->is_front_page_or_home() ) {
-			$title .= $separator . $this->get_site_description();
+		if ( \is_home() || \is_front_page() ) {
+			$title .= $separator . \get_bloginfo( 'description', 'display' );
 		}
 
-		if ( $this->has_multiple_pages( $paged, $page ) ) {
+		if ( ( is_numeric( $paged ) && $paged >= 2 ) || ( is_numeric( $page ) && $page >= 2 ) ) {
 			$title .= $separator . max( $paged, $page );
 		}
 
 		return trim( $title );
 	}
-
-	/**
-	 * Checks if it's the front page or home.
-	 *
-	 * @return bool True if it's the front page or home, false otherwise.
-	 */
-	protected function is_front_page_or_home() {
-		return \is_home() || \is_front_page();
-	}
-
-	/**
-	 * Retrieves the site description.
-	 *
-	 * @return string The site description.
-	 */
-	protected function get_site_description() {
-		return \get_bloginfo( 'description', 'display' );
-	}
-
-	/**
-	 * Checks if there are multiple pages.
-	 *
-	 * @param int $paged Current page number.
-	 * @param int $page Current page number.
-	 *
-	 * @return bool True if there are multiple pages, false otherwise.
-	 */
-	protected function has_multiple_pages( $paged, $page ) {
-		return ( is_numeric( $paged ) && $paged >= 2 ) || ( is_numeric( $page ) && $page >= 2 );
-	}
-
 }
