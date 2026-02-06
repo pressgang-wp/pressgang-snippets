@@ -1,38 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class RemovePosts
+ * Removes the default "Posts" (edit.php) menu item from the WordPress admin
+ * sidebar.
  *
- * Removes the default "Posts" menu item from the WordPress admin dashboard.
- *
- * @package PressGang\Snippets
+ * Enable this snippet on sites that do not use the built-in 'post' post type
+ * to reduce admin clutter.
  */
 class RemovePosts implements SnippetInterface {
 
 	/**
-	 * Constructor.
+	 * Hooks into admin_menu to remove the Posts menu page.
 	 *
-	 * Registers the action to remove the Posts menu on the 'admin_menu' hook.
-	 *
-	 * @param array $args Optional arguments for future extensibility.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'admin_menu', [ $this, 'post_remove' ] );
 	}
 
 	/**
-	 * Removes the 'Posts' menu page from the WordPress admin menu.
-	 *
-	 * This is useful for sites that do not use the default 'post' post type.
+	 * Removes the Posts menu page from the admin sidebar.
 	 *
 	 * @return void
 	 */
 	public function post_remove(): void {
 		\remove_menu_page( 'edit.php' );
 	}
-
 }
