@@ -1,41 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class BigImageScaling
+ * Overrides the WordPress "big image" scaling threshold — the maximum pixel
+ * dimension at which uploaded images are automatically down-scaled.
  *
- * Handles the scaling of large images in WordPress. This class integrates with the 'big_image_size_threshold' hook,
- * allowing the modification of the maximum image width threshold. Images exceeding this threshold will be scaled down.
- * This is particularly useful for optimizing image file sizes for web performance while maintaining high-quality visuals.
+ * WordPress defaults to 2560 px. Enable this snippet to raise (or lower) that
+ * limit — for example, to 2880 px to support Retina hero images without
+ * WordPress silently resizing them on upload.
  *
  * @link https://developer.wordpress.org/reference/hooks/big_image_size_threshold/
  */
 class BigImageScaling implements SnippetInterface {
 
 	/**
-	 * Default maximum width for images.
+	 * Default maximum pixel dimension for images.
 	 */
 	const DEFAULT_IMAGE_MAX_WIDTH = 2880;
 
 	/**
-	 * Maximum width for images.
+	 * Maximum pixel dimension for uploaded images.
 	 *
 	 * @var int
 	 */
 	protected int $image_max_width;
 
 	/**
-	 * Constructor.
+	 * Stores the configured maximum dimension and hooks into the
+	 * big_image_size_threshold filter.
 	 *
-	 * Initializes the class and sets the maximum image width.
-	 * If no specific width is provided, the default value is used.
-	 *
-	 * @see https://developer.wordpress.org/reference/hooks/big_image_size_threshold/
-	 *
-	 * @param array $args Arguments for the constructor.
+	 * @param array<string, mixed> $args Optional. Supports:
+	 *     - 'image_max_width': int — maximum pixel dimension (default 2880).
 	 */
 	public function __construct( array $args ) {
 		$this->image_max_width = $args['image_max_width'] ?? self::DEFAULT_IMAGE_MAX_WIDTH;
@@ -43,12 +41,10 @@ class BigImageScaling implements SnippetInterface {
 	}
 
 	/**
-	 * Get the maximum image size threshold.
+	 * Returns the configured maximum image dimension, replacing the WordPress
+	 * default of 2560 px.
 	 *
-	 * This method returns the maximum width value for scaling large images.
-	 *
-	 * @hooked big_image_size_threshold
-	 * @return int The maximum width for images.
+	 * @return int The maximum pixel dimension for image scaling.
 	 */
 	public function big_image_size_threshold(): int {
 		return $this->image_max_width;
