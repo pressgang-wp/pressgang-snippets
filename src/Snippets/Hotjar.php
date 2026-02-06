@@ -1,22 +1,27 @@
 <?php
 
-namespace PrimeTools\Snippets;
+declare(strict_types=1);
+
+namespace PressGang\Snippets;
 
 use Timber\Timber;
-use PressGang\Snippets\SnippetInterface;
 
 /**
- * Integrates Google Ads Global Site Tag (gtag.js) into a WordPress theme.
+ * Integrates Hotjar behaviour analytics into the theme by adding a Customizer
+ * field for the Hotjar Site ID and injecting the Hotjar tracking script into
+ * wp_head.
  *
- * This class adds a Customizer setting for a Google Ads Conversion ID and
- * injects the required gtag.js script into the <head>.
+ * Enable this snippet to install Hotjar heatmaps, recordings, and surveys on
+ * your site. The Site ID is entered in the Customizer under its own "Hotjar"
+ * section.
  */
-class GoogleAdsTag implements SnippetInterface {
+class Hotjar implements SnippetInterface {
 
 	/**
-	 * __construct
+	 * Registers a Customizer control for the Hotjar Site ID and hooks the
+	 * tracking script into wp_head.
 	 *
-	 * @return void
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
@@ -24,42 +29,43 @@ class GoogleAdsTag implements SnippetInterface {
 	}
 
 	/**
-	 * Adds Customizer settings for Google Ads Conversion ID.
+	 * Adds a "Hotjar" Customizer section with a text field for the Site ID.
 	 *
-	 * @param  \WP_Customize_Manager  $wp_customize  The Customizer manager
-	 *     instance.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
+	 *
+	 * @return void
 	 */
-	public function add_to_customizer( \WP_Customize_Manager $wp_customize
-	): void {
-		if ( ! isset( $wp_customize->sections['google'] ) ) {
-			$wp_customize->add_section( 'google', [
-				'title' => __( "Google", THEMENAME ),
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
+		if ( ! isset( $wp_customize->sections['hotjar'] ) ) {
+			$wp_customize->add_section( 'hotjar', [
+				'title' => \__( "Hotjar", THEMENAME ),
 			] );
 		}
 
-		$wp_customize->add_setting( 'google-ads-conversion-id', [
+		$wp_customize->add_setting( 'hotjar-id', [
 			'default'           => '',
 			'sanitize_callback' => 'sanitize_text_field',
 		] );
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
-			'google-ads-conversion-id', [
-				'label'   => __( "Google Ads Conversion ID",
-					THEMENAME ),
-				'section' => 'google',
+			'hotjar-id', [
+				'label'   => \__( "Hotjar Site ID", THEMENAME ),
+				'section' => 'hotjar',
 				'type'    => 'text',
 			] ) );
 	}
 
 	/**
-	 * Outputs the Google Ads gtag.js script in the <head> section.
+	 * Outputs the Hotjar tracking script via the snippets/hotjar.twig template
+	 * when a Site ID is configured.
+	 *
+	 * @return void
 	 */
 	public function script(): void {
-		if ( $conversion_id = \get_theme_mod( 'google-ads-conversion-id' ) ) {
-			Timber::render( 'snippets/google-ads-tag.twig', [
-				'conversion_id' => $conversion_id,
+		if ( $hotjar_id = \get_theme_mod( 'hotjar-id' ) ) {
+			Timber::render( 'snippets/hotjar.twig', [
+				'hotjar_id' => $hotjar_id,
 			] );
 		}
 	}
-
 }
