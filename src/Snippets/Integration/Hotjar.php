@@ -36,12 +36,52 @@ class Hotjar implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['hotjar'] ) ) {
-			$wp_customize->add_section( 'hotjar', [
-				'title' => \__( "Hotjar", THEMENAME ),
-			] );
+		$this->ensure_hotjar_section_exists( $wp_customize );
+		$this->add_hotjar_id_setting( $wp_customize );
+	}
+
+	/**
+	 * Outputs the Hotjar tracking script via the snippets/integration/hotjar.twig template
+	 * when a Site ID is configured.
+	 *
+	 * @return void
+	 */
+	public function script(): void {
+		$hotjar_id = $this->get_hotjar_id();
+		if ( ! $hotjar_id ) {
+			return;
 		}
 
+		Timber::render( 'snippets/integration/hotjar.twig', [
+			'hotjar_id' => $hotjar_id,
+		] );
+	}
+
+	/**
+	 * Ensure the "Hotjar" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_hotjar_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( isset( $wp_customize->sections['hotjar'] ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'hotjar', [
+			'title' => \__( "Hotjar", THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the Hotjar Site ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_hotjar_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting( 'hotjar-id', [
 			'default'           => '',
 			'sanitize_callback' => 'sanitize_text_field',
@@ -56,16 +96,11 @@ class Hotjar implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the Hotjar tracking script via the snippets/integration/hotjar.twig template
-	 * when a Site ID is configured.
+	 * Get the configured Hotjar site ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function script(): void {
-		if ( $hotjar_id = \get_theme_mod( 'hotjar-id' ) ) {
-			Timber::render( 'snippets/integration/hotjar.twig', [
-				'hotjar_id' => $hotjar_id,
-			] );
-		}
+	private function get_hotjar_id(): string {
+		return (string) \get_theme_mod( 'hotjar-id' );
 	}
 }
