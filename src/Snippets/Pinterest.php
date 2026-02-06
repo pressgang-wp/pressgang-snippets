@@ -1,61 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
+/**
+ * Adds a Pinterest domain verification meta tag to wp_head and provides a
+ * Customizer field for the verification ID.
+ *
+ * Enable this snippet to verify site ownership with Pinterest. Enter the
+ * verification ID in the Customizer under the "Pinterest" section.
+ */
 class Pinterest implements SnippetInterface {
 
 	/**
-	 * Constructor to initialize hooks.
+	 * Registers the Customizer control and hooks the meta tag output into
+	 * wp_head.
 	 *
-	 * @param array $args Arguments passed from the parent class or other sources.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'customizer' ] );
-		\add_action( 'wp_head', [ $this, 'script' ] );
+		\add_action( 'wp_head', [ $this, 'add_meta_tag' ] );
 	}
 
 	/**
-	 * Add Pinterest verification to the WordPress customizer.
+	 * Adds a "Pinterest" Customizer section with a text field for the
+	 * verification ID.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The WordPress Customizer object.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
 	 * @return void
 	 */
 	public function customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['pinterest'] ) ) {
+		if ( ! $wp_customize->get_section( 'pinterest' ) ) {
 			$wp_customize->add_section( 'pinterest', [
-				'title' => __( "Pinterest", THEMENAME ),
+				'title' => \__( "Pinterest", THEMENAME ),
 			] );
 		}
 
-		$wp_customize->add_setting(
-			'pinterest_verification_id',
-			[
-				'default'           => '',
-				'sanitize_callback' => 'sanitize_text_field',
-			]
-		);
+		$wp_customize->add_setting( 'pinterest_verification_id', [
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		] );
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'pinterest_verification_id', [
-				'label'   => __( "Verification", THEMENAME ),
+				'label'   => \__( "Verification", THEMENAME ),
 				'section' => 'pinterest',
 				'type'    => 'text',
 			] ) );
 	}
 
 	/**
-	 * Output the Pinterest verification meta tag in the head section.
+	 * Outputs the Pinterest domain verification meta tag when a verification
+	 * ID is configured.
 	 *
 	 * @return void
 	 */
-	public function script(): void {
-		$pinterest_verification_id = sanitize_text_field( \get_theme_mod( 'pinterest_verification_id' ) );
+	public function add_meta_tag(): void {
+		$pinterest_verification_id = \sanitize_text_field( \get_theme_mod( 'pinterest_verification_id' ) );
 
 		if ( $pinterest_verification_id ) {
-			echo sprintf(
+			printf(
 				'<meta name="p:domain_verify" content="%s" />',
-				esc_attr( $pinterest_verification_id )
+				\esc_attr( $pinterest_verification_id )
 			);
 		}
 	}
