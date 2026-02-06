@@ -1,35 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class WooCommerceDequeueSelectWoo
+ * Dequeues and deregisters the Select2/SelectWoo CSS bundled with WooCommerce,
+ * allowing themes to provide their own dropdown styling.
  *
- * A snippet file for removing the WooCommerce Select Woo styles so that the dropdowns can be custom styled.
- *
- * @package PressGang\Snippets
+ * Enable this snippet when you need full control over select/dropdown
+ * appearance in WooCommerce.
  */
 class WooCommerceDequeueSelectWoo implements SnippetInterface {
 
 	/**
-	 * WooCommerceDequeueStyles constructor.
+	 * Hooks into the woocommerce_enqueue_styles filter.
 	 *
-	 * @param array $args
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_filter( 'woocommerce_enqueue_styles', [ $this, 'dequeue_select_woo' ] );
 	}
 
 	/**
-	 * Dequeues Select2/SelectWoo styles to allow custom dropdown styling.
+	 * Dequeues and deregisters both 'select2' and 'selectWoo' stylesheets.
+	 * The styles array is passed through unmodified since the removal is
+	 * done via wp_dequeue_style / wp_deregister_style.
 	 *
-	 * Although hooked to the 'woocommerce_enqueue_styles' filter, this method
-	 * dequeues styles via wp_dequeue_style/wp_deregister_style rather than
-	 * filtering the array.
-	 *
-	 * @param array<string, array<string, mixed>> $enqueue_styles WooCommerce styles array (passed through).
+	 * @param array<string, array<string, mixed>> $enqueue_styles WooCommerce styles array.
 	 *
 	 * @return array<string, array<string, mixed>> The unmodified styles array.
 	 */
