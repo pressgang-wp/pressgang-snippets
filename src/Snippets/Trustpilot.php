@@ -134,7 +134,7 @@ class Trustpilot implements SnippetInterface {
 	 * and theme customization settings like Business ID, Template ID, and Reviews URL.
 	 */
 	public function render_mini_widget(): void {
-		\Timber::render( 'snippets/trustpilot-mini.twig', [
+		\Timber\Timber::render( 'snippets/trustpilot-mini.twig', [
 			'trustpilot_template_id' => \get_theme_mod( 'trustpilot_template_id' ),
 			'trustpilot_business_id' => \get_theme_mod( 'trustpilot_business_id' ),
 			'trustpilot_reviews_url' => \get_theme_mod( 'trustpilot_reviews_url' ),
