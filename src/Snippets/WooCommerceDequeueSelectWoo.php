@@ -23,15 +23,22 @@ class WooCommerceDequeueSelectWoo implements SnippetInterface {
 	}
 
 	/**
-	 * Dequeues select woo styles
+	 * Dequeues Select2/SelectWoo styles to allow custom dropdown styling.
 	 *
-	 * @hooked woocommerce_enqueue_styles
-	 * @return void
+	 * Although hooked to the 'woocommerce_enqueue_styles' filter, this method
+	 * dequeues styles via wp_dequeue_style/wp_deregister_style rather than
+	 * filtering the array.
+	 *
+	 * @param array<string, array<string, mixed>> $enqueue_styles WooCommerce styles array (passed through).
+	 *
+	 * @return array<string, array<string, mixed>> The unmodified styles array.
 	 */
-	public function dequeue_select_woo(): void {
+	public function dequeue_select_woo( array $enqueue_styles = [] ): array {
 		\wp_dequeue_style( 'select2' );
 		\wp_deregister_style( 'select2' );
 		\wp_dequeue_style( 'selectWoo' );
 		\wp_deregister_style( 'selectWoo' );
+
+		return $enqueue_styles;
 	}
 }
