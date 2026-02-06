@@ -60,7 +60,7 @@ class Pixel implements SnippetInterface {
 			return;
 		}
 
-		Timber::render( 'snippets/facebook/pixel.twig', [
+		$this->render_template( 'snippets/facebook/pixel.twig', [
 			'facebook_pixel_id' => $pixel_id,
 		] );
 	}
@@ -146,5 +146,15 @@ class Pixel implements SnippetInterface {
 		$track_logged_in = \get_theme_mod( 'facebook-track-logged-in' );
 
 		return $track_logged_in || ! \is_user_logged_in();
+	}
+
+	/**
+	 * @param string               $template Template path.
+	 * @param array<string, mixed> $context  Template context.
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
 	}
 }

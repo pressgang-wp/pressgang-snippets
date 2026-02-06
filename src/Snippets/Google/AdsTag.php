@@ -52,7 +52,7 @@ class AdsTag implements SnippetInterface {
 			return;
 		}
 
-		Timber::render( 'snippets/google/ads-tag.twig', [
+		$this->render_template( 'snippets/google/ads-tag.twig', [
 			'conversion_id' => $conversion_id,
 		] );
 	}
@@ -102,5 +102,15 @@ class AdsTag implements SnippetInterface {
 	 */
 	private function get_conversion_id(): string {
 		return (string) \get_theme_mod( 'google-ads-conversion-id' );
+	}
+
+	/**
+	 * @param string               $template Template path.
+	 * @param array<string, mixed> $context  Template context.
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
 	}
 }

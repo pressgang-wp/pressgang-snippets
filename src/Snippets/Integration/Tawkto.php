@@ -53,7 +53,7 @@ class Tawkto implements SnippetInterface {
 			return;
 		}
 
-		Timber::render( 'snippets/integration/tawkto.twig', [ 'tawkto_id' => $tawkto_id ] );
+		$this->render_template( 'snippets/integration/tawkto.twig', [ 'tawkto_id' => $tawkto_id ] );
 	}
 
 	/**
@@ -102,5 +102,15 @@ class Tawkto implements SnippetInterface {
 	 */
 	private function get_tawkto_id(): string {
 		return (string) \get_theme_mod( 'tawkto-id' );
+	}
+
+	/**
+	 * @param string               $template Template path.
+	 * @param array<string, mixed> $context  Template context.
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
 	}
 }

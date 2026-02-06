@@ -52,7 +52,7 @@ class Hotjar implements SnippetInterface {
 			return;
 		}
 
-		Timber::render( 'snippets/integration/hotjar.twig', [
+		$this->render_template( 'snippets/integration/hotjar.twig', [
 			'hotjar_id' => $hotjar_id,
 		] );
 	}
@@ -102,5 +102,15 @@ class Hotjar implements SnippetInterface {
 	 */
 	private function get_hotjar_id(): string {
 		return (string) \get_theme_mod( 'hotjar-id' );
+	}
+
+	/**
+	 * @param string               $template Template path.
+	 * @param array<string, mixed> $context  Template context.
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
 	}
 }

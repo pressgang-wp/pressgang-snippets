@@ -55,7 +55,7 @@ class TagManager implements SnippetInterface {
 			return;
 		}
 
-		Timber::render( 'snippets/google/tag-manager.twig', [
+		$this->render_template( 'snippets/google/tag-manager.twig', [
 			'google_tag_manager_id' => $container_id,
 		] );
 	}
@@ -78,7 +78,7 @@ class TagManager implements SnippetInterface {
 			return;
 		}
 
-		Timber::render( 'snippets/google/tag-manager-no-script.twig', [
+		$this->render_template( 'snippets/google/tag-manager-no-script.twig', [
 			'google_tag_manager_id' => $container_id,
 		] );
 	}
@@ -163,5 +163,20 @@ class TagManager implements SnippetInterface {
 		$track_logged_in = \get_theme_mod( 'google-tag-manager-track-logged-in' );
 
 		return $track_logged_in || ! \is_user_logged_in();
+	}
+
+	/**
+	 * Renders a Twig template via Timber.
+	 *
+	 * Extracted as a testability seam so tests can override this method
+	 * via a named subclass instead of mocking the Timber static call.
+	 *
+	 * @param string               $template Template path.
+	 * @param array<string, mixed> $context  Template context.
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
 	}
 }
