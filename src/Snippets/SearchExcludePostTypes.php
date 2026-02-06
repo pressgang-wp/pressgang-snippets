@@ -1,29 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * Class SearchExclude
+ * Excludes specified post types from front-end WordPress search results by
+ * filtering pre_get_posts.
  *
- * Exclude specific post types from WordPress search results.
- *
- * @package PressGang
+ * Configure via the 'exclude' key in $args, passing an array of post type
+ * slugs to hide from search.
  */
 class SearchExcludePostTypes implements SnippetInterface {
 
 	/**
-	 * The post types to exclude from search results.
+	 * Post type slugs to exclude from search.
 	 *
-	 * @var array
+	 * @var array<int, string>
 	 */
 	protected array $exclude = [];
 
 	/**
-	 * SearchExclude constructor.
+	 * Stores the exclusion list and hooks into pre_get_posts on the front end.
 	 *
-	 * Initializes the class by setting up the post types to exclude from search and hooking into the query filtering mechanism.
-	 *
-	 * @param array $args Arguments to specify options, including 'exclude' which lists the post types to exclude.
+	 * @param array{exclude?: array<int, string>} $args Supported keys:
+	 *     'exclude' — array of post type slugs to remove from search results.
 	 */
 	public function __construct( array $args ) {
 		$this->exclude = $args['exclude'] ?? [];
@@ -34,27 +35,23 @@ class SearchExcludePostTypes implements SnippetInterface {
 	}
 
 	/**
-	 * Modifies the search query to exclude specified post types.
+	 * Removes the configured post types from the search query. Converts
+	 * 'any' to an explicit list of public post types before applying the
+	 * exclusion.
 	 *
 	 * @param \WP_Query $query The current query object.
 	 *
 	 * @return void
 	 */
 	public function filter_search_post_types( \WP_Query $query ): void {
-		if ( $query->is_search && ! is_admin() ) { // Ensure this only affects front-end search queries
-			// Get current post types queried, default to 'any' if not set
+		if ( $query->is_search && ! \is_admin() ) {
 			$current_post_types = (array) ( $query->get( 'post_type' ) ?: [ 'any' ] );
 
-			// If 'any' is specified, we need to convert it to an explicit list of all public post types
 			if ( in_array( 'any', $current_post_types, true ) ) {
 				$current_post_types = \get_post_types( [ 'public' => true ], 'names' );
 			}
 
-			// Exclude the specified post types
-			$post_types_to_include = array_diff( $current_post_types, $this->exclude );
-
-			// Apply the modified list of post types to the query
-			$query->set( 'post_type', $post_types_to_include );
+			$query->set( 'post_type', array_diff( $current_post_types, $this->exclude ) );
 		}
 	}
 }
