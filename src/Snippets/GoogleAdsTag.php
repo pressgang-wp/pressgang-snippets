@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 use Timber\Timber;
-use PressGang\Snippets\SnippetInterface;
-use function PrimeTools\Snippets\__;
 
 /**
- * Integrates Google Ads Global Site Tag (gtag.js) into a WordPress theme.
+ * Integrates Google Ads Global Site Tag (gtag.js) into the theme by adding a
+ * Customizer field for the Google Ads Conversion ID and injecting the gtag.js
+ * script into <head>.
  *
- * This class adds a Customizer setting for a Google Ads Conversion ID and
- * injects the required gtag.js script into the <head>.
+ * Enable this snippet to install Google Ads conversion tracking. The Conversion
+ * ID is entered in the Customizer under the "Google" section.
  */
 class GoogleAdsTag implements SnippetInterface {
 
 	/**
-	 * __construct
+	 * Registers a Customizer control for the Google Ads Conversion ID and
+	 * hooks the tracking script into wp_head.
 	 *
-	 * @return void
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
@@ -25,10 +28,12 @@ class GoogleAdsTag implements SnippetInterface {
 	}
 
 	/**
-	 * Adds Customizer settings for Google Ads Conversion ID.
+	 * Adds a text field for the Google Ads Conversion ID to the Customizer
+	 * under the shared "Google" section.
 	 *
-	 * @param  \WP_Customize_Manager  $wp_customize  The Customizer manager
-	 *     instance.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
+	 *
+	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['google'] ) ) {
@@ -51,7 +56,10 @@ class GoogleAdsTag implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the Google Ads gtag.js script in the <head> section.
+	 * Outputs the Google Ads gtag.js script via the
+	 * snippets/google-ads-tag.twig template when a Conversion ID is configured.
+	 *
+	 * @return void
 	 */
 	public function script(): void {
 		if ( $conversion_id = \get_theme_mod( 'google-ads-conversion-id' ) ) {
@@ -60,5 +68,4 @@ class GoogleAdsTag implements SnippetInterface {
 			] );
 		}
 	}
-
 }
