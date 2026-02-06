@@ -1,40 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class Logo
+ * Adds a raster logo (PNG/JPG/GIF) upload control to the WordPress Customizer
+ * under a "Logo" section, storing the image URL as the 'logo' theme mod.
  *
- * Handles the addition of a logo setting to the WordPress Customizer.
- *
- * @package PressGang
+ * Enable this snippet to let site administrators set a logo image via the
+ * Customizer. The value is available in templates via get_theme_mod('logo').
+ * For SVG logos, use the LogoSvg snippet instead (or alongside this one).
  */
 class Logo implements SnippetInterface {
 
 	/**
-	 * Constructor.
+	 * Registers the Customizer image control for the logo.
 	 *
-	 * Adds the add_logo method to the 'customize_register' action hook in
-	 * WordPress.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 	}
 
 	/**
-	 * Add Logo.
+	 * Adds a "Logo" Customizer section (if it doesn't exist) with an image
+	 * upload control for the site logo.
 	 *
-	 * Adds a new section for the logo in the WordPress Customizer and defines
-	 * controls for it.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The WP_Customize_Manager
-	 *     instance.
+	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! $wp_customize->get_section( 'logo' ) ) {
-			// Add a new section for Logo settings
 			$wp_customize->add_section( 'logo', [
 				'title'    => \_x( "Logo", "Customizer", THEMENAME ),
 				'priority' => 30,
@@ -49,5 +47,4 @@ class Logo implements SnippetInterface {
 				'section' => 'logo',
 			] ) );
 	}
-
 }
