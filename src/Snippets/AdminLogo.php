@@ -1,31 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class AdminLogo
+ * Replaces the default WordPress logo on the login page with the theme's
+ * custom logo (set via the Customizer "logo" or "logo_svg_url" theme mod).
  *
- * Customizes the WordPress admin login logo with the theme's logo.
+ * Enable this snippet to brand the wp-login.php page with your site's logo.
+ * No configuration required — the logo is read from existing theme mods set by
+ * the Logo or LogoSvg snippets.
  */
 class AdminLogo implements SnippetInterface {
 
 	/**
-	 * Constructor.
+	 * Hooks into login_enqueue_scripts to inject the custom logo CSS on the
+	 * WordPress login page.
 	 *
-	 * Hooks into WordPress to change the admin login logo.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'login_enqueue_scripts', [ $this, 'add_login_logo' ] );
 	}
 
 	/**
-	 * Adds custom CSS to the WordPress login page to replace the default
-	 * WordPress logo.
+	 * Outputs an inline <style> block replacing the default WordPress login
+	 * logo with the theme's custom logo. Does nothing if no logo is set.
 	 *
-	 * Only adds the logo if a custom logo has been set in the theme
-	 * customizer.
+	 * @return void
 	 */
 	public function add_login_logo(): void {
 		$logo = \get_theme_mod( 'logo' ) ?: \get_theme_mod( 'logo_svg_url' );
@@ -36,11 +39,12 @@ class AdminLogo implements SnippetInterface {
 	}
 
 	/**
-	 * Generates CSS for customizing the login logo.
+	 * Generates the inline CSS that replaces the login page logo background
+	 * image with the given URL.
 	 *
-	 * @param string $logo_url URL of the custom logo.
+	 * @param string $logo_url URL of the custom logo image.
 	 *
-	 * @return string CSS code for the custom login logo.
+	 * @return string An HTML <style> block with the login logo CSS.
 	 */
 	protected function generate_login_logo_css( string $logo_url ): string {
 		$logo_url = \esc_url( $logo_url );
@@ -57,5 +61,4 @@ class AdminLogo implements SnippetInterface {
             </style>
         ";
 	}
-
 }
