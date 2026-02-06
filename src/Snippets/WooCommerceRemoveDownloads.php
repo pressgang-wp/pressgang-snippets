@@ -1,38 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class WooCommerceRemoveDownloads
+ * Removes the "Downloads" tab from the WooCommerce My Account navigation
+ * menu.
  *
- * A snippet file for removing the WooCommerce Downloads features.
- *
- * @package PressGang\Snippets
+ * Enable this snippet on stores that do not sell downloadable products to
+ * simplify the customer account area.
  */
 class WooCommerceRemoveDownloads implements SnippetInterface {
 
 	/**
-	 * WooCommerceRemoveDownloads constructor.
+	 * Hooks into the woocommerce_account_menu_items filter.
 	 *
-	 * @param array $args
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_filter( 'woocommerce_account_menu_items', [ $this, 'filter_account_menu_items' ] );
 	}
 
 	/**
-	 * Removes the "Downloads" tab from the WooCommerce account menu
+	 * Removes the 'downloads' key from the account menu items array.
 	 *
-	 * @hooked woocommerce_account_menu_items
-	 * @param $items
+	 * @param array<string, string> $items Account menu items.
 	 *
-	 * @return mixed
+	 * @return array<string, string> The filtered menu items.
 	 */
-	public function filter_account_menu_items( $items ): mixed {
+	public function filter_account_menu_items( array $items ): array {
 		unset( $items['downloads'] );
+
 		return $items;
 	}
-
 }
