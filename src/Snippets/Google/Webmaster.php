@@ -35,12 +35,54 @@ class Webmaster implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['google'] ) ) {
-			$wp_customize->add_section( 'google', [
-				'title' => \__( "Google", THEMENAME ),
-			] );
+		$this->ensure_google_section_exists( $wp_customize );
+		$this->add_verification_code_setting( $wp_customize );
+	}
+
+	/**
+	 * Outputs the Google Webmaster verification meta tag in the <head> section.
+	 * Only outputs the tag when a verification code has been entered in the
+	 * Customizer.
+	 *
+	 * @return void
+	 */
+	public function add_meta_tag(): void {
+		$verification_code = $this->get_verification_code();
+		if ( ! $verification_code ) {
+			return;
 		}
 
+		printf(
+			'<meta name="google-site-verification" content="%s" />',
+			\esc_attr( $verification_code )
+		);
+	}
+
+	/**
+	 * Ensure the shared "Google" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_google_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( isset( $wp_customize->sections['google'] ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'google', [
+			'title' => \__( "Google", THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the verification code setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_verification_code_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'google-verification-code',
 			[
@@ -59,18 +101,11 @@ class Webmaster implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the Google Webmaster verification meta tag in the <head> section.
-	 * Only outputs the tag when a verification code has been entered in the
-	 * Customizer.
+	 * Get the configured verification code.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function add_meta_tag(): void {
-		if ( $verification_code = \get_theme_mod( 'google-verification-code' ) ) {
-			printf(
-				'<meta name="google-site-verification" content="%s" />',
-				\esc_attr( $verification_code )
-			);
-		}
+	private function get_verification_code(): string {
+		return (string) \get_theme_mod( 'google-verification-code' );
 	}
 }
