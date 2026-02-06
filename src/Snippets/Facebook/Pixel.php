@@ -38,12 +38,58 @@ class Pixel implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['facebook'] ) ) {
-			$wp_customize->add_section( 'facebook', [
-				'title' => \__( "Facebook", THEMENAME ),
-			] );
+		$this->ensure_facebook_section_exists( $wp_customize );
+		$this->add_pixel_id_setting( $wp_customize );
+		$this->add_track_logged_in_setting( $wp_customize );
+	}
+
+	/**
+	 * Outputs the Facebook Pixel tracking script via the
+	 * snippets/facebook/pixel.twig template. Skips output for logged-in users
+	 * unless the "track logged-in users" Customizer option is enabled.
+	 *
+	 * @return void
+	 */
+	public function script(): void {
+		if ( ! $this->should_render_for_current_user() ) {
+			return;
 		}
 
+		$pixel_id = $this->get_pixel_id();
+		if ( ! $pixel_id ) {
+			return;
+		}
+
+		Timber::render( 'snippets/facebook/pixel.twig', [
+			'facebook_pixel_id' => $pixel_id,
+		] );
+	}
+
+	/**
+	 * Ensure the shared "Facebook" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_facebook_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( isset( $wp_customize->sections['facebook'] ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'facebook', [
+			'title' => \__( "Facebook", THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the Facebook Pixel ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_pixel_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'facebook-pixel-id',
 			[
@@ -58,7 +104,16 @@ class Pixel implements SnippetInterface {
 				'section' => 'facebook',
 				'type'    => 'text',
 			] ) );
+	}
 
+	/**
+	 * Register the "track logged-in users" setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_track_logged_in_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'facebook-track-logged-in', [
 				'default' => 0,
@@ -74,21 +129,22 @@ class Pixel implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the Facebook Pixel tracking script via the
-	 * snippets/facebook/pixel.twig template. Skips output for logged-in users
-	 * unless the "track logged-in users" Customizer option is enabled.
+	 * Get the configured Facebook Pixel ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function script(): void {
+	private function get_pixel_id(): string {
+		return urlencode( (string) \get_theme_mod( 'facebook-pixel-id' ) );
+	}
+
+	/**
+	 * Determine whether the pixel should render for the current user.
+	 *
+	 * @return bool
+	 */
+	private function should_render_for_current_user(): bool {
 		$track_logged_in = \get_theme_mod( 'facebook-track-logged-in' );
 
-		if ( $track_logged_in || ! \is_user_logged_in() ) {
-			if ( $facebook_pixel_id = urlencode( \get_theme_mod( 'facebook-pixel-id' ) ) ) {
-				Timber::render( 'snippets/facebook/pixel.twig', [
-					'facebook_pixel_id' => $facebook_pixel_id,
-				] );
-			}
-		}
+		return $track_logged_in || ! \is_user_logged_in();
 	}
 }
