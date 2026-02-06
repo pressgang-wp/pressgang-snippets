@@ -1,29 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * Customizes ACF WYSIWYG fields by adding a minimal toolbar and allowing the specification of the editor's height.
+ * Adds a minimal toolbar option to ACF WYSIWYG fields and a per-field height
+ * setting, giving content editors a streamlined editing experience for fields
+ * that only need basic formatting.
  *
- * This class hooks into ACF's filters and actions to customize the WYSIWYG toolbars and add a field setting for the
- * editor height. It aims to enhance the flexibility and usability of ACF's WYSIWYG editor for specific use cases.
+ * Enable this snippet when you want a "Minimal" toolbar (bold, italic,
+ * underline) available in the ACF WYSIWYG toolbar dropdown, and/or when you
+ * need to control the editor height per field.
  *
  * @see https://www.advancedcustomfields.com/resources/customize-the-wysiwyg-toolbars/
- * @see https://gist.github.com/stianandreassen/6dc87c88c43b2bc43d0ea1a94bd5cd1e
  */
 class AcfWysiwygMin implements SnippetInterface {
 
 	/**
-	 * Custom toolbar configurations.
+	 * Custom toolbar definitions. Each key is a toolbar name and each value is
+	 * an array of button identifiers for the first row.
 	 *
-	 * @var array
+	 * @var array<string, array<int, string>>
 	 */
 	protected array $toolbars = [ 'Minimal' => [ 'bold', 'italic', 'underline' ] ];
 
 	/**
-	 * AcfWysiwygMin constructor.
+	 * Registers ACF filters and actions to add custom toolbars and a height
+	 * setting to WYSIWYG fields.
 	 *
-	 * Sets up filters and actions to customize ACF WYSIWYG fields.
+	 * @param array<string, array<int, string>> $args Optional. Supports:
+	 *     - 'toolbars': array<string, array<int, string>> — custom toolbar
+	 *       definitions keyed by toolbar name. Replaces the default "Minimal"
+	 *       toolbar if provided.
 	 */
 	public function __construct( array $args ) {
 
@@ -37,11 +46,11 @@ class AcfWysiwygMin implements SnippetInterface {
 	}
 
 	/**
-	 * Customizes the ACF WYSIWYG toolbars to add a 'Minimal' toolbar option.
+	 * Registers custom toolbar configurations into the ACF toolbar list.
 	 *
-	 * @param array $toolbars Existing toolbars.
+	 * @param array<string, array<int, array<int, string>>> $toolbars Existing ACF toolbar definitions.
 	 *
-	 * @return array Modified toolbars with the 'Minimal' option added.
+	 * @return array<string, array<int, array<int, string>>> Modified toolbars with custom entries added.
 	 */
 	public function toolbars( array $toolbars ): array {
 		foreach ( $this->toolbars as $toolbar_name => $buttons ) {
@@ -53,14 +62,17 @@ class AcfWysiwygMin implements SnippetInterface {
 	}
 
 	/**
-	 * Adds a setting for specifying the height of the WYSIWYG editor in the ACF field settings.
+	 * Renders a "Height of Editor" number field in the ACF WYSIWYG field
+	 * settings panel, allowing per-field height customisation.
 	 *
-	 * @param array $field The field settings array.
+	 * @param array<string, mixed> $field The ACF field settings array.
+	 *
+	 * @return void
 	 */
 	public function wysiwyg_render_field_settings( array $field ): void {
 		\acf_render_field_setting( $field, [
-			'label'        => \__( "Height of Editor", "text-domain" ),
-			'instructions' => \__( "Specify the height of the WYSIWYG editor in pixels.", "text-domain" ),
+			'label'        => \__( "Height of Editor", THEMENAME ),
+			'instructions' => \__( "Specify the height of the WYSIWYG editor in pixels.", THEMENAME ),
 			'name'         => 'wysiwyg_height',
 			'type'         => 'number',
 			'placeholder'  => '300',
@@ -68,9 +80,12 @@ class AcfWysiwygMin implements SnippetInterface {
 	}
 
 	/**
-	 * Applies the custom height to the WYSIWYG editor using inline styles and JavaScript.
+	 * Applies the configured height to the rendered WYSIWYG editor iframe via
+	 * inline CSS and a jQuery fallback script.
 	 *
-	 * @param array $field The field being rendered.
+	 * @param array<string, mixed> $field The ACF field being rendered.
+	 *
+	 * @return void
 	 */
 	public function wysiwyg_render_field( array $field ): void {
 		if ( ! empty( $field['wysiwyg_height'] ) ) {
