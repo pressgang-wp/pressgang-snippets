@@ -82,12 +82,7 @@ class Sitemap implements SnippetInterface {
 	 * @param bool $update Whether this is an existing post being updated.
 	 */
 	public function create_sitemap( int $post_id, \WP_Post $post, bool $update ): void {
-		$nodes = array_merge(
-			$this->get_post_nodes(),
-			$this->get_term_nodes()
-		);
-
-		$this->write_sitemap( [ 'nodes' => $nodes ] );
+		$this->write_sitemap( $this->build_sitemap_payload() );
 	}
 
 	/**
@@ -105,6 +100,20 @@ class Sitemap implements SnippetInterface {
 		}
 
 		return $nodes;
+	}
+
+	/**
+	 * Build the full sitemap payload for rendering.
+	 *
+	 * @return array<string, array<int, array<string, mixed>>>
+	 */
+	private function build_sitemap_payload(): array {
+		return [
+			'nodes' => array_merge(
+				$this->get_post_nodes(),
+				$this->get_term_nodes()
+			),
+		];
 	}
 
 	/**
@@ -270,7 +279,7 @@ class Sitemap implements SnippetInterface {
 	 * @return void
 	 */
 	private function write_sitemap( array $data ): void {
-		$sitemap = \Timber\Timber::compile( 'snippets/seo/sitemap-xml.twig', $data );
+		$sitemap = $this->render_sitemap( $data );
 		$path    = $this->path();
 
 		if ( $fp = fopen( $path, 'w' ) ) {
@@ -279,6 +288,17 @@ class Sitemap implements SnippetInterface {
 		} else {
 			\error_log( "Failed to write sitemap to $path" );
 		}
+	}
+
+	/**
+	 * Render the sitemap XML markup from the Twig template.
+	 *
+	 * @param array $data
+	 *
+	 * @return string
+	 */
+	private function render_sitemap( array $data ): string {
+		return \Timber\Timber::compile( 'snippets/seo/sitemap-xml.twig', $data );
 	}
 
 	/**
