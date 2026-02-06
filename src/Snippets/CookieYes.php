@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * CookieYes Class
+ * Integrates the CookieYes cookie consent banner by adding a Customizer field
+ * for the CookieYes site ID and enqueuing the CookieYes client script.
  *
- * This class is designed to integrate the CookieYes service into a WordPress theme. It allows theme users to manage CookieYes settings through the WordPress Customizer and automatically includes the necessary CookieYes script in the website header.
+ * Enable this snippet to add GDPR/cookie-consent functionality via CookieYes
+ * without editing theme templates. The site ID is entered in the Customizer.
  */
 class CookieYes implements SnippetInterface {
 
 	/**
-	 * Constructor
+	 * Registers Customizer controls for the CookieYes ID and hooks the script
+	 * enqueue into wp_enqueue_scripts.
 	 *
-	 * Registers two WordPress actions to integrate CookieYes settings into the WordPress Customizer and enqueue the CookieYes script into the site header.
-	 *
-	 * @param array $args An associative array of initialization parameters (currently not used but can be expanded for future use).
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
@@ -22,13 +25,13 @@ class CookieYes implements SnippetInterface {
 	}
 
 	/**
-	 * Add to customizer
+	 * Adds a "CookieYes" Customizer section with a text field for the site ID.
 	 *
-	 * Adds a new section to the WordPress Customizer specifically for configuring CookieYes. This includes a setting for the CookieYes ID, allowing it to be dynamically updated.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize WordPress Customizer object, providing APIs to add sections, settings, and controls.
+	 * @return void
 	 */
-	public function add_to_customizer( $wp_customize ): void {
+	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! $wp_customize->get_section( 'cookieyes' ) ) {
 			$wp_customize->add_section( 'cookieyes', [
 				'title' => \_x( "CookieYes", 'Customizer', THEMENAME ),
@@ -51,21 +54,17 @@ class CookieYes implements SnippetInterface {
 	}
 
 	/**
-	 * CookieYes Header Script
-	 *
-	 * Enqueues the CookieYes script into the WordPress site header using the specified CookieYes ID from the theme customization settings.
+	 * Enqueues the CookieYes client script if a site ID has been configured
+	 * in the Customizer.
 	 *
 	 * @return void
 	 */
-	public function cookieyes_header_script() {
-		if ( $cookieyes_id = sanitize_text_field( \get_theme_mod( 'cookieyes-id' ) ) ) {
-			if ( $cookieyes_id = sanitize_text_field( \get_theme_mod( 'cookieyes-id' ) ) ) {
-				$script_url = esc_url( "https://cdn-cookieyes.com/client_data/{$cookieyes_id}/script.js" );
+	public function cookieyes_header_script(): void {
+		if ( $cookieyes_id = \sanitize_text_field( \get_theme_mod( 'cookieyes-id' ) ) ) {
+			$script_url = \esc_url( "https://cdn-cookieyes.com/client_data/{$cookieyes_id}/script.js" );
 
-				\wp_register_script( 'cookieyes', $script_url, [], null );
-				\wp_enqueue_script( 'cookieyes' );
-			}
+			\wp_register_script( 'cookieyes', $script_url, [], null );
+			\wp_enqueue_script( 'cookieyes' );
 		}
 	}
-
 }
