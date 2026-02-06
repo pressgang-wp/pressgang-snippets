@@ -1,44 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class RemoveOembedAuthor
+ * Strips author details (author_url, author_name) from the oEmbed response
+ * data so that embeds of your content on other sites do not expose author
+ * information.
  *
- * This class implements the SnippetInterface to remove the author details
- * (author URL and author name) from the oEmbed response data.
- *
- * @package PressGang\Snippets
+ * Enable this snippet when you want to remove author attribution from oEmbed
+ * previews of your posts.
  */
 class RemoveOembedAuthor implements SnippetInterface {
 
 	/**
-	 * Constructor
+	 * Hooks the oembed_response_data filter.
 	 *
-	 * Registers the filter to remove author information from oEmbed response data.
-	 *
-	 * @param array $args An array of arguments, currently unused.
-	 *
-	 * @return void
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_filter( 'oembed_response_data', [ $this, 'disable_embeds_filter_oembed_response_data' ] );
 	}
 
 	/**
-	 * Filters the oEmbed response data to remove the author details.
+	 * Removes the author_url and author_name keys from the oEmbed response.
 	 *
-	 * This method unsets the `author_url` and `author_name` fields from the oEmbed response data.
+	 * @param array<string, mixed> $data The oEmbed response data.
 	 *
-	 * @param array $data The oEmbed response data.
-	 *
-	 * @return array The filtered oEmbed response data with author details removed.
+	 * @return array<string, mixed> The filtered response with author details removed.
 	 */
 	public function disable_embeds_filter_oembed_response_data( array $data ): array {
-		unset( $data['author_url'] );
-		unset( $data['author_name'] );
+		unset( $data['author_url'], $data['author_name'] );
 
 		return $data;
 	}
