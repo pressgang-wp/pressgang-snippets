@@ -1,22 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class EditorStyles
+ * Loads a custom stylesheet into the WordPress block and classic editors so
+ * that the editing experience visually matches the front-end theme styles.
  *
- * Handles the addition of custom styles to the WordPress editor. This class is responsible for
- * ensuring that the styles used in the WordPress editor match those on the front-end, providing
- * a consistent editing experience.
+ * Enable this snippet to ensure WYSIWYG consistency between the editor and the
+ * live site. By default, it loads /css/editor-styles.css from the active theme.
  *
- * @see https://codex.wordpress.org/Editor_Style
+ * @see https://developer.wordpress.org/reference/functions/add_editor_style/
  */
 class EditorStyles implements SnippetInterface {
 
 	/**
-	 * Default path for the editor styles.
+	 * Default path for the editor styles file (relative to theme root).
 	 */
 	const DEFAULT_PATH = '/css/editor-styles.css';
 
@@ -28,13 +28,12 @@ class EditorStyles implements SnippetInterface {
 	protected string $editor_styles_path;
 
 	/**
-	 * EditorStyles constructor.
+	 * Stores the stylesheet path and hooks into admin_init to register editor
+	 * styles.
 	 *
-	 * Initializes the class with provided arguments and sets up the WordPress hook to add custom
-	 * editor styles.
-	 *
-	 * @param array $args An associative array of initialization arguments. It can include:
-	 *                    - 'path': The path to the editor styles file. If not set, the default path is used.
+	 * @param array<string, mixed> $args Optional. Supports:
+	 *     - 'path': string — path to the editor stylesheet relative to the
+	 *       theme root (default '/css/editor-styles.css').
 	 */
 	public function __construct( array $args ) {
 		$this->editor_styles_path = $args['path'] ?? self::DEFAULT_PATH;
@@ -42,14 +41,10 @@ class EditorStyles implements SnippetInterface {
 	}
 
 	/**
-	 * Adds custom styles to the WordPress editor.
+	 * Declares editor-styles theme support and registers the configured
+	 * stylesheet with WordPress.
 	 *
-	 * This method is hooked into the 'admin_init' action and is responsible for adding
-	 * theme support for editor styles and specifying the stylesheet that should be used
-	 * in the editor. This stylesheet should help maintain visual consistency between
-	 * the WordPress editor and the front-end of the website.
-	 *
-	 * @hooked admin_init
+	 * @return void
 	 */
 	public function add_editor_styles(): void {
 		if ( $this->editor_styles_path ) {
@@ -57,5 +52,4 @@ class EditorStyles implements SnippetInterface {
 			\add_editor_style( $this->editor_styles_path );
 		}
 	}
-
 }
