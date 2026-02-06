@@ -1,22 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 use Timber\Timber;
 
 /**
- * Integrates Google AdWords Conversion Tracking into a WordPress site using WooCommerce.
+ * Integrates Google AdWords (Google Ads) conversion tracking into WooCommerce
+ * order confirmation pages. Provides Customizer fields for the AdWords ID and
+ * conversion label, and injects the gtag.js conversion snippet on the
+ * order-received page.
  *
- * This class allows for the easy addition of Google AdWords conversion tracking code to WooCommerce order
- * confirmation pages through the WordPress Customizer. It provides settings for the Google AdWords ID and
- * conversion label, which can be set by site administrators.
+ * Enable this snippet on WooCommerce sites that track purchase conversions via
+ * Google Ads. The AdWords ID and conversion label are entered in the Customizer
+ * under the "Google" section.
  */
 class GoogleConversionTracking implements SnippetInterface {
 
 	/**
-	 * Initializes the class by hooking into WordPress actions for Customizer integration and script injection.
+	 * Registers Customizer controls for the Google AdWords ID and conversion
+	 * label, and hooks the tracking script into wp_head.
 	 *
-	 * @param array $args
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
@@ -24,17 +30,17 @@ class GoogleConversionTracking implements SnippetInterface {
 	}
 
 	/**
-	 * Adds settings to the WordPress Customizer for configuring Google AdWords Conversion Tracking.
+	 * Adds settings for the Google AdWords ID and conversion label to the
+	 * Customizer under the shared "Google" section.
 	 *
-	 * Creates a new section in the Customizer for Google settings if it does not exist, and adds settings for the
-	 * Google AdWords ID and conversion label.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The WordPress Customizer object, providing access to the Customizer's API.
+	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['google'] ) ) {
 			$wp_customize->add_section( 'google', [
-				'title' => __( "Google", THEMENAME ),
+				'title' => \__( "Google", THEMENAME ),
 			] );
 		}
 
@@ -48,7 +54,7 @@ class GoogleConversionTracking implements SnippetInterface {
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'google-adwords-id', [
-				'label'   => __( "Google Ad Words ID", THEMENAME ),
+				'label'   => \__( "Google Ad Words ID", THEMENAME ),
 				'section' => 'google',
 				'type'    => 'text',
 			] ) );
@@ -63,17 +69,18 @@ class GoogleConversionTracking implements SnippetInterface {
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'google-conversion-label', [
-				'label'   => __( "Google Conversion Label", THEMENAME ),
+				'label'   => \__( "Google Conversion Label", THEMENAME ),
 				'section' => 'google',
 				'type'    => 'text',
 			] ) );
 	}
 
 	/**
-	 * Injects the Google AdWords Conversion Tracking script into the site's head.
+	 * Outputs the Google Ads conversion tracking script via the
+	 * snippets/google-conversion-tracking.twig template. On WooCommerce
+	 * order-received pages, includes the order total, currency, and ID.
 	 *
-	 * Outputs the conversion tracking script on WooCommerce order received pages if the required settings are
-	 * configured. It optionally checks if Google Analytics tracking is set up and adjusts the script output accordingly.
+	 * @return void
 	 */
 	public function add_tracking(): void {
 		if ( $google_adwords_id = \get_theme_mod( 'google-adwords-id' ) ) {
@@ -88,7 +95,7 @@ class GoogleConversionTracking implements SnippetInterface {
 
 			if ( class_exists( 'woocommerce' ) && \is_order_received_page() ) {
 				global $wp;
-				$order_id = absint( $wp->query_vars['order-received'] );
+				$order_id = \absint( $wp->query_vars['order-received'] );
 				if ( $order_id && ( $order = \wc_get_order( $order_id ) ) ) {
 					$data['order_total'] = $order->get_total();
 					$data['currency']    = $order->get_currency();
