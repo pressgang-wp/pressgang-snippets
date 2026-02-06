@@ -33,12 +33,53 @@ class CookieYes implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! $wp_customize->get_section( 'cookieyes' ) ) {
-			$wp_customize->add_section( 'cookieyes', [
-				'title' => \_x( "CookieYes", 'Customizer', THEMENAME ),
-			] );
+		$this->ensure_cookieyes_section_exists( $wp_customize );
+		$this->add_cookieyes_id_setting( $wp_customize );
+	}
+
+	/**
+	 * Enqueues the CookieYes client script if a site ID has been configured
+	 * in the Customizer.
+	 *
+	 * @return void
+	 */
+	public function cookieyes_header_script(): void {
+		$cookieyes_id = $this->get_cookieyes_id();
+		if ( ! $cookieyes_id ) {
+			return;
 		}
 
+		$script_url = $this->build_script_url( $cookieyes_id );
+
+		\wp_register_script( 'cookieyes', $script_url, [], null );
+		\wp_enqueue_script( 'cookieyes' );
+	}
+
+	/**
+	 * Ensure the "CookieYes" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_cookieyes_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( $wp_customize->get_section( 'cookieyes' ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'cookieyes', [
+			'title' => \_x( "CookieYes", 'Customizer', THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the CookieYes ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_cookieyes_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'cookieyes-id', [
 				'default'           => '',
@@ -55,17 +96,22 @@ class CookieYes implements SnippetInterface {
 	}
 
 	/**
-	 * Enqueues the CookieYes client script if a site ID has been configured
-	 * in the Customizer.
+	 * Get the configured CookieYes site ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function cookieyes_header_script(): void {
-		if ( $cookieyes_id = \sanitize_text_field( \get_theme_mod( 'cookieyes-id' ) ) ) {
-			$script_url = \esc_url( "https://cdn-cookieyes.com/client_data/{$cookieyes_id}/script.js" );
+	private function get_cookieyes_id(): string {
+		return \sanitize_text_field( \get_theme_mod( 'cookieyes-id' ) );
+	}
 
-			\wp_register_script( 'cookieyes', $script_url, [], null );
-			\wp_enqueue_script( 'cookieyes' );
-		}
+	/**
+	 * Build the CookieYes script URL for a site ID.
+	 *
+	 * @param string $cookieyes_id
+	 *
+	 * @return string
+	 */
+	private function build_script_url( string $cookieyes_id ): string {
+		return \esc_url( "https://cdn-cookieyes.com/client_data/{$cookieyes_id}/script.js" );
 	}
 }
