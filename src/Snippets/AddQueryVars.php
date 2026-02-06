@@ -1,31 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class AddQueryVars
+ * Registers additional public query variables with WordPress so they can be
+ * used in WP_Query and recognised by the rewrite system.
  *
- * This class is responsible for modifying the query variables used in WordPress.
- * It is designed to add custom query variables for specific filtering purposes in WP_Query.
+ * Enable this snippet when your theme needs custom query parameters (e.g. for
+ * filtering or sorting) that WordPress should treat as first-class query vars
+ * rather than ignoring them.
  */
 class AddQueryVars implements SnippetInterface {
 
 	/**
-	 * The Query Vars to enable in WP_Query.
+	 * Query variable names to register.
 	 *
-	 * @var array
+	 * @var array<int, string>
 	 */
 	protected array $query_vars;
 
 	/**
-	 * Constructor for the QueryVars class.
+	 * Stores the requested query variable names and hooks into the 'query_vars'
+	 * filter to register them.
 	 *
-	 * Adds a query_vars hook to modify the query variables in WordPress.
+	 * @param array<int, string> $args Flat array of query variable names to
+	 *     register (e.g. ['colour', 'size']).
 	 *
 	 * @see https://developer.wordpress.org/reference/hooks/query_vars/
-	 * @param array $args Custom query variables to be added.
 	 */
 	public function __construct( array $args ) {
 		$this->query_vars = $args;
@@ -33,19 +36,14 @@ class AddQueryVars implements SnippetInterface {
 	}
 
 	/**
-	 * Adds custom query variables.
+	 * Merges the configured query variable names into the WordPress query vars
+	 * whitelist, making them available via get_query_var().
 	 *
-	 * This function is hooked to the 'query_vars' filter. It adds custom query variables
-	 * to the WordPress query variables, allowing them to be used in WordPress queries for filtering WP_Query.
+	 * @param array<int, string> $vars The existing registered query variables.
 	 *
-	 * @hooked query_vars
-	 * @param array $vars The array of existing query variables.
-	 * @return array The modified array of query variables.
+	 * @return array<int, string> The expanded list including custom variables.
 	 */
-	public function add_query_vars( $vars ): array {
-		$vars = array_merge( $vars, $this->query_vars );
-
-		return $vars;
+	public function add_query_vars( array $vars ): array {
+		return array_merge( $vars, $this->query_vars );
 	}
-
 }
