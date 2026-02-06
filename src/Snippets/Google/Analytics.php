@@ -36,12 +36,58 @@ class Analytics implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['google'] ) ) {
-			$wp_customize->add_section( 'google', [
-				'title' => \__( "Google", THEMENAME ),
-			] );
+		$this->ensure_google_section_exists( $wp_customize );
+		$this->add_tracking_id_setting( $wp_customize );
+		$this->add_track_logged_in_setting( $wp_customize );
+	}
+
+	/**
+	 * Outputs the Google Analytics tracking script via the
+	 * snippets/google/analytics.twig template. Skips output for logged-in
+	 * users unless the "track logged-in users" option is enabled.
+	 *
+	 * @return void
+	 */
+	public function script(): void {
+		if ( ! $this->should_render_for_current_user() ) {
+			return;
 		}
 
+		$tracking_id = $this->get_tracking_id();
+		if ( ! $tracking_id ) {
+			return;
+		}
+
+		Timber::render( 'snippets/google/analytics.twig', [
+			'google_analytics_id' => $tracking_id,
+		] );
+	}
+
+	/**
+	 * Ensure the shared "Google" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_google_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( isset( $wp_customize->sections['google'] ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'google', [
+			'title' => \__( "Google", THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the Google Analytics ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_tracking_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'google-analytics-id', [
 				'default'           => '',
@@ -55,7 +101,16 @@ class Analytics implements SnippetInterface {
 				'section' => 'google',
 				'type'    => 'text',
 			] ) );
+	}
 
+	/**
+	 * Register the "track logged-in users" setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_track_logged_in_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'google-analytics-track-logged-in', [
 			'default' => 0,
@@ -70,21 +125,22 @@ class Analytics implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the Google Analytics tracking script via the
-	 * snippets/google/analytics.twig template. Skips output for logged-in
-	 * users unless the "track logged-in users" option is enabled.
+	 * Get the configured tracking ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function script(): void {
+	private function get_tracking_id(): string {
+		return (string) \get_theme_mod( 'google-analytics-id' );
+	}
+
+	/**
+	 * Determine whether analytics should render for the current user.
+	 *
+	 * @return bool
+	 */
+	private function should_render_for_current_user(): bool {
 		$track_logged_in = \get_theme_mod( 'google-analytics-track-logged-in' );
 
-		if ( ! \is_user_logged_in() || $track_logged_in ) {
-			if ( $google_analytics_id = \get_theme_mod( 'google-analytics-id' ) ) {
-				Timber::render( 'snippets/google/analytics.twig', [
-					'google_analytics_id' => $google_analytics_id,
-				] );
-			}
-		}
+		return ! \is_user_logged_in() || $track_logged_in;
 	}
 }
