@@ -72,26 +72,88 @@ class DuplicatePost implements SnippetInterface {
 	 * @return void
 	 */
 	public function duplicate_post_as_draft(): void {
+		$post_id = $this->get_post_id_from_request();
+		$this->verify_duplicate_nonce();
+
+		$post = $this->get_original_post( $post_id );
+		$new_post_id = $this->create_post_clone( $post );
+
+		$this->duplicate_taxonomies( $post_id, $post, $new_post_id );
+		$this->duplicate_meta( $post_id, $new_post_id );
+		$this->redirect_to_edit_screen( $new_post_id );
+	}
+
+	/**
+	 * Shows a success admin notice after a post has been duplicated.
+	 *
+	 * @return void
+	 */
+	public function duplication_admin_notice(): void {
+		if ( ! $this->should_show_notice() ) {
+			return;
+		}
+
+		if ( isset( $_GET['saved'] ) && $_GET['saved'] === 'post_duplication_created' ) {
+			printf(
+				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+				\esc_html__( 'Post copy created.', 'pressgang' )
+			);
+		}
+	}
+
+	/**
+	 * Resolve the post ID from the request or stop with a user-friendly error.
+	 *
+	 * @return int
+	 */
+	private function get_post_id_from_request(): int {
 		if ( empty( $_GET['post'] ) ) {
 			\wp_die( \esc_html__( 'No post to duplicate has been provided!', 'pressgang' ) );
 		}
 
-		$post_id = \absint( $_GET['post'] );
+		return \absint( $_GET['post'] );
+	}
 
+	/**
+	 * Verify the duplication nonce or stop with an error.
+	 *
+	 * @return void
+	 */
+	private function verify_duplicate_nonce(): void {
 		if (
 			! isset( $_GET['duplicate_nonce'] ) ||
 			! \wp_verify_nonce( $_GET['duplicate_nonce'], 'duplicate_post_nonce' )
 		) {
 			\wp_die( \esc_html__( 'Nonce verification failed.', 'pressgang' ) );
 		}
+	}
 
-		$current_user    = \wp_get_current_user();
-		$new_post_author = $current_user->ID;
-
+	/**
+	 * Fetch the original post or stop if it cannot be found.
+	 *
+	 * @param int $post_id
+	 *
+	 * @return \WP_Post
+	 */
+	private function get_original_post( int $post_id ): \WP_Post {
 		$post = \get_post( $post_id );
 		if ( ! $post ) {
 			\wp_die( \esc_html__( 'Post creation failed, could not find original post.', 'pressgang' ) );
 		}
+
+		return $post;
+	}
+
+	/**
+	 * Create the draft clone of the original post.
+	 *
+	 * @param \WP_Post $post
+	 *
+	 * @return int New post ID.
+	 */
+	private function create_post_clone( \WP_Post $post ): int {
+		$current_user = \wp_get_current_user();
+		$new_post_author = $current_user->ID;
 
 		$args = [
 			'comment_status' => $post->comment_status,
@@ -109,28 +171,62 @@ class DuplicatePost implements SnippetInterface {
 			'menu_order'     => $post->menu_order,
 		];
 
-		$new_post_id = \wp_insert_post( $args );
+		return \wp_insert_post( $args );
+	}
 
+	/**
+	 * Duplicate taxonomy terms from the original post.
+	 *
+	 * @param int $post_id
+	 * @param \WP_Post $post
+	 * @param int $new_post_id
+	 *
+	 * @return void
+	 */
+	private function duplicate_taxonomies( int $post_id, \WP_Post $post, int $new_post_id ): void {
 		$taxonomies = \get_object_taxonomies( \get_post_type( $post ) );
-		if ( ! empty( $taxonomies ) ) {
-			foreach ( $taxonomies as $taxonomy ) {
-				$post_terms = \wp_get_object_terms( $post_id, $taxonomy, [ 'fields' => 'slugs' ] );
-				\wp_set_object_terms( $new_post_id, $post_terms, $taxonomy, false );
-			}
+		if ( empty( $taxonomies ) ) {
+			return;
 		}
 
+		foreach ( $taxonomies as $taxonomy ) {
+			$post_terms = \wp_get_object_terms( $post_id, $taxonomy, [ 'fields' => 'slugs' ] );
+			\wp_set_object_terms( $new_post_id, $post_terms, $taxonomy, false );
+		}
+	}
+
+	/**
+	 * Duplicate meta values from the original post.
+	 *
+	 * @param int $post_id
+	 * @param int $new_post_id
+	 *
+	 * @return void
+	 */
+	private function duplicate_meta( int $post_id, int $new_post_id ): void {
 		$post_meta = \get_post_meta( $post_id );
-		if ( ! empty( $post_meta ) ) {
-			foreach ( $post_meta as $meta_key => $meta_values ) {
-				if ( $meta_key === '_wp_old_slug' ) {
-					continue;
-				}
-				foreach ( $meta_values as $meta_value ) {
-					\add_post_meta( $new_post_id, $meta_key, \maybe_unserialize( $meta_value ) );
-				}
-			}
+		if ( empty( $post_meta ) ) {
+			return;
 		}
 
+		foreach ( $post_meta as $meta_key => $meta_values ) {
+			if ( $meta_key === '_wp_old_slug' ) {
+				continue;
+			}
+			foreach ( $meta_values as $meta_value ) {
+				\add_post_meta( $new_post_id, $meta_key, \maybe_unserialize( $meta_value ) );
+			}
+		}
+	}
+
+	/**
+	 * Redirect to the new post edit screen and terminate the request.
+	 *
+	 * @param int $new_post_id
+	 *
+	 * @return void
+	 */
+	private function redirect_to_edit_screen( int $new_post_id ): void {
 		\wp_safe_redirect(
 			\add_query_arg(
 				[
@@ -144,22 +240,13 @@ class DuplicatePost implements SnippetInterface {
 	}
 
 	/**
-	 * Shows a success admin notice after a post has been duplicated.
+	 * Determine whether the duplication notice can be displayed.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function duplication_admin_notice(): void {
+	private function should_show_notice(): bool {
 		$screen = \get_current_screen();
 
-		if ( $screen->base !== 'edit' ) {
-			return;
-		}
-
-		if ( isset( $_GET['saved'] ) && $_GET['saved'] === 'post_duplication_created' ) {
-			printf(
-				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-				\esc_html__( 'Post copy created.', 'pressgang' )
-			);
-		}
+		return $screen->base === 'edit';
 	}
 }
