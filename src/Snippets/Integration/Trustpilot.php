@@ -41,47 +41,10 @@ class Trustpilot implements SnippetInterface {
 	 * @return void
 	 */
 	public function customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! $wp_customize->get_section( 'trustpilot' ) ) {
-			$wp_customize->add_section( 'trustpilot', [
-				'title' => \_x( "Trustpilot", 'Trustpilot', THEMENAME ),
-			] );
-		}
-
-		$wp_customize->add_setting( 'trustpilot_business_id', [
-			'default'           => '',
-			'sanitize_callback' => 'sanitize_text_field',
-		] );
-
-		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
-			'trustpilot_business_id', [
-				'label'   => \_x( "Business ID", 'Trustpilot', THEMENAME ),
-				'section' => 'trustpilot',
-				'type'    => 'text',
-			] ) );
-
-		$wp_customize->add_setting( 'trustpilot_template_id', [
-			'default'           => '',
-			'sanitize_callback' => 'sanitize_text_field',
-		] );
-
-		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
-			'trustpilot_template_id', [
-				'label'   => \__( "Template ID", THEMENAME ),
-				'section' => 'trustpilot',
-				'type'    => 'text',
-			] ) );
-
-		$wp_customize->add_setting( 'trustpilot_reviews_link', [
-			'default'           => '',
-			'sanitize_callback' => 'esc_url_raw',
-		] );
-
-		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
-			'trustpilot_reviews_link', [
-				'label'   => \__( "Reviews URL", THEMENAME ),
-				'section' => 'trustpilot',
-				'type'    => 'text',
-			] ) );
+		$this->ensure_section( $wp_customize );
+		$this->add_business_id_setting( $wp_customize );
+		$this->add_template_id_setting( $wp_customize );
+		$this->add_reviews_url_setting( $wp_customize );
 	}
 
 	/**
@@ -126,5 +89,85 @@ class Trustpilot implements SnippetInterface {
 			'trustpilot_business_id' => \get_theme_mod( 'trustpilot_business_id' ),
 			'trustpilot_reviews_url' => \get_theme_mod( 'trustpilot_reviews_url' ),
 		] );
+	}
+
+	/**
+	 * Ensure the Trustpilot Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_section( \WP_Customize_Manager $wp_customize ): void {
+		if ( $wp_customize->get_section( 'trustpilot' ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'trustpilot', [
+			'title' => \_x( "Trustpilot", 'Trustpilot', THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the Business ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_business_id_setting( \WP_Customize_Manager $wp_customize ): void {
+		$wp_customize->add_setting( 'trustpilot_business_id', [
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		] );
+
+		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
+			'trustpilot_business_id', [
+				'label'   => \_x( "Business ID", 'Trustpilot', THEMENAME ),
+				'section' => 'trustpilot',
+				'type'    => 'text',
+			] ) );
+	}
+
+	/**
+	 * Register the Template ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_template_id_setting( \WP_Customize_Manager $wp_customize ): void {
+		$wp_customize->add_setting( 'trustpilot_template_id', [
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		] );
+
+		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
+			'trustpilot_template_id', [
+				'label'   => \__( "Template ID", THEMENAME ),
+				'section' => 'trustpilot',
+				'type'    => 'text',
+			] ) );
+	}
+
+	/**
+	 * Register the Reviews URL setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_reviews_url_setting( \WP_Customize_Manager $wp_customize ): void {
+		$wp_customize->add_setting( 'trustpilot_reviews_link', [
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		] );
+
+		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
+			'trustpilot_reviews_link', [
+				'label'   => \__( "Reviews URL", THEMENAME ),
+				'section' => 'trustpilot',
+				'type'    => 'text',
+			] ) );
 	}
 }
