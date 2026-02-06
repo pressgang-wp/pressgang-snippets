@@ -1,18 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * Class ArchiveTitles
+ * Allows site administrators to customise archive page titles (category,
+ * tag, author, date, post-type archive, and search) via the WordPress
+ * Customizer instead of accepting WordPress's hard-coded defaults.
  *
- * Customizes archive titles in WordPress using the Customizer.
- *
- * @package PressGang\Snippets
+ * Enable this snippet when you want editorial control over how archive
+ * headings read — for example changing "Category: News" to just "News", or
+ * localising archive titles.
  */
 class ArchiveTitles implements SnippetInterface {
 
 	/**
-	 * @var array
+	 * Map of Customizer setting keys to their default title patterns.
+	 * Use %s as a placeholder for the dynamic value (category name, etc.).
+	 *
+	 * @var array<string, string>
 	 */
 	private array $available_titles = [
 		'archives_title'          => 'Archives',
@@ -27,12 +34,14 @@ class ArchiveTitles implements SnippetInterface {
 	];
 
 	/**
-	 * Constructor to initialize hooks and configure archive titles.
+	 * Registers Customizer controls for archive titles and hooks the title
+	 * filter into get_the_archive_title.
 	 *
-	 * @param array $args Specify which archive titles to include and their default labels.
+	 * @param array<string, string> $args Optional. Keys matching
+	 *     available_titles to include (with optional custom defaults). When
+	 *     empty, all title types are registered.
 	 */
 	public function __construct( array $args = [] ) {
-		// If $args is empty, use all available titles
 		$this->available_titles = ! empty( $args ) ? array_intersect_key( $this->available_titles, $args ) + $args : $this->available_titles;
 
 		\add_action( 'customize_register', [ $this, 'customizer' ] );
@@ -40,17 +49,17 @@ class ArchiveTitles implements SnippetInterface {
 	}
 
 	/**
-	 * Add archive title settings to the WordPress customizer.
+	 * Registers an "Archive Titles" Customizer section with a text control for
+	 * each configured title type.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The WordPress Customizer object.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
 	 * @return void
 	 */
 	public function customizer( \WP_Customize_Manager $wp_customize ): void {
-		// Check if the section already exists
 		if ( ! $wp_customize->get_section( 'archive-titles' ) ) {
 			$wp_customize->add_section( 'archive-titles', [
-				'title' => __( 'Archive Titles', THEMENAME ),
+				'title' => \__( 'Archive Titles', THEMENAME ),
 			] );
 		}
 
@@ -61,7 +70,7 @@ class ArchiveTitles implements SnippetInterface {
 			] );
 
 			$wp_customize->add_control( new \WP_Customize_Control( $wp_customize, $setting, [
-				'label'   => __( ucwords( str_replace( '_', ' ', $setting ) ), THEMENAME ),
+				'label'   => \__( ucwords( str_replace( '_', ' ', $setting ) ), THEMENAME ),
 				'section' => 'archive-titles',
 				'type'    => 'text',
 			] ) );
@@ -69,11 +78,13 @@ class ArchiveTitles implements SnippetInterface {
 	}
 
 	/**
-	 * Customize the archive title based on the current archive type.
+	 * Replaces the default archive title with the Customizer value for the
+	 * current archive type, using sprintf to insert the dynamic portion
+	 * (category name, date, search query, etc.).
 	 *
-	 * @param string $title The original archive title.
+	 * @param string $title The original archive title from WordPress.
 	 *
-	 * @return string The customized archive title.
+	 * @return string The customised archive title.
 	 */
 	public function custom_archive_title( string $title ): string {
 		$modifications = [
@@ -83,15 +94,15 @@ class ArchiveTitles implements SnippetInterface {
 			'is_author'            => [ 'single_author_title', '<span class="vcard">' . \get_the_author() . '</span>' ],
 			'is_year'              => [
 				'single_year_title',
-				\get_the_date( _x( 'Y', 'yearly archives date format' ) )
+				\get_the_date( \_x( 'Y', 'yearly archives date format' ) )
 			],
 			'is_month'             => [
 				'single_month_title',
-				\get_the_date( _x( 'F Y', 'monthly archives date format' ) )
+				\get_the_date( \_x( 'F Y', 'monthly archives date format' ) )
 			],
 			'is_day'               => [
 				'single_day_title',
-				\get_the_date( _x( 'F j, Y', 'daily archives date format' ) )
+				\get_the_date( \_x( 'F j, Y', 'daily archives date format' ) )
 			],
 			'is_post_type_archive' => [ 'post_type_archive_title', \post_type_archive_title( '', false ) ],
 			'is_search'            => [ 'search_results_title', \get_search_query() ],
