@@ -1,63 +1,63 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-
 /**
- * TinyMceBlockFormats Class
+ * Customises the block-format dropdown in the classic TinyMCE editor.
+ * By default H1 is omitted (since it should be reserved for the post title)
+ * and only Paragraph, H2, H3, and H4 are available.
  *
- * Allows for customizing the block formats in the TinyMCE editor.
- * By default, it hides the H1 heading and enables other specified formats.
+ * Pass an associative array of Label => tag pairs via $args to override the
+ * defaults.
+ *
+ * @see https://developer.wordpress.org/reference/hooks/tiny_mce_before_init/
  */
 class TinyMceBlockFormats implements SnippetInterface {
 
 	/**
-	 * The block formats to enable in the TinyMCE editor.
+	 * Map of display labels to HTML tag names.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	protected array $block_formats;
 
 	/**
-	 * Constructor
+	 * Merges provided formats with defaults and hooks into
+	 * tiny_mce_before_init.
 	 *
-	 * Registers the filter to modify TinyMCE editor settings.
-	 *
-	 * @see https://developer.wordpress.org/reference/hooks/tiny_mce_before_init/
+	 * @param array<string, string> $args Label => tag pairs to add or override.
 	 */
 	public function __construct( array $args = [] ) {
-
-		// Default block formats
 		$defaults = [
 			'Paragraph' => 'p',
 			'Heading 2' => 'h2',
 			'Heading 3' => 'h3',
 			'Heading 4' => 'h4',
-			// H1 is intentionally omitted to hide it
 		];
 
-		$this->block_formats = \wp_parse_args($args, $defaults);
+		$this->block_formats = \wp_parse_args( $args, $defaults );
 
 		\add_filter( 'tiny_mce_before_init', [ $this, 'customize_block_formats' ] );
 	}
 
 	/**
-	 * Customize Block Formats in TinyMCE Editor
+	 * Sets the block_formats key in the TinyMCE configuration array.
 	 *
-	 * Sets the block formats in the TinyMCE editor based on constructor arguments.
+	 * @param array<string, mixed> $in The TinyMCE configuration.
 	 *
-	 * @hooked tiny_mce_before_init
-	 * @param array $in The initial editor configuration.
-	 * @return array The modified editor configuration.
+	 * @return array<string, mixed> The modified configuration.
 	 */
-	public function customize_block_formats( $in ): array {
-		$formats = array_map(function ($tag, $label) {
-			return "$label=$tag";
-		}, $this->block_formats, array_keys($this->block_formats));
+	public function customize_block_formats( array $in ): array {
+		$formats = array_map(
+			fn( string $tag, string $label ) => "{$label}={$tag}",
+			$this->block_formats,
+			array_keys( $this->block_formats )
+		);
 
-		$in['block_formats'] = implode('; ', $formats) . ';';
+		$in['block_formats'] = implode( '; ', $formats ) . ';';
 
 		return $in;
 	}
-
 }
