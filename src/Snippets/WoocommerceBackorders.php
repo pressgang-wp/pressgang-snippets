@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * Class WooCommerceBackorders
+ * Adds a "Backorder date" custom field to the WooCommerce product stock
+ * options panel and modifies out-of-stock / on-backorder availability
+ * messages to include the expected delivery date.
  *
- * An Snippet for adding a WooCommerce Backorder Date
- *
- * @package PressGang
+ * Enable this snippet on stores that accept backorders and want to
+ * communicate expected delivery dates to customers.
  */
 class WooCommerceBackorders implements SnippetInterface {
 
 	/**
-	 * Initializes the WooCommerceBackorders class by setting up actions and filters related to WooCommerce products.
+	 * Registers product editor fields and availability-text filters.
 	 *
-	 * @param array $args Optional. Arguments for initializing the class. Not used in the current implementation.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		// Display and save custom field in WooCommerce
@@ -54,12 +57,14 @@ class WooCommerceBackorders implements SnippetInterface {
 	}
 
 	/**
-	 * Modifies the availability text for products, especially for those on backorder or out of stock, to include the expected backorder date.
+	 * Modifies availability text for on-backorder and out-of-stock products
+	 * to include the expected delivery date. Supports both standard
+	 * WC_Product and WC Composite Products (WC_CP_Product).
 	 *
 	 * @param string $availability The original availability text.
-	 * @param mixed $instance The product instance or the composite product instance.
+	 * @param mixed  $instance     The product or composite product instance.
 	 *
-	 * @return string The modified availability text including the expected backorder date if applicable.
+	 * @return string The modified availability text.
 	 */
 	public function availability_backorder_text( string $availability, mixed $instance ): string {
 		if ( is_a( $instance, 'WC_CP_Product' ) ) {
@@ -88,15 +93,16 @@ class WooCommerceBackorders implements SnippetInterface {
 	}
 
 	/**
-	 * Displays a custom field in the WooCommerce product data panel for specifying the backorder date.
+	 * Renders the backorder date input field in the product stock options
+	 * panel.
 	 *
 	 * @return void
 	 */
 	public function woocommerce_product_custom_fields(): void {
 		echo '<div class="product_custom_field form-field backorder-date hide_if_variable hide_if_external hide_if_grouped">';
-		woocommerce_wp_text_input( [
+		\woocommerce_wp_text_input( [
 			'id'       => 'backorder_date',
-			'label'    => __( 'Backorder date', 'woocommerce' ),
+			'label'    => \__( 'Backorder date', 'woocommerce' ),
 			'desc_tip' => 'true',
 			'type'     => 'date',
 		] );
@@ -132,5 +138,4 @@ class WooCommerceBackorders implements SnippetInterface {
 			}
 		}
 	}
-
 }
