@@ -1,31 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 use Timber\Timber;
 
 /**
- * Class GoogleRecaptcha
+ * Adds Customizer fields for the Google reCAPTCHA site key and secret, and
+ * provides a static render_script() method that themes can call to output
+ * the reCAPTCHA widget on specific forms.
  *
- * Integrates Google reCAPTCHA settings into the WordPress Customizer and provides a method to render the reCAPTCHA script.
- *
- * @package PressGang\Snippets
+ * Enable this snippet when your theme includes forms that need reCAPTCHA
+ * protection. The keys are entered in the Customizer under the "Google"
+ * section; the script is rendered by calling
+ * GoogleRecaptcha::render_script($form_id) in your template or PHP.
  */
 class GoogleRecaptcha implements SnippetInterface {
 
 	/**
-	 * Constructor.
+	 * Registers Customizer controls for the reCAPTCHA site key and secret
+	 * under the shared "Google" section.
 	 *
-	 * Registers the customization settings and controls for Google reCAPTCHA in the WordPress Customizer.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'add_to_customizer' ] );
 	}
 
 	/**
-	 * Adds Google reCAPTCHA settings and controls to the WordPress Customizer.
+	 * Adds the Google reCAPTCHA site key and secret settings to the Customizer.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The Customizer object.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
+	 *
+	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
 		$this->ensure_google_section_exists( $wp_customize );
@@ -34,22 +42,26 @@ class GoogleRecaptcha implements SnippetInterface {
 	}
 
 	/**
-	 * Ensures that a section for Google settings exists in the Customizer.
+	 * Creates the shared "Google" Customizer section if it does not exist.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The Customizer object.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
+	 *
+	 * @return void
 	 */
 	protected function ensure_google_section_exists( \WP_Customize_Manager $wp_customize ): void {
 		if ( ! isset( $wp_customize->sections['google'] ) ) {
 			$wp_customize->add_section( 'google', [
-				'title' => __( "Google", THEMENAME ),
+				'title' => \__( "Google", THEMENAME ),
 			] );
 		}
 	}
 
 	/**
-	 * Adds a setting for the Google reCAPTCHA site key to the Customizer.
+	 * Registers the reCAPTCHA site key Customizer setting and control.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The Customizer object.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
+	 *
+	 * @return void
 	 */
 	protected function add_site_key_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting( 'google-recaptcha-site-key', [
@@ -59,7 +71,7 @@ class GoogleRecaptcha implements SnippetInterface {
 
 		$wp_customize->add_control( new \WP_Customize_Control(
 			$wp_customize, 'google-recaptcha-site-key', [
-				'label'   => __( "Google Recaptcha Site Key", THEMENAME ),
+				'label'   => \__( "Google Recaptcha Site Key", THEMENAME ),
 				'section' => 'google',
 				'type'    => 'text',
 			]
@@ -67,9 +79,11 @@ class GoogleRecaptcha implements SnippetInterface {
 	}
 
 	/**
-	 * Adds a setting for the Google reCAPTCHA secret key to the Customizer.
+	 * Registers the reCAPTCHA secret key Customizer setting and control.
 	 *
-	 * @param \WP_Customize_Manager $wp_customize The Customizer object.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
+	 *
+	 * @return void
 	 */
 	protected function add_secret_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting( 'google-recaptcha-secret', [
@@ -79,7 +93,7 @@ class GoogleRecaptcha implements SnippetInterface {
 
 		$wp_customize->add_control( new \WP_Customize_Control(
 			$wp_customize, 'google-recaptcha-secret', [
-				'label'   => __( "Google Recaptcha Secret", THEMENAME ),
+				'label'   => \__( "Google Recaptcha Secret", THEMENAME ),
 				'section' => 'google',
 				'type'    => 'text',
 			]
@@ -87,11 +101,13 @@ class GoogleRecaptcha implements SnippetInterface {
 	}
 
 	/**
-	 * Renders the Google reCAPTCHA script.
+	 * Renders the Google reCAPTCHA script and hidden input for a specific form.
+	 * Call this method from your template or controller where the reCAPTCHA
+	 * widget should appear.
 	 *
-	 * This method should be called in the appropriate place to ensure the reCAPTCHA script is included on the page.
+	 * @param string $form_id The HTML ID of the form to protect with reCAPTCHA.
 	 *
-	 * @param string $form_id
+	 * @return void
 	 */
 	public static function render_script( string $form_id ): void {
 		Timber::render( 'snippets/google-recaptcha.twig', [
