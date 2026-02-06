@@ -33,13 +33,36 @@ class Logo implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! $wp_customize->get_section( 'logo' ) ) {
-			$wp_customize->add_section( 'logo', [
-				'title'    => \_x( "Logo", "Customizer", THEMENAME ),
-				'priority' => 30,
-			] );
+		$this->ensure_logo_section_exists( $wp_customize );
+		$this->add_logo_setting( $wp_customize );
+	}
+
+	/**
+	 * Ensure the "Logo" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_logo_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( $wp_customize->get_section( 'logo' ) ) {
+			return;
 		}
 
+		$wp_customize->add_section( 'logo', [
+			'title'    => \_x( "Logo", "Customizer", THEMENAME ),
+			'priority' => 30,
+		] );
+	}
+
+	/**
+	 * Register the logo setting and image control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_logo_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting( 'logo', [ 'default' => '' ] );
 
 		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize,
