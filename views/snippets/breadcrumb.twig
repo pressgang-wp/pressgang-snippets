@@ -1,13 +1,13 @@
 <nav aria-label="breadcrumb">
-    <ol class="breadcrumb {{ class|e('html_attr') }}" itemscope itemtype="http://schema.org/BreadcrumbList">
+    <ol class="breadcrumb {{ class|e('html_attr') }}" itemscope itemtype="https://schema.org/BreadcrumbList">
         {% for breadcrumb in breadcrumbs %}
-            <li class="breadcrumb-item {{ breadcrumb.class|e('html_attr') }}" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <li class="breadcrumb-item {{ breadcrumb.class|e('html_attr') }}" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                 {% if breadcrumb.url %}
                     <a href="{{ breadcrumb.url|e('html_attr') }}" itemprop="item">
-                        <span itemprop="name">{{ breadcrumb.title|default('') }}</span>
+                        <span itemprop="name">{{ breadcrumb.title|default('')|e }}</span>
                     </a>
                 {% else %}
-                    <span itemprop="name">{{ breadcrumb.title }}</span>
+                    <span itemprop="name" aria-current="page">{{ breadcrumb.title|e }}</span>
                 {% endif %}
                 <meta itemprop="position" content="{{ loop.index|e('html_attr') }}">
             </li>

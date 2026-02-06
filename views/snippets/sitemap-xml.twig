@@ -7,10 +7,10 @@
                 <xhtml:link rel="alternate" hreflang="{{ lang|e('html_attr') }}" href="{{ href|e('html_attr') }}"/>
             {% endfor %}
             {% if node['lastmod'] %}
-                <lastmod>{{ node['lastmod'] }}</lastmod>
+                <lastmod>{{ node['lastmod']|e }}</lastmod>
             {% endif %}
-            <changefreq>{{ node['changefreq'] }}</changefreq>
-            <priority>{{ node['priority'] }}</priority>
+            <changefreq>{{ node['changefreq']|e }}</changefreq>
+            <priority>{{ node['priority']|e }}</priority>
         </url>
     {% endfor %}
 </urlset>

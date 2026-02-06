@@ -1,15 +1,16 @@
 {% extends 'json-ld/script.twig' %}
 
 {% block schema %}
-  {
-  "@context": "http://schema.org",
-  "@type": "event",
-  "name": "{{ name }}",
-  "description": "{{ description }}",
-  "image": "{{ image }}",
-  "url": "{{ url }}",
-  "startDate": "{{ start_date }}",
-  "endDate": "{{ end_date }}",
-  "location": "{{ location }}"
-  }
+  {% set schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    'name': name,
+    'description': description,
+    'image': image,
+    'url': url,
+    'startDate': start_date,
+    'endDate': end_date,
+    'location': location
+  } %}
+  {{ schema|json_encode|raw }}
 {% endblock %}

@@ -1,15 +1,16 @@
 <script type="application/ld+json">
-{
-  "@context":"http://schema.org",
-  "@type":"ItemList",
-  "itemListElement": [
+  {% set item_list = [] %}
   {% for item in items %}
-    {
-      "@type": "ListItem",
-      "position": {{ loop.index }},
-      "url": "{{ item.link }}"
-    }{% if not loop.last %},{% endif %}
-    {% endfor %}
-  ]
-}
+    {% set item_list = item_list|merge([{
+      '@type': 'ListItem',
+      'position': loop.index,
+      'url': item.link
+    }]) %}
+  {% endfor %}
+  {% set schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'itemListElement': item_list
+  } %}
+  {{ schema|json_encode|raw }}
 </script>

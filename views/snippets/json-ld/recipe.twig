@@ -1,48 +1,47 @@
 {% extends 'json-ld/script.twig' %}
 
 {% block schema %}
-{
-    "@context": "http://schema.org",
-    "@type": "Recipe",
-    "name": "{{ name }}",
-    "image": [
-    {% for image in images %}
-        "{{ image }}"{% if not loop.last %},{% endif %}
+  {% set schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    'name': name,
+    'image': images,
+    'datePublished': date_published,
+    'description': description
+  } %}
+  {% if prep_time %}
+    {% set schema = schema|merge({ 'prepTime': prep_time }) %}
+  {% endif %}
+  {% if cook_time %}
+    {% set schema = schema|merge({ 'cookTime': cook_time }) %}
+  {% endif %}
+  {% if total_time %}
+    {% set schema = schema|merge({ 'totalTime': total_time }) %}
+  {% endif %}
+  {% if keywords %}
+    {% set schema = schema|merge({ 'keywords': keywords|join(', ') }) %}
+  {% endif %}
+  {% if recipe_yield %}
+    {% set schema = schema|merge({ 'recipeYield': '%d servings'|format(recipe_yield) }) %}
+  {% endif %}
+  {% if recipe_category %}
+    {% set schema = schema|merge({ 'recipeCategory': recipe_category }) %}
+  {% endif %}
+  {% if recipe_cuisine %}
+    {% set schema = schema|merge({ 'recipeCuisine': recipe_cuisine }) %}
+  {% endif %}
+  {% if recipe_ingredients %}
+    {% set schema = schema|merge({ 'recipeIngredient': recipe_ingredients }) %}
+  {% endif %}
+  {% if recipe_instructions %}
+    {% set instruction_list = [] %}
+    {% for step in recipe_instructions %}
+      {% set instruction_list = instruction_list|merge([{
+        '@type': 'HowToStep',
+        'text': step
+      }]) %}
     {% endfor %}
-    ],
-    "datePublished": "{{ date_published }}",
-    "description": "{{ description }}",
-    {% if prep_time %}"prepTime": "{{ prep_time }}",{% endif %}
-    {% if cook_time %}"cookTime": "{{ cook_time }}",{% endif %}
-    {% if total_time %}"totalTime": "{{ total_time }}",{% endif %}
-    {% if keywords %}
-    "keywords": "{{ keywords|join(', ') }}",
-    {% endif %}
-    {% if recipe_yield %}
-    "recipeYield": "{{ '%d servings'|format(recipe_yield) }}",
-    {% endif %}
-    {% if recipe_category %}
-    "recipeCategory": "{{ recipe_category }}",
-    {% endif %}
-    {% if recipe_cuisine %}
-        "recipeCuisine": "{{ recipe_cuisine }}",
-    {% endif %}
-    {% if recipe_ingredients %}
-        "recipeIngredient": [
-        {% for ingredient in recipe_ingredients %}
-            "{{ ingredient }}"{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ],
-    {% endif %}
-    {% if recipe_instructions %}
-    "recipeInstructions": [
-        {% for step in recipe_instructions %}
-            {
-                "@type": "HowToStep",
-                "text": "{{ step }}"
-            }{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ]
-    {% endif %}
-}
+    {% set schema = schema|merge({ 'recipeInstructions': instruction_list }) %}
+  {% endif %}
+  {{ schema|json_encode|raw }}
 {% endblock %}

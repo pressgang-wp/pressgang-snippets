@@ -19,7 +19,7 @@
         // Usage of grecaptcha.ready()
         document.addEventListener("DOMContentLoaded", function() {
             grecaptcha.ready(function() {
-                const formEl = document.getElementById("{{ form_id }}");
+                const formEl = document.getElementById("{{ form_id|e('esc_js') }}");
 
                 formEl.addEventListener("submit", function (e) {
                     e.preventDefault(); // Prevent default form submission
