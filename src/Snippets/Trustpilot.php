@@ -1,102 +1,93 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
+use Timber\Timber;
 use Twig\Environment;
 use Twig\TwigFunction;
 
 /**
- * Class Trustpilot
+ * Integrates Trustpilot review widgets by adding Customizer fields for the
+ * Business ID, Template ID, and Reviews URL, enqueuing the Trustpilot
+ * bootstrap script, and registering a {{ trustpilot_mini() }} Twig function
+ * for rendering the mini widget in templates.
  *
- * Handles the integration of the Trustpilot widget and customizer settings in a
- * WordPress theme. This includes adding custom settings in the WordPress
- * Customizer for Trustpilot configuration and embedding the Trustpilot script
- * in the website's head section for the widgets to function properly.
+ * Enable this snippet to display Trustpilot widgets on your site.
  */
 class Trustpilot implements SnippetInterface {
 
-	const SCRIPT_ENQUEUE_KEY = 'trustpilot-pressgang-snippet';
+	private const SCRIPT_ENQUEUE_KEY = 'trustpilot-pressgang-snippet';
 
 	/**
-	 * Trustpilot constructor.
+	 * Registers Customizer controls, enqueues the Trustpilot script, and
+	 * adds the trustpilot_mini Twig function.
 	 *
-	 * Sets up WordPress customizer options, includes Trustpilot script,
-	 * and adds Trustpilot widgets to Twig.
-	 *
-	 * @param array $args*/
-	public function __construct( array $args) {
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
+	 */
+	public function __construct( array $args ) {
 		\add_action( 'customize_register', [ $this, 'customizer' ] );
 		\add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 		\add_filter( 'timber/twig', [ $this, 'add_to_twig' ] );
 	}
 
 	/**
-	 * Add Trustpilot settings to the WordPress Customizer.
+	 * Adds a "Trustpilot" Customizer section with fields for Business ID,
+	 * Template ID, and Reviews URL.
 	 *
-	 * Registers settings and controls for managing Trustpilot integration,
-	 * including Business ID, Template ID, and Reviews URL, and creates a new
-	 * section in the Customizer dedicated to Trustpilot settings.
+	 * @param \WP_Customize_Manager $wp_customize The Customizer manager instance.
 	 *
-	 * @hooked customize_register
-	 * @param \WP_Customize_Manager $wp_customize WordPress Customizer object.
+	 * @return void
 	 */
 	public function customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['trustpilot'] ) ) {
+		if ( ! $wp_customize->get_section( 'trustpilot' ) ) {
 			$wp_customize->add_section( 'trustpilot', [
-				'title' => _x( "Trustpilot", 'Trustpilot', THEMENAME ),
+				'title' => \_x( "Trustpilot", 'Trustpilot', THEMENAME ),
 			] );
 		}
 
-		$wp_customize->add_setting( 'trustpilot_business_id',
-			[
-				'default'           => '',
-				'sanitize_callback' => 'sanitize_text_field',
-			]
-		);
+		$wp_customize->add_setting( 'trustpilot_business_id', [
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		] );
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'trustpilot_business_id', [
-				'label'   => _x( "Business ID", 'Trustpilot', THEMENAME ),
+				'label'   => \_x( "Business ID", 'Trustpilot', THEMENAME ),
 				'section' => 'trustpilot',
 				'type'    => 'text',
 			] ) );
 
-		$wp_customize->add_setting( 'trustpilot_template_id',
-			[
-				'default'           => '',
-				'sanitize_callback' => 'sanitize_text_field',
-			]
-		);
+		$wp_customize->add_setting( 'trustpilot_template_id', [
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		] );
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'trustpilot_template_id', [
-				'label'   => __( "Template ID", THEMENAME ),
+				'label'   => \__( "Template ID", THEMENAME ),
 				'section' => 'trustpilot',
 				'type'    => 'text',
 			] ) );
 
-		$wp_customize->add_setting( 'trustpilot_reviews_link',
-			[
-				'default'           => '',
-				'sanitize_callback' => 'esc_url_raw',
-			]
-		);
+		$wp_customize->add_setting( 'trustpilot_reviews_link', [
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		] );
 
 		$wp_customize->add_control( new \WP_Customize_Control( $wp_customize,
 			'trustpilot_reviews_link', [
-				'label'   => __( "Reviews URL", THEMENAME ),
+				'label'   => \__( "Reviews URL", THEMENAME ),
 				'section' => 'trustpilot',
 				'type'    => 'text',
 			] ) );
 	}
 
 	/**
-	 * Registers and enqueues the Trustpilot script.
+	 * Registers and enqueues the Trustpilot widget bootstrap script.
 	 *
-	 * Adds the necessary Trustpilot script to the website's head section.
-	 * This script is required for the proper functioning of Trustpilot widgets.
-	 *
-	 * @hooked wp_enqueue_scripts
+	 * @return void
 	 */
 	public function register_scripts(): void {
 		\wp_register_script(
@@ -111,30 +102,26 @@ class Trustpilot implements SnippetInterface {
 	}
 
 	/**
-	 * Adds custom functions to Twig.
-	 *
-	 * Integrates custom Trustpilot-related Twig functions for rendering
-	 * Trustpilot widgets within templates.
-	 *
-	 * @hooked timber/twig
+	 * Registers the trustpilot_mini() Twig function.
 	 *
 	 * @param Environment $twig The Twig environment instance.
+	 *
+	 * @return Environment The modified Twig environment.
 	 */
 	public function add_to_twig( Environment $twig ): Environment {
 		$twig->addFunction( new TwigFunction( 'trustpilot_mini', [ $this, 'render_mini_widget' ] ) );
+
 		return $twig;
 	}
 
 	/**
-	 * Renders the Trustpilot mini widget.
+	 * Renders the Trustpilot mini widget via the snippets/trustpilot-mini.twig
+	 * template using the Customizer theme mod values.
 	 *
-	 * @usage {{ trustpilot_mini() }}
-	 *
-	 * Uses Timber to render the Trustpilot mini widget based on the template
-	 * and theme customization settings like Business ID, Template ID, and Reviews URL.
+	 * @return void
 	 */
 	public function render_mini_widget(): void {
-		\Timber\Timber::render( 'snippets/trustpilot-mini.twig', [
+		Timber::render( 'snippets/trustpilot-mini.twig', [
 			'trustpilot_template_id' => \get_theme_mod( 'trustpilot_template_id' ),
 			'trustpilot_business_id' => \get_theme_mod( 'trustpilot_business_id' ),
 			'trustpilot_reviews_url' => \get_theme_mod( 'trustpilot_reviews_url' ),
