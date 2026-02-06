@@ -38,12 +38,55 @@ class ConversionTracking implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_to_customizer( \WP_Customize_Manager $wp_customize ): void {
-		if ( ! isset( $wp_customize->sections['google'] ) ) {
-			$wp_customize->add_section( 'google', [
-				'title' => \__( "Google", THEMENAME ),
-			] );
+		$this->ensure_google_section_exists( $wp_customize );
+		$this->add_adwords_id_setting( $wp_customize );
+		$this->add_conversion_label_setting( $wp_customize );
+	}
+
+	/**
+	 * Outputs the Google Ads conversion tracking script via the
+	 * snippets/google/conversion-tracking.twig template. On WooCommerce
+	 * order-received pages, includes the order total, currency, and ID.
+	 *
+	 * @return void
+	 */
+	public function add_tracking(): void {
+		$google_adwords_id = $this->get_adwords_id();
+		if ( ! $google_adwords_id ) {
+			return;
 		}
 
+		$data = $this->build_tracking_context( $google_adwords_id );
+		$data = $this->add_order_context_if_available( $data );
+
+		Timber::render( 'snippets/google/conversion-tracking.twig', $data );
+	}
+
+	/**
+	 * Ensure the shared "Google" Customizer section exists.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function ensure_google_section_exists( \WP_Customize_Manager $wp_customize ): void {
+		if ( isset( $wp_customize->sections['google'] ) ) {
+			return;
+		}
+
+		$wp_customize->add_section( 'google', [
+			'title' => \__( "Google", THEMENAME ),
+		] );
+	}
+
+	/**
+	 * Register the AdWords ID setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_adwords_id_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'google-adwords-id',
 			[
@@ -58,7 +101,16 @@ class ConversionTracking implements SnippetInterface {
 				'section' => 'google',
 				'type'    => 'text',
 			] ) );
+	}
 
+	/**
+	 * Register the conversion label setting and control.
+	 *
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @return void
+	 */
+	private function add_conversion_label_setting( \WP_Customize_Manager $wp_customize ): void {
 		$wp_customize->add_setting(
 			'google-conversion-label',
 			[
@@ -76,34 +128,70 @@ class ConversionTracking implements SnippetInterface {
 	}
 
 	/**
-	 * Outputs the Google Ads conversion tracking script via the
-	 * snippets/google/conversion-tracking.twig template. On WooCommerce
-	 * order-received pages, includes the order total, currency, and ID.
+	 * Fetch the configured AdWords ID.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function add_tracking(): void {
-		if ( $google_adwords_id = \get_theme_mod( 'google-adwords-id' ) ) {
-			$data = [
-				'google_adwords_id'       => $google_adwords_id,
-				'add_gtag_script'         => ! \get_theme_mod( 'google-analytics-id' ) || \get_theme_mod( 'track-logged-in' ) || ! \is_user_logged_in(),
-				'order_total'             => 0,
-				'currency'                => '',
-				'tracking_id'             => 0,
-				'google_conversion_label' => \get_theme_mod( 'google-conversion-label' )
-			];
+	private function get_adwords_id(): string {
+		return (string) \get_theme_mod( 'google-adwords-id' );
+	}
 
-			if ( class_exists( 'woocommerce' ) && \is_order_received_page() ) {
-				global $wp;
-				$order_id = \absint( $wp->query_vars['order-received'] );
-				if ( $order_id && ( $order = \wc_get_order( $order_id ) ) ) {
-					$data['order_total'] = $order->get_total();
-					$data['currency']    = $order->get_currency();
-					$data['tracking_id'] = $order->get_id();
-				}
-			}
+	/**
+	 * Build the base tracking context for the Twig template.
+	 *
+	 * @param string $google_adwords_id
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function build_tracking_context( string $google_adwords_id ): array {
+		return [
+			'google_adwords_id'       => $google_adwords_id,
+			'add_gtag_script'         => $this->should_add_gtag_script(),
+			'order_total'             => 0,
+			'currency'                => '',
+			'tracking_id'             => 0,
+			'google_conversion_label' => \get_theme_mod( 'google-conversion-label' ),
+		];
+	}
 
-			Timber::render( 'snippets/google/conversion-tracking.twig', $data );
+	/**
+	 * Determine whether to include the gtag.js loader.
+	 *
+	 * @return bool
+	 */
+	private function should_add_gtag_script(): bool {
+		return ! \get_theme_mod( 'google-analytics-id' )
+			|| \get_theme_mod( 'track-logged-in' )
+			|| ! \is_user_logged_in();
+	}
+
+	/**
+	 * Add WooCommerce order details to the tracking context when available.
+	 *
+	 * @param array<string, mixed> $data
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function add_order_context_if_available( array $data ): array {
+		if ( ! class_exists( 'woocommerce' ) || ! \is_order_received_page() ) {
+			return $data;
 		}
+
+		global $wp;
+		$order_id = \absint( $wp->query_vars['order-received'] );
+		if ( ! $order_id ) {
+			return $data;
+		}
+
+		$order = \wc_get_order( $order_id );
+		if ( ! $order ) {
+			return $data;
+		}
+
+		$data['order_total'] = $order->get_total();
+		$data['currency']    = $order->get_currency();
+		$data['tracking_id'] = $order->get_id();
+
+		return $data;
 	}
 }
