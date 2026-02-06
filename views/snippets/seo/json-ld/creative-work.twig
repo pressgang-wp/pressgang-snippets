@@ -1,0 +1,29 @@
+{% extends 'snippets/seo/json-ld/script.twig' %}
+
+{% block schema %}
+  {% set schema = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    'creator': {
+      '@type': 'Organization',
+      'name': organization.name,
+      'sameAs': organization.same_as
+    },
+    'url': url,
+    'headline': headline,
+    'description': description,
+    'thumbnailUrl': thumbnail_url,
+    'keywords': keywords
+  } %}
+  {% if contributors %}
+    {% set contributor_list = [] %}
+    {% for contributor in contributors %}
+      {% set contributor_list = contributor_list|merge([{
+        '@type': 'Organization',
+        'name': contributor.name
+      }]) %}
+    {% endfor %}
+    {% set schema = schema|merge({ 'contributor': contributor_list }) %}
+  {% endif %}
+  {{ schema|json_encode|raw }}
+{% endblock %}

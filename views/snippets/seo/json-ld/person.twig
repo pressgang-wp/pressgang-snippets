@@ -1,0 +1,19 @@
+{% extends 'snippets/seo/json-ld/script.twig' %}
+
+{% block schema %}
+  {% set schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    'givenName': given_name,
+    'familyName': family_name,
+    'image': image,
+    'url': url,
+    'jobTitle': job_title,
+    'awards': awards,
+    'worksFor': {
+      '@id': works_for
+    },
+    'workLocation': work_location
+  } %}
+  {{ schema|json_encode|raw }}
+{% endblock %}
