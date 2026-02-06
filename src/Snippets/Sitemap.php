@@ -1,30 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * Class Sitemap
+ * Generates a sitemap.xml file containing all published posts, pages, and
+ * public taxonomy terms. The sitemap is regenerated on every save_post
+ * action and supports WPML translations.
  *
- * Generates a sitemap.xml file for a WordPress site, including posts, pages, and terms.
- *
- * @package PressGang\Snippets
+ * Configure via $args: 'change_frequency' (default 'weekly') and 'priority'
+ * (default '0.5'). Per-post overrides are supported via ACF fields
+ * 'change_frequency' and 'priority' when ACF is active.
  */
 class Sitemap implements SnippetInterface {
 
-	/**
-	 * Default change frequency for sitemap entries.
-	 */
 	private const DEFAULT_CHANGE_FREQUENCY = 'weekly';
 
-	/**
-	 * Default priority for sitemap entries.
-	 */
 	private const DEFAULT_PRIORITY = '0.5';
 
 	/**
-	 * Available change frequencies for sitemap entries.
+	 * Valid change-frequency values per the sitemap protocol.
 	 *
-	 * @var array
+	 * @var array<int, string>
 	 */
 	private array $frequencies = [
 		'never',
@@ -36,24 +34,16 @@ class Sitemap implements SnippetInterface {
 		'always',
 	];
 
-	/**
-	 * Change frequency for the sitemap.
-	 *
-	 * @var string
-	 */
 	private string $change_frequency;
 
-	/**
-	 * Priority for the sitemap.
-	 *
-	 * @var string
-	 */
 	private string $priority;
 
 	/**
-	 * Constructor to initialize sitemap generation.
+	 * Initialises configuration and hooks into save_post to regenerate the
+	 * sitemap whenever content is saved.
 	 *
-	 * @param array $args Arguments for customization of change frequency and priority.
+	 * @param array{change_frequency?: string, priority?: string} $args
+	 *     Optional overrides for default change frequency and priority.
 	 */
 	public function __construct( array $args = [] ) {
 		$this->initialize_config( $args );
