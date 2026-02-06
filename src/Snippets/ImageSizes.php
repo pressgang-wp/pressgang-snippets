@@ -1,24 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
 /**
- * Class ImageSizes
+ * Manages WordPress image sizes: updates default sizes (thumbnail, medium,
+ * large), registers custom sizes, and can disable sizes by setting them to
+ * false.
  *
- * Manages WordPress image sizes, allowing customization of existing sizes and addition of new custom sizes.
- *
- * @package PressGang\Snippets
+ * Configured via the $args array passed from config/snippets.php. Each key is
+ * a size name and each value is either an array of {width, height, crop} or
+ * false to disable the size.
  */
 class ImageSizes implements SnippetInterface {
 
+	/**
+	 * Image size configuration map.
+	 *
+	 * @var array<string, array{width: int, height: int, crop?: bool}|false>
+	 */
 	private array $args;
 
 	/**
-	 * ImageSizes constructor.
+	 * Stores the image size configuration and hooks into 'init' to apply it.
 	 *
-	 * Sets up the image sizes according to the provided configuration.
-	 *
-	 * @param array $args Associative array for image size configuration.
+	 * @param array<string, array{width: int, height: int, crop?: bool}|false> $args
+	 *     Associative array of image size definitions. Each key is a size name
+	 *     and each value is one of:
+	 *     - array{width: int, height: int, crop?: bool} to set/add the size
+	 *     - false to disable/remove the size
 	 */
 	public function __construct( array $args ) {
 		$this->args = $args;
@@ -26,9 +37,10 @@ class ImageSizes implements SnippetInterface {
 	}
 
 	/**
-	 * Initializes the setup of image sizes.
+	 * Iterates through each configured size and applies the appropriate
+	 * action (update, add, or disable).
 	 *
-	 * Iterates through each image size configuration and applies the necessary changes.
+	 * @return void
 	 */
 	public function setup_image_sizes(): void {
 		foreach ( $this->args as $size => $settings ) {
@@ -41,12 +53,13 @@ class ImageSizes implements SnippetInterface {
 	}
 
 	/**
-	 * Handles the setting or addition of an image size.
+	 * Routes a size definition to either update_default_size or
+	 * add_custom_size based on whether it is a built-in WordPress size.
 	 *
-	 * Determines whether to update a default size or add a custom size.
+	 * @param string                                     $size     Size name.
+	 * @param array{width?: int, height?: int, crop?: bool} $settings Size configuration.
 	 *
-	 * @param string $size Name of the image size.
-	 * @param array $settings Configuration settings for the image size.
+	 * @return void
 	 */
 	private function handle_image_size( string $size, array $settings ): void {
 		$width  = $settings['width'] ?? 0;
@@ -61,12 +74,14 @@ class ImageSizes implements SnippetInterface {
 	}
 
 	/**
-	 * Updates the settings for a default WordPress image size.
+	 * Updates the WordPress options for a built-in image size.
 	 *
-	 * @param string $size Name of the image size.
-	 * @param int $width Width of the image size.
-	 * @param int $height Height of the image size.
-	 * @param bool $crop Whether to crop the image.
+	 * @param string $size   Size name ('thumbnail', 'medium', or 'large').
+	 * @param int    $width  Width in pixels.
+	 * @param int    $height Height in pixels.
+	 * @param bool   $crop   Whether to hard-crop the image.
+	 *
+	 * @return void
 	 */
 	private function update_default_size( string $size, int $width, int $height, bool $crop ): void {
 		\update_option( "{$size}_size_w", $width );
@@ -75,12 +90,14 @@ class ImageSizes implements SnippetInterface {
 	}
 
 	/**
-	 * Adds a new custom image size.
+	 * Registers a new custom image size with WordPress.
 	 *
-	 * @param string $size Name of the image size.
-	 * @param int $width Width of the image size.
-	 * @param int $height Height of the image size.
-	 * @param bool $crop Whether to crop the image.
+	 * @param string $size   Size name.
+	 * @param int    $width  Width in pixels.
+	 * @param int    $height Height in pixels.
+	 * @param bool   $crop   Whether to hard-crop the image.
+	 *
+	 * @return void
 	 */
 	private function add_custom_size( string $size, int $width, int $height, bool $crop ): void {
 		if ( $width > 0 && $height > 0 ) {
@@ -89,11 +106,11 @@ class ImageSizes implements SnippetInterface {
 	}
 
 	/**
-	 * Disables an image size.
+	 * Disables an image size by zeroing built-in sizes or removing custom ones.
 	 *
-	 * Sets default sizes to zero or removes custom sizes.
+	 * @param string $size Size name to disable.
 	 *
-	 * @param string $size Name of the image size to be disabled.
+	 * @return void
 	 */
 	protected function disable_image_size( string $size ): void {
 		if ( in_array( $size, [ 'thumbnail', 'medium', 'large' ] ) ) {
@@ -104,5 +121,4 @@ class ImageSizes implements SnippetInterface {
 			\remove_image_size( $size );
 		}
 	}
-
 }
