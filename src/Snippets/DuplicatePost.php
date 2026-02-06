@@ -1,20 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PressGang\Snippets;
 
-use PressGang\Snippets\SnippetInterface;
-
 /**
- * Class DuplicatePost
+ * Adds a "Duplicate" action link to the post/page list tables in the WordPress
+ * admin, allowing editors to clone any post (including taxonomies and meta)
+ * as a new draft with one click.
  *
- * Allows duplicating posts and pages without requiring a plugin.
+ * Enable this snippet to provide quick content duplication without a
+ * third-party plugin. Requires the edit_posts capability.
  */
 class DuplicatePost implements SnippetInterface {
 
 	/**
-	 * Constructor.
+	 * Registers row action links for posts and pages, the admin action handler
+	 * for duplication, and the success admin notice.
 	 *
-	 * @param array $args Unused, but required by the interface.
+	 * @param array<string, mixed> $args Unused; required by SnippetInterface.
 	 */
 	public function __construct( array $args = [] ) {
 		\add_filter( 'post_row_actions', [ $this, 'duplicate_post_link' ], 10, 2 );
@@ -24,12 +28,13 @@ class DuplicatePost implements SnippetInterface {
 	}
 
 	/**
-	 * Adds the duplicate link to the post actions row.
+	 * Appends a "Duplicate" link to the row actions for a post or page.
+	 * Only shown to users with the edit_posts capability.
 	 *
-	 * @param array $actions The available actions.
-	 * @param \WP_Post $post The current post.
+	 * @param array<string, string> $actions The existing row action links.
+	 * @param \WP_Post              $post    The current post object.
 	 *
-	 * @return array Updated actions array.
+	 * @return array<string, string> The actions array with the duplicate link added.
 	 */
 	public function duplicate_post_link( array $actions, \WP_Post $post ): array {
 		if ( ! \current_user_can( 'edit_posts' ) ) {
@@ -50,16 +55,20 @@ class DuplicatePost implements SnippetInterface {
 
 		$actions['duplicate'] = sprintf(
 			'<a href="%s" title="%s">%s</a>',
-			esc_url( $url ),
-			esc_attr__( 'Duplicate this item', 'pressgang' ),
-			esc_html__( 'Duplicate', 'pressgang' )
+			\esc_url( $url ),
+			\esc_attr__( 'Duplicate this item', 'pressgang' ),
+			\esc_html__( 'Duplicate', 'pressgang' )
 		);
 
 		return $actions;
 	}
 
 	/**
-	 * Creates a duplicate post as a draft and redirects to the edit screen.
+	 * Handles the duplicate_post_as_draft admin action: verifies the nonce,
+	 * creates a copy of the post (including taxonomies and meta) as a draft,
+	 * and redirects to the new post's edit screen.
+	 *
+	 * @return void
 	 */
 	public function duplicate_post_as_draft(): void {
 		if ( empty( $_GET['post'] ) ) {
@@ -101,7 +110,6 @@ class DuplicatePost implements SnippetInterface {
 
 		$new_post_id = \wp_insert_post( $args );
 
-		// Duplicate taxonomies
 		$taxonomies = \get_object_taxonomies( \get_post_type( $post ) );
 		if ( ! empty( $taxonomies ) ) {
 			foreach ( $taxonomies as $taxonomy ) {
@@ -110,7 +118,6 @@ class DuplicatePost implements SnippetInterface {
 			}
 		}
 
-		// Duplicate post meta
 		$post_meta = \get_post_meta( $post_id );
 		if ( ! empty( $post_meta ) ) {
 			foreach ( $post_meta as $meta_key => $meta_values ) {
@@ -123,7 +130,6 @@ class DuplicatePost implements SnippetInterface {
 			}
 		}
 
-		// Redirect to the edit screen for the new draft
 		\wp_safe_redirect(
 			\add_query_arg(
 				[
@@ -137,7 +143,9 @@ class DuplicatePost implements SnippetInterface {
 	}
 
 	/**
-	 * Displays an admin notice after duplicating a post.
+	 * Shows a success admin notice after a post has been duplicated.
+	 *
+	 * @return void
 	 */
 	public function duplication_admin_notice(): void {
 		$screen = \get_current_screen();
@@ -149,7 +157,7 @@ class DuplicatePost implements SnippetInterface {
 		if ( isset( $_GET['saved'] ) && $_GET['saved'] === 'post_duplication_created' ) {
 			printf(
 				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-				esc_html__( 'Post copy created.', 'pressgang' )
+				\esc_html__( 'Post copy created.', 'pressgang' )
 			);
 		}
 	}
