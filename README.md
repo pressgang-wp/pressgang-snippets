@@ -13,13 +13,13 @@ Every WordPress developer has done this: you need Google Analytics on a new site
 ```php
 // config/snippets.php — your entire "functions.php" replacement
 return [
-    'DisableEmojis'    => [],
-    'GoogleAnalytics'  => [],
-    'ImageSizes'       => [
+    'PressGang\\Snippets\\Theme\\DisableEmojis'    => [],
+    'PressGang\\Snippets\\Google\\Analytics'      => [],
+    'PressGang\\Snippets\\Theme\\ImageSizes'       => [
         'hero' => ['width' => 1920, 'height' => 600, 'crop' => true],
     ],
-    'DuplicatePost'    => [],
-    'OpenGraph'        => [],
+    'PressGang\\Snippets\\Content\\DuplicatePost'  => [],
+    'PressGang\\Snippets\\Seo\\OpenGraph'          => [],
 ];
 ```
 
@@ -50,28 +50,25 @@ Activate snippets in your child theme's `config/snippets.php`. Each entry maps a
 
 return [
     // No args needed — just enable it
-    'DisableEmojis' => [],
+    'PressGang\\Snippets\\Theme\\DisableEmojis' => [],
 
     // Pass configuration via the args array
-    'ImageSizes' => [
+    'PressGang\\Snippets\\Theme\\ImageSizes' => [
         'thumbnail' => ['width' => 150, 'height' => 150, 'crop' => true],
         'medium'    => ['width' => 600, 'height' => 600, 'crop' => false],
         'hero'      => ['width' => 1920, 'height' => 600, 'crop' => true],
     ],
 
     // Customizer-based snippets — the user enters values in the WP Customizer
-    'GoogleAnalytics' => [],
-    'GoogleTagManager' => [],
-
-    // Fully qualified class names work too
-    'PressGang\\Snippets\\Breadcrumb' => [],
+    'PressGang\\Snippets\\Google\\Analytics'  => [],
+    'PressGang\\Snippets\\Google\\TagManager' => [],
 
     // Or your own child theme snippets
     'MyTheme\\Snippets\\CustomFeature' => ['enabled' => true],
 ];
 ```
 
-**Namespace resolution:** PressGang checks your child theme namespace first (`YourTheme\Snippets\SnippetName`), then falls back to `PressGang\Snippets\SnippetName`. Use short names for convenience, or fully qualified names for clarity.
+**Namespace resolution:** Snippets are grouped by category namespace (e.g. `PressGang\\Snippets\\Google\\Analytics`). Use fully qualified class names for clarity.
 
 ## 📖 Available Snippets
 
@@ -79,86 +76,86 @@ return [
 
 | Snippet | Description |
 |---|---|
-| `GoogleAnalytics` | Google Analytics (gtag.js) with Customizer controls and logged-in user toggle |
-| `GoogleTagManager` | Google Tag Manager container — injects into `<head>` and `<body>` |
-| `GoogleAdsTag` | Google Ads global site tag |
-| `GoogleConversionTracking` | Google Ads conversion tracking pixel |
-| `GoogleAnalyticsWoocommerce` | GA e-commerce event tracking for WooCommerce |
-| `FacebookPixel` | Meta (Facebook) Pixel |
-| `Pinterest` | Pinterest Tag |
-| `Hotjar` | Hotjar behaviour analytics |
-| `Tawkto` | Tawk.to live chat widget |
-| `CookieYes` | CookieYes consent management |
-| `Trustpilot` | Trustpilot review widget |
+| `Google\\Analytics` | Google Analytics (gtag.js) with Customizer controls and logged-in user toggle |
+| `Google\\TagManager` | Google Tag Manager container — injects into `<head>` and `<body>` |
+| `Google\\AdsTag` | Google Ads global site tag |
+| `Google\\ConversionTracking` | Google Ads conversion tracking pixel |
+| `Google\\AnalyticsWoocommerce` | GA e-commerce event tracking for WooCommerce |
+| `Facebook\\Pixel` | Meta (Facebook) Pixel |
+| `Integration\\Pinterest` | Pinterest Tag |
+| `Integration\\Hotjar` | Hotjar behaviour analytics |
+| `Integration\\Tawkto` | Tawk.to live chat widget |
+| `Integration\\CookieYes` | CookieYes consent management |
+| `Integration\\Trustpilot` | Trustpilot review widget |
 
 ### 🔍 SEO & Meta
 
 | Snippet | Description |
 |---|---|
-| `OpenGraph` | Open Graph meta tags for social sharing (title, description, image) |
-| `SeoTitle` | SEO-friendly `<title>` tag management |
-| `Sitemap` | XML sitemap generation with support for CPTs, taxonomies, and WPML |
-| `Breadcrumb` | Breadcrumb navigation — registers a `{{ breadcrumb() }}` Twig function |
-| `GoogleWebmaster` | Google Search Console verification meta tag |
-| `FacebookVerify` | Facebook domain verification meta tag |
+| `Seo\\OpenGraph` | Open Graph meta tags for social sharing (title, description, image) |
+| `Seo\\Title` | SEO-friendly `<title>` tag management |
+| `Seo\\Sitemap` | XML sitemap generation with support for CPTs, taxonomies, and WPML |
+| `Theme\\Breadcrumb` | Breadcrumb navigation — registers a `{{ breadcrumb() }}` Twig function |
+| `Google\\Webmaster` | Google Search Console verification meta tag |
+| `Facebook\\Verify` | Facebook domain verification meta tag |
 
 ### 🖼️ Media & Assets
 
 | Snippet | Description |
 |---|---|
-| `ImageSizes` | Configure, add, and disable WordPress image sizes |
-| `BigImageScaling` | Set the threshold for WordPress big image scaling |
-| `Logo` | Logo image Customizer control |
-| `LogoSvg` | SVG logo support via Customizer |
-| `EditorStyles` | Add editor stylesheet support |
+| `Theme\\ImageSizes` | Configure, add, and disable WordPress image sizes |
+| `Theme\\BigImageScaling` | Set the threshold for WordPress big image scaling |
+| `Theme\\Logo` | Logo image Customizer control |
+| `Theme\\LogoSvg` | SVG logo support via Customizer |
+| `Theme\\EditorStyles` | Add editor stylesheet support |
 
 ### ⚡ Performance
 
 | Snippet | Description |
 |---|---|
-| `DisableEmojis` | Remove WordPress emoji scripts, styles, and DNS prefetch (~15 KB saved) |
-| `RemoveOembedAuthor` | Strip author info from oEmbed responses |
+| `Theme\\DisableEmojis` | Remove WordPress emoji scripts, styles, and DNS prefetch (~15 KB saved) |
+| `Content\\RemoveOembedAuthor` | Strip author info from oEmbed responses |
 
 ### 🛠️ Admin & Editor
 
 | Snippet | Description |
 |---|---|
-| `DuplicatePost` | "Duplicate" link on post/page rows — clones content, meta, and taxonomies |
-| `AdminLogo` | Custom logo on the WordPress login page |
-| `TinyMceBlockFormats` | Customise TinyMCE block format dropdown |
-| `RemovePosts` | Remove the default "Posts" menu from the admin |
-| `PostTypeMenuHighlighter` | Fix admin menu highlighting for custom post types |
-| `Copyright` | Copyright notice Customizer control |
-| `ArchiveTitles` | Customiser controls for archive page titles |
+| `Content\\DuplicatePost` | "Duplicate" link on post/page rows — clones content, meta, and taxonomies |
+| `Theme\\AdminLogo` | Custom logo on the WordPress login page |
+| `Theme\\TinyMceBlockFormats` | Customise TinyMCE block format dropdown |
+| `Content\\RemovePosts` | Remove the default "Posts" menu from the admin |
+| `Theme\\PostTypeMenuHighlighter` | Fix admin menu highlighting for custom post types |
+| `Theme\\Copyright` | Copyright notice Customizer control |
+| `Theme\\ArchiveTitles` | Customiser controls for archive page titles |
 
 ### 🔧 Theme Utilities
 
 | Snippet | Description |
 |---|---|
-| `Permalinks` | Custom rewrite rules for CSS, JS, images, and fonts |
-| `AddQueryVars` | Register custom query variables |
-| `SearchExcludePostTypes` | Exclude specific post types from search results |
-| `PasswordProtection` | Custom template for password-protected posts |
-| `GoogleRecaptcha` | Google reCAPTCHA site + secret key management |
+| `Theme\\Permalinks` | Custom rewrite rules for CSS, JS, images, and fonts |
+| `Theme\\AddQueryVars` | Register custom query variables |
+| `Content\\SearchExcludePostTypes` | Exclude specific post types from search results |
+| `Content\\PasswordProtection` | Custom template for password-protected posts |
+| `Google\\Recaptcha` | Google reCAPTCHA site + secret key management |
 
 ### 🎨 ACF Integration
 
 | Snippet | Description |
 |---|---|
-| `AcfColorPickerThemeSync` | Sync theme.json colour palette to ACF colour picker |
-| `AcfGoogleMaps` | Google Maps API key for ACF map fields |
-| `AcfWysiwygMin` | Minimal toolbar for ACF WYSIWYG fields |
+| `Acf\\ColorPickerThemeSync` | Sync theme.json colour palette to ACF colour picker |
+| `Acf\\GoogleMaps` | Google Maps API key for ACF map fields |
+| `Acf\\WysiwygMin` | Minimal toolbar for ACF WYSIWYG fields |
 
 ### 🛒 WooCommerce
 
 | Snippet | Description |
 |---|---|
-| `WoocommerceAjaxCartCount` | AJAX-powered cart count updates |
-| `WoocommerceBackorders` | Enable backorder support |
-| `WooCommerceDequeueStyles` | Remove default WooCommerce stylesheets |
-| `WooCommerceDequeueSelectWoo` | Remove the SelectWoo library |
-| `WooCommerceRemoveUncategorized` | Hide the default "Uncategorized" product category |
-| `WooCommerceRemoveDownloads` | Remove the "Downloads" endpoint from My Account |
+| `WooCommerce\\AjaxCartCount` | AJAX-powered cart count updates |
+| `WooCommerce\\Backorders` | Enable backorder support |
+| `WooCommerce\\DequeueStyles` | Remove default WooCommerce stylesheets |
+| `WooCommerce\\DequeueSelectWoo` | Remove the SelectWoo library |
+| `WooCommerce\\RemoveUncategorized` | Hide the default "Uncategorized" product category |
+| `WooCommerce\\RemoveDownloads` | Remove the "Downloads" endpoint from My Account |
 
 ## ✍️ Writing Your Own Snippets
 
