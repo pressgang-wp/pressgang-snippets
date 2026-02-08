@@ -19,6 +19,7 @@ projects and may be obsolete or unused today.
 - `InternalLinks` -> `src/Snippets/Content/InternalLinks.php`
 - `MicrosoftClarity` -> `src/Snippets/Integration/MicrosoftClarity.php`
 - `PlainTextPaste` -> `src/Snippets/Theme/PlainTextPaste.php`
+- `RequireFeaturedImage` -> `src/Snippets/Content/RequireFeaturedImage.php`
 - `RemoveImageSizes` -> `src/Snippets/Theme/RemoveImageSizes.php`
 - `TrackPostViews` -> `src/Snippets/Content/TrackPostViews.php`
 - `TwitterPixel` -> `src/Snippets/Integration/TwitterPixel.php`
