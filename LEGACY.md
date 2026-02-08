@@ -21,6 +21,7 @@ projects and may be obsolete or unused today.
 - `PlainTextPaste` -> `src/Snippets/Theme/PlainTextPaste.php`
 - `RequireFeaturedImage` -> `src/Snippets/Content/RequireFeaturedImage.php`
 - `RemoveImageSizes` -> `src/Snippets/Theme/RemoveImageSizes.php`
+- `Schema` -> `src/Snippets/Seo/Schema.php`
 - `TrackPostViews` -> `src/Snippets/Content/TrackPostViews.php`
 - `TwitterPixel` -> `src/Snippets/Integration/TwitterPixel.php`
 - `TwitterSummary` -> `src/Snippets/Seo/TwitterSummary.php`
