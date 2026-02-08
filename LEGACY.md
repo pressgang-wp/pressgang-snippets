@@ -26,3 +26,4 @@ projects and may be obsolete or unused today.
 - `WooCommerceHiddenSearchFix` -> `src/Snippets/WooCommerce/HiddenSearchFix.php`
 - `WooCommerceAcfAttribute` -> `src/Snippets/Acf/WooCommerceAttributeRule.php`
 - `WysiwygStyles` -> `src/Snippets/Theme/WysiwygStyles.php`
+- `AcfWcProductAttributes` -> superseded by `src/Snippets/Acf/WooCommerceAttributeRule.php`
