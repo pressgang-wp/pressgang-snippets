@@ -31,3 +31,7 @@ projects and may be obsolete or unused today.
 - `WooCommerceTaxToggle` -> `src/Snippets/WooCommerce/TaxToggle.php`
 - `WysiwygStyles` -> `src/Snippets/Theme/WysiwygStyles.php`
 - `AcfWcProductAttributes` -> superseded by `src/Snippets/Acf/WooCommerceAttributeRule.php`
+- `StructuredDataSearch` -> superseded by `src/Snippets/Seo/Schema.php` (SearchAction)
+- `StructuredDataPageMap` -> deprecated (legacy PageMap markup)
+- `ThemeColor` -> removed (empty stub)
+- `Screenshot` -> removed (placeholder)
