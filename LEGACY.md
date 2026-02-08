@@ -36,3 +36,7 @@ projects and may be obsolete or unused today.
 - `StructuredDataPageMap` -> deprecated (legacy PageMap markup)
 - `ThemeColor` -> removed (empty stub)
 - `Screenshot` -> removed (placeholder)
+
+## Retired From ToDo (Deprecated Without Refactor)
+
+- `Chart` -> deprecated (Chart.js 2.5.0 CDN + theme-specific script references)
