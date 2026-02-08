@@ -1,0 +1,13 @@
+<!-- Twitter Card -->
+<meta name="twitter:card" content="{{ card_type|e('html_attr') }}"/>
+<meta name="twitter:title" content="{{ title|e('html_attr') }}"/>
+<meta name="twitter:description" content="{{ description|e('html_attr') }}"/>
+{% if image %}
+<meta name="twitter:image" content="{{ image|e('esc_url') }}"/>
+{% endif %}
+{% if site_handle %}
+<meta name="twitter:site" content="{{ site_handle|e('html_attr') }}"/>
+{% endif %}
+{% if creator_handle %}
+<meta name="twitter:creator" content="{{ creator_handle|e('html_attr') }}"/>
+{% endif %}
