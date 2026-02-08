@@ -1,0 +1,8 @@
+<form method="post" class="woocommerce-tax-toggle">
+	<input type="hidden" name="{{ cookie_name|e('html_attr') }}_toggle" value="1">
+	<label>
+		<input type="checkbox" name="{{ cookie_name|e('html_attr') }}" value="1" {% if display_tax %}checked{% endif %}>
+		<span>{{ display_tax ? 'Prices include VAT' : 'Prices exclude VAT' }}</span>
+	</label>
+	<button type="submit">Update</button>
+</form>
