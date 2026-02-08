@@ -5,7 +5,7 @@ namespace PressGang\Tests\Snippets\Unit\Snippets\WooCommerce;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
-use PressGang\Snippets\WooCommerce\WooCommerceSearch;
+use PressGang\Snippets\WooCommerce\Search;
 use PressGang\Tests\Snippets\Unit\TestCase;
 
 if ( ! class_exists( 'WooCommerce' ) ) {
@@ -13,7 +13,7 @@ if ( ! class_exists( 'WooCommerce' ) ) {
 }
 
 /**
- * @covers \PressGang\Snippets\WooCommerce\WooCommerceSearch
+ * @covers \PressGang\Snippets\WooCommerce\Search
  */
 class WooCommerceSearchTest extends TestCase {
 
@@ -24,14 +24,14 @@ class WooCommerceSearchTest extends TestCase {
 		Filters\expectAdded( 'search_post_types' )->once();
 		Actions\expectAdded( 'woocommerce_after_shop_loop' )->once();
 
-		new WooCommerceSearch( [] );
+		new Search( [] );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function test_search_post_types_returns_products(): void {
-		$snippet = new WooCommerceSearch( [] );
+		$snippet = new Search( [] );
 
 		$this->assertSame( [ 'product' ], $snippet->search_post_types() );
 	}
@@ -40,7 +40,7 @@ class WooCommerceSearchTest extends TestCase {
 	 * @return void
 	 */
 	public function test_add_search_pagination_sets_globals(): void {
-		$snippet = new WooCommerceSearch( [] );
+		$snippet = new Search( [] );
 
 		Functions\expect( 'is_search' )
 			->once()
