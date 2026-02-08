@@ -40,3 +40,10 @@ projects and may be obsolete or unused today.
 ## Retired From ToDo (Deprecated Without Refactor)
 
 - `Chart` -> deprecated (Chart.js 2.5.0 CDN + theme-specific script references)
+- `Chimpstatic` -> deprecated (legacy Mailchimp embed helper; no maintained snippet/template)
+- `Gallery` -> deprecated (Magnific Popup + theme JS dependency; template missing)
+- `InfinitePagination` -> deprecated (legacy query_posts + theme JS dependency)
+- `Masonry` -> deprecated (theme JS dependency)
+- `Paypal` -> deprecated (legacy PayPal Standard/Buy Now flow)
+- `SearchTypeahead` -> deprecated (typeahead.js 0.11.1 era + theme JS dependency)
+- `Sumome` -> deprecated (legacy Sumo/BDOW embed helper; template missing)
