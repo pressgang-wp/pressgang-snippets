@@ -25,6 +25,7 @@ projects and may be obsolete or unused today.
 - `TrackPostViews` -> `src/Snippets/Content/TrackPostViews.php`
 - `TwitterPixel` -> `src/Snippets/Integration/TwitterPixel.php`
 - `TwitterSummary` -> `src/Snippets/Seo/TwitterSummary.php`
+- `TaxonomyFilter` -> `src/Snippets/Theme/TaxonomyFilter.php`
 - `WooCommerceHiddenSearchFix` -> `src/Snippets/WooCommerce/HiddenSearchFix.php`
 - `WooCommerceAcfAttribute` -> `src/Snippets/Acf/WooCommerceAttributeRule.php`
 - `WooCommerceSearch` -> `src/Snippets/WooCommerce/WooCommerceSearch.php`
