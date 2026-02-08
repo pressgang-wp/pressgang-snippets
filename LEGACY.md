@@ -16,6 +16,7 @@ projects and may be obsolete or unused today.
 - `GoogleAdsense` -> `src/Snippets/Google/Adsense.php`
 - `HeapAnalytics` -> `src/Snippets/Integration/HeapAnalytics.php`
 - `HideSinglePageTemplate` -> `src/Snippets/Theme/HideSinglePageTemplate.php`
+- `InternalLinks` -> `src/Snippets/Content/InternalLinks.php`
 - `MicrosoftClarity` -> `src/Snippets/Integration/MicrosoftClarity.php`
 - `PlainTextPaste` -> `src/Snippets/Theme/PlainTextPaste.php`
 - `RemoveImageSizes` -> `src/Snippets/Theme/RemoveImageSizes.php`
