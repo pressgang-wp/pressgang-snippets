@@ -26,5 +26,6 @@ projects and may be obsolete or unused today.
 - `TwitterSummary` -> `src/Snippets/Seo/TwitterSummary.php`
 - `WooCommerceHiddenSearchFix` -> `src/Snippets/WooCommerce/HiddenSearchFix.php`
 - `WooCommerceAcfAttribute` -> `src/Snippets/Acf/WooCommerceAttributeRule.php`
+- `WooCommerceSearch` -> `src/Snippets/WooCommerce/WooCommerceSearch.php`
 - `WysiwygStyles` -> `src/Snippets/Theme/WysiwygStyles.php`
 - `AcfWcProductAttributes` -> superseded by `src/Snippets/Acf/WooCommerceAttributeRule.php`
