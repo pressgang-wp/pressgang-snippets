@@ -11,7 +11,7 @@ use PressGang\Snippets\SnippetInterface;
  * Enable this snippet to make WooCommerce search behave consistently in themes
  * that rely on the WooCommerce loop totals for pagination.
  */
-class WooCommerceSearch implements SnippetInterface {
+class Search implements SnippetInterface {
 
 	/**
 	 * Registers filters and actions for WooCommerce search adjustments.
