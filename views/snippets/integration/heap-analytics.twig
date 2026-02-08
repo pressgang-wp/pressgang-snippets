@@ -1,0 +1,26 @@
+<script type="text/javascript">
+	window.heapReadyCb = window.heapReadyCb || [];
+	window.heap = window.heap || [];
+	heap.load = function (appId, config) {
+		window.heap.envId = appId;
+		window.heap.clientConfig = config = config || {};
+		window.heap.clientConfig.shouldFetchServerConfig = false;
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.async = true;
+		script.src = "https://cdn.us.heap-api.com/config/" + appId + "/heap_config.js";
+		var first = document.getElementsByTagName("script")[0];
+		first.parentNode.insertBefore(script, first);
+		var methods = ["init","startTracking","stopTracking","track","resetIdentity","identify","identifyHashed","getSessionId","getUserId","getIdentity","addUserProperties","addEventProperties","removeEventProperty","clearEventProperties","addAccountProperties","addAdapter","addTransformer","addTransformerFn","onReady","addPageviewProperties","removePageviewProperty","clearPageviewProperties","trackPageview"];
+		var factory = function (name) {
+			return function () {
+				var args = Array.prototype.slice.call(arguments, 0);
+				window.heapReadyCb.push({name: name, fn: function () { heap[name] && heap[name].apply(heap, args); }});
+			};
+		};
+		for (var i = 0; i < methods.length; i++) {
+			heap[methods[i]] = factory(methods[i]);
+		}
+	};
+	heap.load("{{ heap_analytics_id|e('esc_js') }}");
+</script>
