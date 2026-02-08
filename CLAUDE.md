@@ -457,7 +457,7 @@ A new or modified snippet should satisfy:
 ## Known Issues
 
 ### `src/ToDo/` directory
-Contains 38 incomplete snippets under `PressGang\ToDo` namespace. These are **not autoloaded** and should not be referenced. They need completion and migration to `src/Snippets/` before use.
+Currently empty. Legacy items that originated in `src/ToDo/` are tracked in `LEGACY.md` for review.
 
 ---
 
