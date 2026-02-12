@@ -8,10 +8,6 @@ use Brain\Monkey\Functions;
 use PressGang\Snippets\WooCommerce\Search;
 use PressGang\Tests\Snippets\Unit\TestCase;
 
-if ( ! class_exists( 'WooCommerce' ) ) {
-	class WooCommerce {}
-}
-
 /**
  * @covers \PressGang\Snippets\WooCommerce\Search
  */

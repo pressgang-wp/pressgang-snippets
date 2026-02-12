@@ -52,8 +52,9 @@ class TrackPostViewsTest extends TestCase {
 			->with( 12, TrackPostViews::COUNT_KEY, true )
 			->andReturn( 5 );
 
-		$post = (object) [ 'ID' => 12 ];
-		$result = $snippet->add_views_to_post( $post );
+		$post     = new \WP_Post();
+		$post->ID = 12;
+		$result   = $snippet->add_views_to_post( $post );
 
 		$this->assertSame( 5, $result->views );
 	}

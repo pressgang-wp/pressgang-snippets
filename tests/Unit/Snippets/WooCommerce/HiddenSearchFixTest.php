@@ -7,25 +7,6 @@ use Brain\Monkey\Functions;
 use PressGang\Snippets\WooCommerce\HiddenSearchFix;
 use PressGang\Tests\Snippets\Unit\TestCase;
 
-if ( ! class_exists( 'WooCommerce' ) ) {
-	class WooCommerce {}
-}
-
-if ( ! class_exists( 'WP_Query' ) ) {
-	class WP_Query {
-		public bool $is_search = true;
-		public array $set_data = [];
-
-		public function is_search(): bool {
-			return $this->is_search;
-		}
-
-		public function set( string $key, $value ): void {
-			$this->set_data[ $key ] = $value;
-		}
-	}
-}
-
 /**
  * @covers \PressGang\Snippets\WooCommerce\HiddenSearchFix
  */

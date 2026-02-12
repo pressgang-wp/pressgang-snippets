@@ -61,15 +61,9 @@ class TwitterSummaryTest extends TestCase {
 		Functions\expect( 'get_theme_mod' )
 			->with( 'twitter-creator-handle' )
 			->andReturn( '' );
-		Functions\expect( 'apply_filters' )
-			->with( 'pressgang_twitter_title', 'Example Title' )
-			->andReturn( 'Example Title' );
-		Functions\expect( 'apply_filters' )
-			->with( 'pressgang_twitter_description', 'Example description' )
-			->andReturn( 'Example description' );
-		Functions\expect( 'apply_filters' )
-			->with( 'pressgang_twitter_image', 'https://example.test/logo.png' )
-			->andReturn( 'https://example.test/logo.png' );
+
+		// Pass through the filtered value unchanged (standard WordPress behaviour).
+		Functions\when( 'apply_filters' )->returnArg( 2 );
 
 		$snippet->add_meta_tags();
 

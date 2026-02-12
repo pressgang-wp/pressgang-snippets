@@ -3,6 +3,7 @@
 namespace PressGang\Tests\Snippets\Unit\Snippets\Integration;
 
 use Brain\Monkey\Actions;
+use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use PressGang\Snippets\Integration\Disqus;
 use PressGang\Tests\Snippets\Unit\TestCase;
@@ -17,7 +18,7 @@ class DisqusTest extends TestCase {
 	 */
 	public function test_constructor_registers_hooks(): void {
 		Actions\expectAdded( 'customize_register' )->once();
-		Actions\expectAdded( 'comments_template' )->once();
+		Filters\expectAdded( 'comments_template' )->once();
 
 		new Disqus( [] );
 	}

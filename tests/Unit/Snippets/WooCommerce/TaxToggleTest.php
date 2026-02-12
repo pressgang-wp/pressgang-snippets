@@ -34,9 +34,20 @@ class TestableTaxToggle extends TaxToggle {
 class TaxToggleTest extends TestCase {
 
 	/**
+	 * Stubs the get_option calls made in the TaxToggle constructor.
+	 *
+	 * @return void
+	 */
+	private function stub_get_option(): void {
+		Functions\when( 'get_option' )->justReturn( 'incl' );
+	}
+
+	/**
 	 * @return void
 	 */
 	public function test_constructor_registers_filters(): void {
+		$this->stub_get_option();
+
 		Filters\expectAdded( 'timber/twig' )->once();
 		Filters\expectAdded( 'option_woocommerce_tax_display_shop' )->once();
 		Filters\expectAdded( 'option_woocommerce_tax_display_cart' )->once();
@@ -48,6 +59,8 @@ class TaxToggleTest extends TestCase {
 	 * @return void
 	 */
 	public function test_add_to_twig_registers_function(): void {
+		$this->stub_get_option();
+
 		$snippet = new TaxToggle( [] );
 		$twig = $this->createMock( Environment::class );
 
@@ -60,7 +73,12 @@ class TaxToggleTest extends TestCase {
 	 * @return void
 	 */
 	public function test_render_tax_toggle_adds_context(): void {
+		$this->stub_get_option();
+
 		$snippet = new TestableTaxToggle( [] );
+
+		// Set cookie so get_tax_display() returns early without calling setcookie().
+		$_COOKIE[ TaxToggle::COOKIE_NAME ] = 'incl';
 
 		$snippet->render_tax_toggle();
 

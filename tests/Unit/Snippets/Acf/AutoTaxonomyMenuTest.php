@@ -50,9 +50,13 @@ class AutoTaxonomyMenuTest extends TestCase {
 		$snippet = new AutoTaxonomyMenu( [] );
 
 		$item = (object) [ 'ID' => 10 ];
-		$term = (object) [ 'term_id' => 7, 'name' => 'Fiction', 'slug' => 'fiction' ];
 
-		Functions\when( 'get_field' )->justReturn( 'genre' );
+		$term           = new \WP_Term();
+		$term->term_id  = 7;
+		$term->name     = 'Fiction';
+		$term->slug     = 'fiction';
+
+		$menu = new \WP_Term();
 
 		Functions\expect( 'is_admin' )
 			->once()
@@ -73,7 +77,7 @@ class AutoTaxonomyMenuTest extends TestCase {
 			->with( $term )
 			->andReturn( 'https://example.test/genre/fiction' );
 
-		$items = $snippet->add_sub_menu_items( [ $item ], (object) [], [] );
+		$items = $snippet->add_sub_menu_items( [ $item ], $menu, [] );
 
 		$this->assertCount( 2, $items );
 		$this->assertSame( 'Fiction', $items[1]->title );

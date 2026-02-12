@@ -25,6 +25,8 @@ class AdminTaxonomyFilterTest extends TestCase {
 	 * @return void
 	 */
 	public function test_admin_taxonomy_filter_outputs_selects(): void {
+		$this->stubEscapeFunctions();
+
 		$snippet = new AdminTaxonomyFilter( [] );
 
 		$taxonomy = (object) [

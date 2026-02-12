@@ -98,7 +98,7 @@ class Disqus implements SnippetInterface {
 	 * @return string|null
 	 */
 	private function get_template_path(): ?string {
-		$path = dirname( __DIR__, 4 ) . '/views/snippets/integration/disqus.php';
+		$path = dirname( __DIR__, 3 ) . '/views/snippets/integration/disqus.php';
 
 		return \file_exists( $path ) ? $path : null;
 	}
