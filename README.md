@@ -136,6 +136,8 @@ return [
 | `Theme\\AddQueryVars` | Register custom query variables |
 | `Content\\SearchExcludePostTypes` | Exclude specific post types from search results |
 | `Content\\PasswordProtection` | Custom template for password-protected posts |
+| `Content\\AddPostTypeSupport` | Add a feature (excerpt, thumbnail, etc.) to an existing post type |
+| `Content\\RegisterTaxonomyForPostType` | Associate an existing taxonomy with a post type |
 | `Google\\Recaptcha` | Google reCAPTCHA site + secret key management |
 
 ### 🎨 ACF Integration

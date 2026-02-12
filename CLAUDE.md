@@ -124,7 +124,7 @@ public function add_to_twig(Environment $twig): Environment {
 
 Receives structured args and registers WordPress resources (image sizes, rewrite rules, etc.).
 
-**Examples:** `ImageSizes`, `Permalinks`
+**Examples:** `ImageSizes`, `Permalinks`, `AddPostTypeSupport`, `RegisterTaxonomyForPostType`
 
 **Conventions:**
 - The args array shape should mirror WordPress API conventions where possible.
