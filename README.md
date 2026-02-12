@@ -87,6 +87,7 @@ return [
 | `Integration\\Tawkto` | Tawk.to live chat widget |
 | `Integration\\CookieYes` | CookieYes consent management |
 | `Integration\\Trustpilot` | Trustpilot review widget |
+| `Integration\\DisableCf7Assets` | Disable Contact Form 7 JS and CSS on the frontend |
 
 ### 🔍 SEO & Meta
 
