@@ -55,7 +55,7 @@ class Trustpilot implements SnippetInterface {
 	public function register_scripts(): void {
 		\wp_register_script(
 			self::SCRIPT_ENQUEUE_KEY,
-			'//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js',
+			'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js',
 			[],
 			null,
 			true
@@ -84,11 +84,44 @@ class Trustpilot implements SnippetInterface {
 	 * @return void
 	 */
 	public function render_mini_widget(): void {
-		Timber::render( 'snippets/integration/trustpilot-mini.twig', [
+		$this->render_template( 'snippets/integration/trustpilot-mini.twig', [
 			'trustpilot_template_id' => \get_theme_mod( 'trustpilot_template_id' ),
 			'trustpilot_business_id' => \get_theme_mod( 'trustpilot_business_id' ),
-			'trustpilot_reviews_url' => \get_theme_mod( 'trustpilot_reviews_url' ),
+			'trustpilot_reviews_url' => $this->get_reviews_url(),
 		] );
+	}
+
+	/**
+	 * Wrapper for Timber::render to keep render path testable.
+	 *
+	 * @param string               $template
+	 * @param array<string, mixed> $context
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
+	}
+
+	/**
+	 * Resolve reviews URL with backwards compatibility for historical setting key.
+	 *
+	 * @return string
+	 */
+	private function get_reviews_url(): string {
+		$reviews_url = \get_theme_mod( 'trustpilot_reviews_link' ) ?: \get_theme_mod( 'trustpilot_reviews_url' );
+
+		if ( ! empty( $reviews_url ) ) {
+			return (string) $reviews_url;
+		}
+
+		$host = (string) \wp_parse_url( \home_url(), PHP_URL_HOST );
+
+		if ( ! empty( $host ) ) {
+			return 'https://uk.trustpilot.com/review/' . $host;
+		}
+
+		return 'https://uk.trustpilot.com/';
 	}
 
 	/**
