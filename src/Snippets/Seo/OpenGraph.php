@@ -108,11 +108,19 @@ class OpenGraph implements SnippetInterface {
 	 */
 	protected function get_url(): string {
 		if ( \is_tax() ) {
-			return \get_term_link( \get_query_var( 'term' ), \get_query_var( 'taxonomy' ) );
+			$link = \get_term_link( \get_query_var( 'term' ), \get_query_var( 'taxonomy' ) );
+
+			if ( ! \is_wp_error( $link ) ) {
+				return $link;
+			}
 		} elseif ( \is_post_type_archive() ) {
-			return \get_post_type_archive_link( \get_query_var( 'post_type' ) );
+			$link = \get_post_type_archive_link( \get_query_var( 'post_type' ) );
+
+			if ( $link ) {
+				return $link;
+			}
 		}
 
-		return \get_permalink();
+		return (string) \get_permalink();
 	}
 }
