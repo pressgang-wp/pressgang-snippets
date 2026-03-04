@@ -33,10 +33,11 @@ class AjaxCartCount implements SnippetInterface {
 	 * @return array<string, string> The fragments with the updated cart link.
 	 */
 	public function cart_count_fragment( array $fragments ): array {
-		$fragments['a#cart-link'] = Timber::compile( 'woocommerce/cart-link.twig', [
-			'cart_link'           => \esc_url( \wc_get_cart_url() ),
-			'cart_contents_count' => \WC()->cart->get_cart_contents_count(),
-		] );
+		$context                        = Timber::context();
+		$context['cart_link']           = \esc_url( \wc_get_cart_url() );
+		$context['cart_contents_count'] = \WC()->cart->get_cart_contents_count();
+
+		$fragments['a#cart-link'] = Timber::compile( 'woocommerce/cart-link.twig', $context );
 
 		return $fragments;
 	}
