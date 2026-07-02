@@ -92,6 +92,22 @@ public function __construct(array $args) {
 - Provide sensible defaults for all args.
 - Document supported args in the constructor docblock.
 
+### Shared Crawl And Performance Snippets
+
+These snippets are intentionally shared across commerce themes and should be
+reused before creating site-local equivalents:
+
+| Class | Purpose |
+|---|---|
+| `PressGang\Snippets\Seo\RobotsTxt` | Own WordPress' virtual `robots.txt` via config. Supports `allow`, `disallow`, `sitemap_url`, and `user_agent` args. It has no default crawl policy; keep all site-specific rules in theme config. Remember that a physical web-root `robots.txt` bypasses WordPress. |
+| `PressGang\Snippets\WooCommerce\Cart\DecrawlAddToCartLinks` | Remove crawlable `?add-to-cart=` hrefs from product loops and redirect direct GET/HEAD add-to-cart hits before WooCommerce creates cart/session work. |
+| `PressGang\Snippets\WooCommerce\Cart\DisableEmptyCartFragments` | Suppress `wc-cart-fragments` localization on empty-cart browsing views so WooCommerce does not make a cold-load fragments AJAX request. |
+
+When a theme needs similar behaviour, enable these with fully-qualified
+`PressGang\Snippets\...` keys in `config/snippets.php`. If a change would help
+more than one project, update this package first, push it, then update the
+theme lockfiles to the new `pressgang-wp/pressgang-snippets` commit.
+
 ### Admin Features
 
 Adds functionality to the WordPress admin — row actions, admin notices, editor customisation.
@@ -144,7 +160,7 @@ Extends Advanced Custom Fields admin UI.
 
 Modifies WooCommerce behaviour.
 
-**Examples:** `WooCommerceRemoveUncategorized`, `WooCommerceDequeueStyles`, `WoocommerceAjaxCartCount`
+**Examples:** `WooCommerceRemoveUncategorized`, `WooCommerceDequeueStyles`, `WoocommerceAjaxCartCount`, `WooCommerce\Cart\DecrawlAddToCartLinks`, `WooCommerce\Cart\DisableEmptyCartFragments`
 
 **Conventions:**
 - Guard with `class_exists('WooCommerce')` if the snippet could be loaded on a non-WooCommerce site.

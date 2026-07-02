@@ -94,6 +94,7 @@ return [
 | Snippet | Description |
 |---|---|
 | `Seo\\OpenGraph` | Open Graph meta tags for social sharing (title, description, image) |
+| `Seo\\RobotsTxt` | Deploy-managed virtual `robots.txt` renderer; all allow/disallow/sitemap rules are supplied by theme config |
 | `Seo\\Title` | SEO-friendly `<title>` tag management |
 | `Seo\\Sitemap` | XML sitemap generation with support for CPTs, taxonomies, and WPML |
 | `Theme\\Breadcrumb` | Breadcrumb navigation — registers a `{{ breadcrumb() }}` Twig function |
@@ -116,6 +117,8 @@ return [
 |---|---|
 | `Theme\\DisableEmojis` | Remove WordPress emoji scripts, styles, and DNS prefetch (~15 KB saved) |
 | `Content\\RemoveOembedAuthor` | Strip author info from oEmbed responses |
+| `WooCommerce\\Cart\\DisableEmptyCartFragments` | Keep WooCommerce cart fragments inert for anonymous/empty-cart browsing views |
+| `WooCommerce\\Cart\\DecrawlAddToCartLinks` | Replace crawlable loop add-to-cart hrefs and redirect direct GET add-to-cart hits |
 
 ### 🛠️ Admin & Editor
 
@@ -157,6 +160,8 @@ return [
 | `WooCommerce\\Backorders` | Enable backorder support |
 | `WooCommerce\\DequeueStyles` | Remove default WooCommerce stylesheets |
 | `WooCommerce\\DequeueSelectWoo` | Remove the SelectWoo library |
+| `WooCommerce\\Cart\\DecrawlAddToCartLinks` | Product-loop add-to-cart crawl hygiene and GET request redirects |
+| `WooCommerce\\Cart\\DisableEmptyCartFragments` | Disable empty-cart `wc-cart-fragments` AJAX cold loads |
 | `WooCommerce\\RemoveUncategorized` | Hide the default "Uncategorized" product category |
 | `WooCommerce\\RemoveDownloads` | Remove the "Downloads" endpoint from My Account |
 
