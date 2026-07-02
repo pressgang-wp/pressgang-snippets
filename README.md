@@ -94,7 +94,7 @@ return [
 | Snippet | Description |
 |---|---|
 | `Seo\\OpenGraph` | Open Graph meta tags for social sharing (title, description, image) |
-| `Seo\\RobotsTxt` | Deploy-managed virtual `robots.txt` renderer; all allow/disallow/sitemap rules are supplied by theme config |
+| `Seo\\RobotsTxt` | Deploy-managed virtual `robots.txt` renderer with generic WordPress defaults; theme config can override allow/disallow/sitemap rules |
 | `Seo\\Title` | SEO-friendly `<title>` tag management |
 | `Seo\\Sitemap` | XML sitemap generation with support for CPTs, taxonomies, and WPML |
 | `Theme\\Breadcrumb` | Breadcrumb navigation — registers a `{{ breadcrumb() }}` Twig function |

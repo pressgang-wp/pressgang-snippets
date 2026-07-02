@@ -99,7 +99,7 @@ reused before creating site-local equivalents:
 
 | Class | Purpose |
 |---|---|
-| `PressGang\Snippets\Seo\RobotsTxt` | Own WordPress' virtual `robots.txt` via config. Supports `allow`, `disallow`, `sitemap_url`, and `user_agent` args. It has no default crawl policy; keep all site-specific rules in theme config. Remember that a physical web-root `robots.txt` bypasses WordPress. |
+| `PressGang\Snippets\Seo\RobotsTxt` | Own WordPress' virtual `robots.txt` via config. Supports `allow`, `disallow`, `sitemap_url`, and `user_agent` args. Defaults only to WordPress' admin/admin-ajax rules; keep site-specific rules in theme config. Remember that a physical web-root `robots.txt` bypasses WordPress. |
 | `PressGang\Snippets\WooCommerce\Cart\DecrawlAddToCartLinks` | Remove crawlable `?add-to-cart=` hrefs from product loops and redirect direct GET/HEAD add-to-cart hits before WooCommerce creates cart/session work. |
 | `PressGang\Snippets\WooCommerce\Cart\DisableEmptyCartFragments` | Suppress `wc-cart-fragments` localization on empty-cart browsing views so WooCommerce does not make a cold-load fragments AJAX request. |
 

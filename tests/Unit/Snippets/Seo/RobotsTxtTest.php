@@ -17,12 +17,15 @@ class RobotsTxtTest extends TestCase {
 		new RobotsTxt( [] );
 	}
 
-	public function test_filter_robots_txt_has_no_site_specific_default_rules(): void {
+	public function test_filter_robots_txt_uses_generic_wordpress_defaults(): void {
 		$snippet = new RobotsTxt( [] );
 
 		$output = $snippet->filter_robots_txt( '', true );
 
-		$this->assertSame( 'User-agent: *', $output );
+		$this->assertSame(
+			"User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php",
+			$output
+		);
 	}
 
 	public function test_filter_robots_txt_uses_configured_rules(): void {
@@ -44,5 +47,18 @@ class RobotsTxtTest extends TestCase {
 			"User-agent: *\nDisallow: /calendar\nDisallow: /*?*yith_wcan=1\nDisallow: /*?add-to-cart=\nAllow: /wp-admin/admin-ajax.php\nSitemap: https://example.com/sitemap_index.xml",
 			$output
 		);
+	}
+
+	public function test_configured_empty_rule_lists_override_defaults(): void {
+		$snippet = new RobotsTxt(
+			[
+				'allow'    => [],
+				'disallow' => [],
+			]
+		);
+
+		$output = $snippet->filter_robots_txt( '', true );
+
+		$this->assertSame( 'User-agent: *', $output );
 	}
 }

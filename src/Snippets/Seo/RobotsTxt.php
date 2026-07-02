@@ -9,21 +9,34 @@ use PressGang\Snippets\SnippetInterface;
  *
  * Use this when a theme needs deploy-managed robots rules instead of an
  * unmanaged web-root `robots.txt` file. This class is deliberately only a
- * renderer: it does not assume WordPress admin paths, WooCommerce paths,
- * sitemap plugins, or crawl policy. Keep site-specific rules in the consuming
- * theme's `config/snippets.php`.
+ * renderer: it only supplies WordPress' standard admin/admin-ajax defaults
+ * and does not assume WooCommerce paths, sitemap plugins, or site-specific
+ * crawl policy. Keep project-specific rules in the consuming theme's
+ * `config/snippets.php`.
  *
  * Important: WordPress only serves the virtual robots output when no physical
  * `robots.txt` exists in the site root. If a server-level file exists, remove
  * or rename it before expecting this snippet to affect `/robots.txt`.
  *
  * Supported args:
- * - `allow` list|string: rules emitted as `Allow: ...`.
- * - `disallow` list|string: rules emitted as `Disallow: ...`.
+ * - `allow` list|string: rules emitted as `Allow: ...`; defaults to
+ *   `/wp-admin/admin-ajax.php`.
+ * - `disallow` list|string: rules emitted as `Disallow: ...`; defaults to
+ *   `/wp-admin/`.
  * - `sitemap_url` string: sitemap URL to emit. Empty string omits it.
  * - `user_agent` string: user-agent token; defaults to `*`.
  */
 class RobotsTxt implements SnippetInterface {
+
+	/**
+	 * @var list<string>
+	 */
+	private const DEFAULT_ALLOW = [ '/wp-admin/admin-ajax.php' ];
+
+	/**
+	 * @var list<string>
+	 */
+	private const DEFAULT_DISALLOW = [ '/wp-admin/' ];
 
 	/**
 	 * @var list<string>
@@ -52,8 +65,8 @@ class RobotsTxt implements SnippetInterface {
 	 *                                  docblock for supported keys.
 	 */
 	public function __construct( array $args = [] ) {
-		$this->allow       = $this->normalize_rules( $args['allow'] ?? [] );
-		$this->disallow    = $this->normalize_rules( $args['disallow'] ?? [] );
+		$this->allow       = $this->normalize_rules( $args['allow'] ?? self::DEFAULT_ALLOW );
+		$this->disallow    = $this->normalize_rules( $args['disallow'] ?? self::DEFAULT_DISALLOW );
 		$this->sitemap_url = \trim( (string) ( $args['sitemap_url'] ?? '' ) );
 		$this->user_agent  = (string) ( $args['user_agent'] ?? '*' );
 
