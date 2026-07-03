@@ -63,6 +63,10 @@ return [
     'PressGang\\Snippets\\Google\\Analytics'  => [],
     'PressGang\\Snippets\\Google\\TagManager' => [],
 
+    // Parameterised behaviour snippets
+    'PressGang\\Snippets\\Content\\RemoveTaxonomyUi' => ['taxonomy' => 'post_tag', 'post_type' => 'post'],
+    'PressGang\\Snippets\\Theme\\MenuItemClassMap'   => ['primary' => \MyTheme\Models\MainMenuItem::class],
+
     // Or your own child theme snippets
     'MyTheme\\Snippets\\CustomFeature' => ['enabled' => true],
 ];
@@ -108,6 +112,8 @@ return [
 | `Theme\\ImageSizes` | Configure, add, and disable WordPress image sizes |
 | `Theme\\BigImageScaling` | Set the threshold for WordPress big image scaling |
 | `Theme\\Logo` | Logo image Customizer control |
+| `Content\\AllowSvgUploads` | Allow SVG files in the media library |
+| `Theme\\RemoveGalleryStyle` | Remove the WordPress gallery inline CSS |
 | `Theme\\LogoSvg` | SVG logo support via Customizer |
 | `Theme\\EditorStyles` | Add editor stylesheet support |
 
@@ -116,6 +122,7 @@ return [
 | Snippet | Description |
 |---|---|
 | `Theme\\DisableEmojis` | Remove WordPress emoji scripts, styles, and DNS prefetch (~15 KB saved) |
+| `Theme\\DisableBlockStyles` | Dequeue block library and global styles on non-block themes |
 | `Content\\RemoveOembedAuthor` | Strip author info from oEmbed responses |
 | `WooCommerce\\Cart\\DisableEmptyCartFragments` | Keep WooCommerce cart fragments inert for anonymous/empty-cart browsing views |
 | `WooCommerce\\Cart\\DecrawlAddToCartLinks` | Replace crawlable loop add-to-cart hrefs and redirect direct GET add-to-cart hits |
@@ -129,6 +136,7 @@ return [
 | `Theme\\TinyMceBlockFormats` | Customise TinyMCE block format dropdown |
 | `Content\\RemovePosts` | Remove the default "Posts" menu from the admin |
 | `Theme\\PostTypeMenuHighlighter` | Fix admin menu highlighting for custom post types |
+| `Content\\RemoveTaxonomyUi` | Hide a taxonomy's admin submenu and meta box (default: post tags) |
 | `Theme\\Copyright` | Copyright notice Customizer control |
 | `Theme\\ArchiveTitles` | Customiser controls for archive page titles |
 
@@ -138,6 +146,8 @@ return [
 |---|---|
 | `Theme\\Permalinks` | Custom rewrite rules for CSS, JS, images, and fonts |
 | `Theme\\AddQueryVars` | Register custom query variables |
+| `Theme\\MenuActiveClasses` | Add active/current classes to custom-link menu items (Timber MenuItem::current) |
+| `Theme\\MenuItemClassMap` | Register custom Timber MenuItem classes per menu location |
 | `Content\\SearchExcludePostTypes` | Exclude specific post types from search results |
 | `Content\\PasswordProtection` | Custom template for password-protected posts |
 | `Content\\AddPostTypeSupport` | Add a feature (excerpt, thumbnail, etc.) to an existing post type |
