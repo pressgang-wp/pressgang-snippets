@@ -5,8 +5,12 @@ namespace PressGang\Snippets\Theme;
 use PressGang\Snippets\SnippetInterface;
 
 /**
- * Removes the WordPress gallery inline CSS so the theme can style galleries
- * itself.
+ * Suppresses the WordPress gallery shortcode's default inline CSS so the
+ * theme can style galleries itself.
+ *
+ * Not needed when the theme declares `add_theme_support('html5', ['gallery'])`
+ * — WordPress already skips the inline styles for html5 galleries. Use this
+ * for themes without html5 gallery support.
  */
 class RemoveGalleryStyle implements SnippetInterface {
 
@@ -14,17 +18,6 @@ class RemoveGalleryStyle implements SnippetInterface {
 	 * @param array $args
 	 */
 	public function __construct( array $args ) {
-		\add_filter( 'gallery_style', [ $this, 'remove_style' ] );
-	}
-
-	/**
-	 * Replaces the gallery style block with an empty string.
-	 *
-	 * @param string $existing_code Gallery style block.
-	 *
-	 * @return string
-	 */
-	public function remove_style( $existing_code ): string {
-		return '';
+		\add_filter( 'use_default_gallery_style', '__return_false' );
 	}
 }

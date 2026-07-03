@@ -14,18 +14,11 @@ class RemoveGalleryStyleTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function test_constructor_registers_gallery_style_filter(): void {
-		Filters\expectAdded( 'gallery_style' )->once();
+	public function test_constructor_disables_default_gallery_style(): void {
+		Filters\expectAdded( 'use_default_gallery_style' )
+			->once()
+			->with( '__return_false' );
 
 		new RemoveGalleryStyle( [] );
-	}
-
-	/**
-	 * @return void
-	 */
-	public function test_gallery_style_is_emptied(): void {
-		$style = ( new RemoveGalleryStyle( [] ) )->remove_style( '<style>.gallery {}</style>' );
-
-		self::assertSame( '', $style );
 	}
 }
