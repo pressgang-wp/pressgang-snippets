@@ -113,7 +113,7 @@ return [
 | `Theme\\BigImageScaling` | Set the threshold for WordPress big image scaling |
 | `Theme\\Logo` | Logo image Customizer control |
 | `Content\\AllowSvgUploads` | Allow SVG files in the media library |
-| `Theme\\RemoveGalleryStyle` | Remove the WordPress gallery inline CSS |
+| `Theme\\RemoveGalleryStyle` | Suppress the default gallery inline CSS (for themes without html5 gallery support) |
 | `Theme\\LogoSvg` | SVG logo support via Customizer |
 | `Theme\\EditorStyles` | Add editor stylesheet support |
 

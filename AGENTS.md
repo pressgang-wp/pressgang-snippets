@@ -17,7 +17,7 @@ Theme/menu utilities added 2026-07:
 - `PressGang\Snippets\Theme\DisableBlockStyles` — dequeue block library/global styles on classic-editor themes. Args: optional `handles` list.
 - `PressGang\Snippets\Theme\MenuActiveClasses` — active/current classes for custom-link menu items so Timber `MenuItem::current` works.
 - `PressGang\Snippets\Theme\MenuItemClassMap` — map menu locations to custom Timber MenuItem classes. Args: `location => FQCN`.
-- `PressGang\Snippets\Theme\RemoveGalleryStyle` — strip WordPress gallery inline CSS.
+- `PressGang\Snippets\Theme\RemoveGalleryStyle` — suppress default gallery inline CSS (redundant when html5 gallery support is declared).
 - `PressGang\Snippets\Content\AllowSvgUploads` — allow SVG uploads.
 - `PressGang\Snippets\Content\RemoveTaxonomyUi` — hide a taxonomy's admin submenu/meta box. Args: `taxonomy`, `post_type`.
 
