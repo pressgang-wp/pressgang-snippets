@@ -6,9 +6,12 @@ use PressGang\Snippets\SnippetInterface;
 use Timber\URLHelper;
 
 /**
- * Adds active/current classes to custom-link menu items whose URL matches
- * the current request, so Timber's MenuItem::current highlighting works for
- * them (WordPress only sets current classes on object-linked items).
+ * Adds active/current classes to menu items whose URL matches the current
+ * request, using Timber's normalised URL comparison. More robust than
+ * WordPress core's exact-match handling for custom links (scheme/host/
+ * trailing-slash differences), and adds an `active` class for CSS hooks.
+ *
+ * Ported from the PressGang v1 parent theme's Filters class.
  */
 class MenuActiveClasses implements SnippetInterface {
 
