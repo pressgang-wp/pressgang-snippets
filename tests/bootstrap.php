@@ -16,6 +16,7 @@
 // parent theme installed.
 require_once __DIR__ . '/stubs/SnippetInterface.php';
 require_once __DIR__ . '/stubs/WooCommerce.php';
+require_once __DIR__ . '/stubs/WP_Theme_JSON_Data.php';
 require_once __DIR__ . '/stubs/WP_Query.php';
 require_once __DIR__ . '/stubs/WP_Post.php';
 require_once __DIR__ . '/stubs/WP_Term.php';

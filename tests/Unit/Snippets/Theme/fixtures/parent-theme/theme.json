@@ -1,0 +1,11 @@
+{
+	"version": 3,
+	"settings": {
+		"typography": {
+			"defaultFontSizes": false
+		},
+		"shadow": {
+			"defaultPresets": false
+		}
+	}
+}
