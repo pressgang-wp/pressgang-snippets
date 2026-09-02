@@ -18,6 +18,7 @@ Theme/menu utilities added 2026-07:
 - `PressGang\Snippets\Theme\MenuActiveClasses` — active/current classes for custom-link menu items so Timber `MenuItem::current` works.
 - `PressGang\Snippets\Theme\MenuItemClassMap` — map menu locations to custom Timber MenuItem classes. Args: `location => FQCN`.
 - `PressGang\Snippets\Theme\RemoveGalleryStyle` — suppress default gallery inline CSS (redundant when html5 gallery support is declared).
+- `PressGang\Snippets\Theme\RemoveDefaultPresets` — remove core default presets (palette, gradients, font sizes, spacing, shadows, aspect ratios) from the global styles CSS for whichever groups theme.json switches off via its `default*` flags. WordPress applies those flags to the editor UI only, so the CSS is printed regardless. Args: optional `presets` list to override the theme.json detection.
 - `PressGang\Snippets\Content\AllowSvgUploads` — allow SVG uploads.
 - `PressGang\Snippets\Content\RemoveTaxonomyUi` — hide a taxonomy's admin submenu/meta box. Args: `taxonomy`, `post_type`.
 
