@@ -23,6 +23,7 @@ class DisableCoreArchivesTest extends TestCase {
 		Filters\expectAdded( 'category_rewrite_rules' )->never();
 		Filters\expectAdded( 'post_tag_rewrite_rules' )->never();
 		Filters\expectAdded( 'pre_handle_404' )->once()->with( Mockery::type( 'array' ), 10, 2 );
+		Filters\expectAdded( 'redirect_canonical' )->once()->with( Mockery::type( 'array' ) );
 
 		new DisableCoreArchives( [] );
 	}
@@ -31,7 +32,7 @@ class DisableCoreArchivesTest extends TestCase {
 	 * @return void
 	 */
 	public function test_constructor_registers_only_configured_route_filters(): void {
-		Filters\expectAdded( 'post_rewrite_rules' )->once();
+		Filters\expectAdded( 'post_rewrite_rules' )->never();
 		Filters\expectAdded( 'category_rewrite_rules' )->once();
 		Filters\expectAdded( 'post_tag_rewrite_rules' )->once();
 		Filters\expectAdded( 'author_rewrite_rules' )->never();
@@ -62,6 +63,24 @@ class DisableCoreArchivesTest extends TestCase {
 		Functions\expect( 'nocache_headers' )->once();
 
 		$this->assertTrue( $snippet->maybe_set_404( false, $query ) );
+		$this->assertFalse( $snippet->prevent_canonical_redirect( 'https://example.com/author/name/' ) );
+	}
+
+	/**
+	 * @return void
+	 */
+	public function test_disabled_post_does_not_remove_shared_rewrite_rules(): void {
+		Filters\expectAdded( 'post_rewrite_rules' )->never();
+		$snippet = new DisableCoreArchives( [ 'routes' => [ 'post' ] ] );
+		$query   = Mockery::mock( 'WP_Query' );
+
+		$query->shouldReceive( 'is_singular' )->once()->with( 'post' )->andReturn( true );
+		$query->shouldReceive( 'set_404' )->once();
+		Functions\expect( 'status_header' )->once()->with( 404 );
+		Functions\expect( 'nocache_headers' )->once();
+
+		$this->assertTrue( $snippet->maybe_set_404( false, $query ) );
+		$this->assertFalse( $snippet->prevent_canonical_redirect( 'https://example.com/hello-world/' ) );
 	}
 
 	/**
@@ -78,6 +97,10 @@ class DisableCoreArchivesTest extends TestCase {
 		Functions\expect( 'nocache_headers' )->never();
 
 		$this->assertFalse( $snippet->maybe_set_404( false, $query ) );
+		$this->assertSame(
+			'https://example.com/canonical/',
+			$snippet->prevent_canonical_redirect( 'https://example.com/canonical/' )
+		);
 	}
 
 	/**

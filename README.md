@@ -125,7 +125,7 @@ return [
 | `Theme\\DisableBlockStyles` | Dequeue block library and global styles on non-block themes |
 | `Theme\\RemoveDefaultPresets` | Drop core presets (palette, font sizes, gradients...) from the global styles CSS when theme.json disables them |
 | `Content\\RemoveOembedAuthor` | Strip author info from oEmbed responses |
-| `Content\\DisableCoreArchives` | Remove selected post, category, tag, author, and date routes; defaults to author/date archives |
+| `Content\\DisableCoreArchives` | Disable selected post, category, tag, author, and date routes; defaults to author/date archives |
 | `WooCommerce\\Cart\\DisableEmptyCartFragments` | Keep WooCommerce cart fragments inert for anonymous/empty-cart browsing views |
 | `WooCommerce\\Cart\\DecrawlAddToCartLinks` | Replace crawlable loop add-to-cart hrefs and redirect direct GET add-to-cart hits |
 

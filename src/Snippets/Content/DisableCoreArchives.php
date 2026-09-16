@@ -5,13 +5,13 @@ namespace PressGang\Snippets\Content;
 use PressGang\Snippets\SnippetInterface;
 
 /**
- * Removes selected built-in WordPress content routes and returns a genuine 404
+ * Disables selected built-in WordPress content routes and returns a genuine 404
  * when they are requested through either pretty permalinks or query strings.
  *
  * Enable this snippet when a site does not publish some of WordPress's default
- * post, category, tag, author, or date views. Removing the rewrite rules keeps
- * those URLs out of the site's public route inventory; the request guard also
- * covers previously cached rules and query-string forms such as `?author=1`.
+ * post, category, tag, author, or date views. Archive-specific rewrite rules
+ * are removed where WordPress provides them independently; the request guard
+ * covers shared post rules, cached rules, and query strings such as `?author=1`.
  */
 class DisableCoreArchives implements SnippetInterface {
 
@@ -19,12 +19,21 @@ class DisableCoreArchives implements SnippetInterface {
 	private array $routes;
 
 	/**
+	 * Whether the current request matched a disabled route.
+	 *
+	 * @var bool
+	 */
+	private bool $disabled_request = false;
+
+	/**
 	 * Registers rewrite-rule filters and WordPress's status-handling filter.
 	 *
 	 * Supported route names are `post`, `category`, `tag`, `author`, and `date`.
 	 * Author and date archives are disabled by default. Pass an explicit `routes`
 	 * list when the site also needs to disable built-in posts or taxonomies.
-	 * Rewrite rules must be flushed once after this configuration changes.
+	 * Rewrite rules must be flushed once after this configuration changes. Post
+	 * rewrite rules are retained because WordPress may share them with page
+	 * routing when the permalink structure starts with `%postname%`.
 	 *
 	 * @param array{routes?: list<string>} $args Snippet configuration.
 	 */
@@ -34,18 +43,20 @@ class DisableCoreArchives implements SnippetInterface {
 		$this->routes = array_values( array_intersect( $supported, $configured ) );
 
 		$rewrite_filters = [
-			'post'     => 'post_rewrite_rules',
 			'category' => 'category_rewrite_rules',
 			'tag'      => 'post_tag_rewrite_rules',
 			'author'   => 'author_rewrite_rules',
 			'date'     => 'date_rewrite_rules',
 		];
 
-		foreach ( $this->routes as $route ) {
-			\add_filter( $rewrite_filters[ $route ], [ $this, 'remove_rewrite_rules' ] );
+		foreach ( $rewrite_filters as $route => $filter ) {
+			if ( \in_array( $route, $this->routes, true ) ) {
+				\add_filter( $filter, [ $this, 'remove_rewrite_rules' ] );
+			}
 		}
 
 		\add_filter( 'pre_handle_404', [ $this, 'maybe_set_404' ], 10, 2 );
+		\add_filter( 'redirect_canonical', [ $this, 'prevent_canonical_redirect' ] );
 	}
 
 	/**
@@ -74,11 +85,23 @@ class DisableCoreArchives implements SnippetInterface {
 			return $preempt;
 		}
 
+		$this->disabled_request = true;
 		$query->set_404();
 		\status_header( 404 );
 		\nocache_headers();
 
 		return true;
+	}
+
+	/**
+	 * Prevents canonical redirects after a configured route becomes a 404.
+	 *
+	 * @param string|false $redirect_url Canonical redirect selected by WordPress.
+	 *
+	 * @return string|false
+	 */
+	public function prevent_canonical_redirect( $redirect_url ) {
+		return $this->disabled_request ? false : $redirect_url;
 	}
 
 	/**
