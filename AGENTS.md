@@ -8,6 +8,7 @@ Before adding a site-local snippet to a PressGang child theme, check `src/Snippe
 
 Current commerce crawl/performance helpers:
 
+- `PressGang\Snippets\Content\DisableCoreArchives` — removes selected built-in post, category, tag, author, and date routes and returns real 404 responses for pretty-permalink and query-string forms. Args: optional `routes` list; defaults to author/date.
 - `PressGang\Snippets\Seo\RobotsTxt` — configurable virtual `robots.txt` output. Args: `allow`, `disallow`, `sitemap_url`, `user_agent`. Defaults only to WordPress' admin/admin-ajax rules; put all site-specific rules in theme config. A physical root `robots.txt` bypasses this.
 - `PressGang\Snippets\WooCommerce\Cart\DecrawlAddToCartLinks` — removes crawlable product-loop `?add-to-cart=` hrefs and redirects direct GET/HEAD add-to-cart requests early.
 - `PressGang\Snippets\WooCommerce\Cart\DisableEmptyCartFragments` — prevents empty-cart browsing views from localizing `wc-cart-fragments`, avoiding the cold-load fragments AJAX request.

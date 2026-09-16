@@ -125,6 +125,7 @@ return [
 | `Theme\\DisableBlockStyles` | Dequeue block library and global styles on non-block themes |
 | `Theme\\RemoveDefaultPresets` | Drop core presets (palette, font sizes, gradients...) from the global styles CSS when theme.json disables them |
 | `Content\\RemoveOembedAuthor` | Strip author info from oEmbed responses |
+| `Content\\DisableCoreArchives` | Remove selected post, category, tag, author, and date routes; defaults to author/date archives |
 | `WooCommerce\\Cart\\DisableEmptyCartFragments` | Keep WooCommerce cart fragments inert for anonymous/empty-cart browsing views |
 | `WooCommerce\\Cart\\DecrawlAddToCartLinks` | Replace crawlable loop add-to-cart hrefs and redirect direct GET add-to-cart hits |
 
@@ -153,6 +154,7 @@ return [
 | `Content\\PasswordProtection` | Custom template for password-protected posts |
 | `Content\\AddPostTypeSupport` | Add a feature (excerpt, thumbnail, etc.) to an existing post type |
 | `Content\\RegisterTaxonomyForPostType` | Associate an existing taxonomy with a post type |
+| `Content\\DisableCoreArchives` | Return 404 responses for selected built-in routes. Args: `routes` (`post`, `category`, `tag`, `author`, `date`); defaults to author/date |
 | `Google\\Recaptcha` | Google reCAPTCHA site + secret key management |
 
 ### 🎨 ACF Integration
