@@ -120,6 +120,23 @@ Adds functionality to the WordPress admin — row actions, admin notices, editor
 - Always verify nonces for state-changing actions.
 - Use `\wp_safe_redirect()` after admin actions, never `\wp_redirect()`.
 
+### Editor Assets
+
+Before creating an editor stylesheet helper, reuse
+`PressGang\Snippets\Theme\EditorStyles`. Its `path` selects the theme CSS;
+`block_editor_only => true` loads it in the block editor canvas without applying
+it to classic TinyMCE editors. Inspect the installed version before using an
+option or namespace: older releases used a flat `EditorStyles` class.
+
+This shared CSS snippet is an intentional editor integration. It does not
+replace PressGang's `config/scripts.php` / `config/styles.php` asset declarations
+and does not load JavaScript. Do not create a site-local snippet that hard-codes
+script handles, paths or versions. When editor-only JavaScript needs a context
+guard, declare the script with a dedicated enqueue `hook` in `config/scripts.php`
+and use a small snippet only to dispatch that hook from `enqueue_block_assets`
+when `is_admin()` is true. `enqueue_block_assets` also runs on the frontend;
+`enqueue_block_editor_assets` targets the editor UI rather than its iframe.
+
 ### Twig Function Registration
 
 Registers a function into the Twig environment via the `timber/twig` filter.
