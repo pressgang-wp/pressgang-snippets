@@ -15,6 +15,10 @@ use Timber\Timber;
  * platforms. No configuration required — values are derived automatically from
  * the current page context.
  *
+ * Outputs nothing while Yoast SEO's own Open Graph tags are enabled, so pages
+ * never carry two conflicting sets. Override with the `pressgang_og_enabled`
+ * filter.
+ *
  * Note: depends on PressGang\SEO\MetaDescriptionService from the parent theme.
  *
  * @see https://developers.facebook.com/docs/sharing/webmasters/#markup
@@ -38,7 +42,11 @@ class OpenGraph implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_meta_tags(): void {
-		Timber::render( 'snippets/seo/open-graph.twig', [
+		if ( ! \apply_filters( 'pressgang_og_enabled', ! $this->yoast_outputs_open_graph() ) ) {
+			return;
+		}
+
+		$this->render_template( 'snippets/seo/open-graph.twig', [
 			'site_name'   => \apply_filters( 'pressgang_og_site_name', \get_bloginfo() ),
 			'title'       => \apply_filters( 'pressgang_og_title', $this->get_title() ),
 			'description' => \apply_filters( 'pressgang_og_description', $this->get_description() ),
@@ -46,6 +54,25 @@ class OpenGraph implements SnippetInterface {
 			'url'         => \apply_filters( 'pressgang_og_url', $this->get_url() ),
 			'image'       => \apply_filters( 'pressgang_og_image', $this->get_image_url() ),
 		] );
+	}
+
+	/**
+	 * Whether Yoast SEO is active with its Open Graph output switched on.
+	 *
+	 * @return bool
+	 */
+	protected function yoast_outputs_open_graph(): bool {
+		return \class_exists( '\WPSEO_Options' ) && (bool) \WPSEO_Options::get( 'opengraph', true );
+	}
+
+	/**
+	 * @param string               $template
+	 * @param array<string, mixed> $context
+	 *
+	 * @return void
+	 */
+	protected function render_template( string $template, array $context ): void {
+		Timber::render( $template, $context );
 	}
 
 	/**
