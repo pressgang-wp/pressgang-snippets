@@ -3,6 +3,7 @@
 namespace PressGang\Tests\Snippets\Unit\Snippets\Seo;
 
 use Brain\Monkey\Actions;
+use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use PressGang\Snippets\Seo\TwitterSummary;
 use PressGang\Tests\Snippets\Unit\TestCase;
@@ -14,8 +15,14 @@ use PressGang\Tests\Snippets\Unit\TestCase;
  */
 class TestableTwitterSummary extends TwitterSummary {
 
+	public bool $yoast = false;
+
 	/** @var array<int, array{template: string, context: array<string, mixed>}> */
 	public array $rendered = [];
+
+	protected function yoast_outputs_twitter(): bool {
+		return $this->yoast;
+	}
 
 	protected function render_template( string $template, array $context ): void {
 		$this->rendered[] = [ 'template' => $template, 'context' => $context ];
@@ -71,5 +78,32 @@ class TwitterSummaryTest extends TestCase {
 		$this->assertSame( 'snippets/seo/twitter-summary.twig', $snippet->rendered[0]['template'] );
 		$this->assertSame( 'Example Title', $snippet->rendered[0]['context']['title'] );
 		$this->assertSame( 'Example description', $snippet->rendered[0]['context']['description'] );
+	}
+
+	/**
+	 * @return void
+	 */
+	public function test_skips_tags_when_yoast_outputs_twitter(): void {
+		$snippet        = new TestableTwitterSummary( [] );
+		$snippet->yoast = true;
+
+		$snippet->add_meta_tags();
+
+		$this->assertSame( [], $snippet->rendered );
+	}
+
+	/**
+	 * @return void
+	 */
+	public function test_filter_can_force_tags_alongside_yoast(): void {
+		$snippet        = new TestableTwitterSummary( [] );
+		$snippet->yoast = true;
+
+		Filters\expectApplied( 'pressgang_twitter_enabled' )->once()->with( false )->andReturn( true );
+		Functions\when( 'get_theme_mod' )->justReturn( '' );
+
+		$snippet->add_meta_tags();
+
+		$this->assertCount( 1, $snippet->rendered );
 	}
 }

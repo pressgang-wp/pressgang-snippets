@@ -12,6 +12,10 @@ use Timber\Timber;
  * Enable this snippet to add Twitter Card metadata. Optional site and creator
  * handles can be configured in the Customizer under the "Twitter" section.
  *
+ * Outputs nothing while Yoast SEO's own Twitter card tags are enabled, so
+ * pages never carry two conflicting sets. Override with the
+ * `pressgang_twitter_enabled` filter.
+ *
  * Note: depends on PressGang\SEO\MetaDescriptionService from the parent theme.
  */
 class TwitterSummary implements SnippetInterface {
@@ -46,6 +50,10 @@ class TwitterSummary implements SnippetInterface {
 	 * @return void
 	 */
 	public function add_meta_tags(): void {
+		if ( ! \apply_filters( 'pressgang_twitter_enabled', ! $this->yoast_outputs_twitter() ) ) {
+			return;
+		}
+
 		$this->render_template( 'snippets/seo/twitter-summary.twig', $this->build_context() );
 	}
 
@@ -199,11 +207,14 @@ class TwitterSummary implements SnippetInterface {
 	}
 
 	/**
-	 * Returns the canonical URL for the current page, handling taxonomy and
-	 * post-type archive contexts.
+	 * Whether Yoast SEO is active with its Twitter card output switched on.
 	 *
-	 * @return string The canonical URL.
+	 * @return bool
 	 */
+	protected function yoast_outputs_twitter(): bool {
+		return \class_exists( '\WPSEO_Options' ) && (bool) \WPSEO_Options::get( 'twitter', true );
+	}
+
 	/**
 	 * @param string               $template Template path.
 	 * @param array<string, mixed> $context  Template context.
